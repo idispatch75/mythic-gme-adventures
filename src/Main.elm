@@ -11,7 +11,7 @@ import List.Extra as ListX
 -- MAIN
 
 
-main : Program () Model Msg
+main : Program () Model2 Msg
 main =
   Browser.sandbox { init = init, update = update, view = view }
 
