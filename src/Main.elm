@@ -1,9 +1,10 @@
 module Main exposing (..)
 
-import FateChart exposing (FateChart)
 import Browser
 import Html exposing (Html, button, div, text)
 import Html.Events exposing (onClick)
+import FateChart
+import List.Extra as ListX
 
 
 
@@ -19,9 +20,9 @@ main =
 -- MODEL
 
 
-type alias Model = Int
+type alias Model2 = Int
 
-type alias Model2 =
+type alias Model =
   { campain : Maybe Campaign
   , campaigns : List Campaign
   , globalSettings : GlobalSettings
@@ -31,6 +32,8 @@ type alias Campaign =
   { name : String
   , chaosFactor : Int
   , scenes : List Scene
+  , threadList : List Int
+  , characterList : List Int
   , threads : List Thread
   , characters : List Character
   , playableCharacters : List PlayableCharacter
@@ -57,16 +60,17 @@ testExpectedScene chaosFactor = Expected
 rollSceneAdjustment : List String
 rollSceneAdjustment = [ "Remove A Character" ]
 
+rollPlayableCharacter : Model -> Maybe PlayableCharacter
+rollPlayableCharacter model =
+	model.campain
+    |> Maybe.andThen (\x ->  List.head x.playableCharacters) -- TODO
+
+
 type alias Character =
-  { name : String 
+  { id : Int
+  , name : String 
   , summary : Maybe String
   , notes : Maybe String
-  }
-
-type alias NonPlayableCharacter =
-  { name : String
-  , notes : String
-  , motivation : String
   }
 
 type alias PlayableCharacter =
@@ -74,7 +78,8 @@ type alias PlayableCharacter =
   }
 
 type alias Thread =
-  { name : String
+  { id : Int
+  , name : String
   , notes : String
   }
 
@@ -90,14 +95,15 @@ type alias RollLogEntry =
   }
 
 type alias CampaignSettings =
-  { fateChart : FateChart
+  { fateChartType : FateChart.Type
   }
 
 type alias GlobalSettings =
-  { fateChart: FateChart
+  { fateChartType: FateChart.Type
   }
 
-init : Model
+
+init : Model2
 init =
   0
 
@@ -111,7 +117,7 @@ type Msg
   | Decrement
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model2 -> Model2
 update msg model =
   case msg of
     Increment ->
@@ -125,7 +131,7 @@ update msg model =
 -- VIEW
 
 
-view : Model -> Html Msg
+view : Model2 -> Html Msg
 view model =
   div []
     [ button [ onClick Decrement ] [ text "-" ]

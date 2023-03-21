@@ -1,19 +1,28 @@
 module FateChart exposing 
-  ( FateChart, Probability, Outcome
+  ( Type, Probability, Outcome
   , rollFateChart
-  , fateChartStandard
   )
 
 import Random
-import List.Extra as XList
+import List.Extra as ListX
+
+
+type Type
+  = Standard
+  | Mid
+  | Low
+  | None
+
 
 type alias FateChart = List ChaosFactor
+
 
 type alias ChaosFactor = 
   { min : Int
   , max : Int
   , outcomeProbabilities : List OutcomeProbability
   }
+
 
 type alias OutcomeProbability =
   { probability : Probability
@@ -29,36 +38,44 @@ type Probability
 
 
 type Outcome
-  = Yes
-  | ExtremeYes
+  = ExtremeYes
+  | Yes
   | No
   | ExtremeNo
 
--- rollFateChart : Probability -> Int -> Outcome
--- rollFateChart probability chaosFactor = Yes
 
-rollFateChart : FateChart -> Probability -> Int -> Random.Generator Outcome
-rollFateChart chart probability chaosFactor =
+rollFateChart : Type -> Probability -> Int -> Random.Generator Outcome
+rollFateChart chartType probability chaosFactor =
+  Random.map (determineOutcome chartType probability chaosFactor) rollDie
+
+
+determineOutcome: Type -> Probability -> Int -> Int -> Outcome
+determineOutcome chartType probability chaosFactor dieRoll =
   let
-    outcomeProbability = XList.find (\x -> chaosFactor >= x.min && chaosFactor <= x.max) chart
+    outcomeProbability = ListX.find (\x -> chaosFactor >= x.min && chaosFactor <= x.max) (chartFromType chartType)
       |> Maybe.withDefault defaultChaosFactor
       |> .outcomeProbabilities
-      |> XList.find (\x -> probability == x.probability)
+      |> ListX.find (\x -> probability == x.probability)
       |> Maybe.withDefault defaultOutcomeProbability
   in
-    Random.map (determineOutcome outcomeProbability) rollDie
+    if dieRoll <= outcomeProbability.extremeYes then
+      ExtremeYes
+    else if dieRoll <= outcomeProbability.threshold then
+      Yes
+    else if dieRoll < outcomeProbability.extremeNo then
+      No
+    else
+      ExtremeNo
 
 
-determineOutcome: OutcomeProbability -> Int -> Outcome
-determineOutcome outcomeProbability dieRoll =
-  if dieRoll <= outcomeProbability.extremeYes then
-    ExtremeYes
-  else if dieRoll <= outcomeProbability.threshold then
-    Yes
-  else if dieRoll < outcomeProbability.extremeNo then
-    No
-  else
-    ExtremeNo
+chartFromType : Type -> FateChart
+chartFromType chartType = 
+  case chartType of
+    Standard -> fateChartStandard
+    Mid -> fateChartMid
+    Low -> fateChartLow
+    None -> fateChartNone
+
 
 rollDie : Random.Generator Int
 rollDie = Random.int 1 100
@@ -76,17 +93,25 @@ fateChartStandard =
     ]
   ]
 
+
+fateChartMid : FateChart
+fateChartMid = []
+
+
+fateChartLow : FateChart
+fateChartLow = []
+
+
+fateChartNone : FateChart
+fateChartNone = []
+
+
 defaultChaosFactor : ChaosFactor
 defaultChaosFactor = ChaosFactor 1 1
   [ OutcomeProbability Certain 10 50 91
   , OutcomeProbability NearlyCertain 10 50 91
   ]
 
+
 defaultOutcomeProbability : OutcomeProbability
 defaultOutcomeProbability = OutcomeProbability Certain 10 50 91
-
--- fateChartMid : FateChart
-
--- fateChartLow : FateChart
-
--- fateChartNone : FateChart
