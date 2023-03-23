@@ -1,4 +1,4 @@
 /node_modules
-/elm-stuff
+**/elm-stuff
 /.parcel-cache
 /dist

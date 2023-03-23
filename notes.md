@@ -5,6 +5,7 @@ elm-actor-model
 elm-app-url
 billstclair/elm-localstorage
 elm-json-decode-pipeline
+elm-serialize
 
 https://elm-ts-interop.com/
 https://github.com/izdi/elm-cheat-sheet
@@ -17,6 +18,8 @@ https://github.com/elm/compiler/blob/master/hints/comparing-records.md
 https://github.com/quicktype/quicktype
 
 http://localhost:1234/
+
+npx elm-codegen run --flags-from="assets/translations.en.json"
 
  root
  - campain
