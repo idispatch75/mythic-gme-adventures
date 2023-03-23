@@ -38,7 +38,7 @@ type alias Campaign =
     , characterList : List CharacterId
     , threads : List Thread
     , characters : List Character
-    , playableCharacters : List PlayableCharacter
+    , playerCharacters : List PlayerCharacter
     , rollLog : List RollLogEntry
     , notes : List CampaignNote
     , settings : CampaignSettings
@@ -64,10 +64,10 @@ testExpectedScene chaosFactor = Expected
 rollSceneAdjustment : List String
 rollSceneAdjustment = [ "Remove A Character" ]
 
-rollPlayableCharacter : Model -> Maybe PlayableCharacter
-rollPlayableCharacter model =
-	model.campain
-    |> Maybe.andThen (\x ->  List.head x.playableCharacters) -- TODO
+rollPlayerCharacter : Model -> Maybe PlayerCharacter
+rollPlayerCharacter model =
+    model.campain
+    |> Maybe.andThen (\x ->  List.head x.playerCharacters) -- TODO
 
 
 type alias Character =
@@ -85,7 +85,7 @@ characterIdDecoder =
     Decode.map CharacterId int
 
 
-type alias PlayableCharacter =
+type alias PlayerCharacter =
     { name : String
     }
 
@@ -133,10 +133,10 @@ update : Msg -> Model2 -> Model2
 update msg model =
     case msg of
         Increment ->
-        model + 1
+            model + 1
 
         Decrement ->
-        model - 1
+            model - 1
 
 
 

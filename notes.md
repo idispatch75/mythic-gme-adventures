@@ -19,6 +19,8 @@ https://github.com/quicktype/quicktype
 
 http://localhost:1234/
 
+elm make src\Main.elm --output=test.js
+
 npx elm-codegen run --flags-from="assets/translations.en.json"
 
  root

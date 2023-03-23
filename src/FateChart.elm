@@ -1,7 +1,7 @@
 module FateChart exposing 
-  ( Type, Probability, Outcome
-  , rollFateChart
-  )
+    ( Type, Probability, Outcome
+    , rollFateChart
+    )
 
 import Random
 import List.Extra as ListX
@@ -10,27 +10,27 @@ import ChaosFactor exposing (ChaosFactor)
 
 
 type Type
-  = Standard
-  | Mid
-  | Low
-  | None
+    = Standard
+    | Mid
+    | Low
+    | None
 
 
 type alias FateChart = List ChaosFactorOutcomeProbabilities
 
 
 type alias ChaosFactorOutcomeProbabilities = 
-  { min : Int
-  , max : Int
-  , outcomeProbabilities : List OutcomeProbability
-  }
+    { min : Int
+    , max : Int
+    , outcomeProbabilities : List OutcomeProbability
+    }
 
 
 type alias OutcomeProbability =
-  { extremeYes : Int
-  , threshold : Int
-  , extremeNo : Int
-  }
+    { extremeYes : Int
+    , threshold : Int
+    , extremeNo : Int
+    }
 
 
 type Probability
@@ -64,19 +64,19 @@ determineOutcome chartType probability chaosFactor dieRoll =
     let
         chaosFactorInt = ChaosFactor.toInt chaosFactor
         outcomeProbability = ListX.find (\x -> chaosFactorInt >= x.min && chaosFactorInt <= x.max) (chartFromType chartType)
-        |> Maybe.withDefault fallbackChaosFactor
-        |> .outcomeProbabilities
-        |> ListX.getAt (probabilityToIndex probability)
-        |> Maybe.withDefault fallbackOutcomeProbability
+            |> Maybe.withDefault fallbackChaosFactor
+            |> .outcomeProbabilities
+            |> ListX.getAt (probabilityToIndex probability)
+            |> Maybe.withDefault fallbackOutcomeProbability
     in
     if dieRoll <= outcomeProbability.extremeYes then
-    ExtremeYes
+        ExtremeYes
     else if dieRoll <= outcomeProbability.threshold then
-    Yes
+        Yes
     else if dieRoll < outcomeProbability.extremeNo then
-    No
+        No
     else
-    ExtremeNo
+        ExtremeNo
 
 
 {-| Determines the index of a Probability in a ChaosFactor.outcomeProbabilities -}
@@ -111,15 +111,15 @@ rollDie = Random.int 1 100
 
 fallbackChaosFactor : ChaosFactorOutcomeProbabilities
 fallbackChaosFactor = ChaosFactorOutcomeProbabilities 1 9
-    [ outcomeProbability 90
-    , outcomeProbability 85
-    , outcomeProbability 75
-    , outcomeProbability 65
-    , outcomeProbability 50
-    , outcomeProbability 35
-    , outcomeProbability 25
-    , outcomeProbability 15
-    , outcomeProbability 10
+    [ outcomeProbabilityForThreshold 90
+    , outcomeProbabilityForThreshold 85
+    , outcomeProbabilityForThreshold 75
+    , outcomeProbabilityForThreshold 65
+    , outcomeProbabilityForThreshold 50
+    , outcomeProbabilityForThreshold 35
+    , outcomeProbabilityForThreshold 25
+    , outcomeProbabilityForThreshold 15
+    , outcomeProbabilityForThreshold 10
     ]
 
 
@@ -130,8 +130,8 @@ fallbackOutcomeProbability =
 
 
 {-| Returns the OutcomeProbability with the specified threshold. -}
-outcomeProbability : Int -> OutcomeProbability
-outcomeProbability threshold =
+outcomeProbabilityForThreshold : Int -> OutcomeProbability
+outcomeProbabilityForThreshold threshold =
     Dict.get threshold availableOutcomeProbabilities 
         |> Maybe.withDefault fallbackOutcomeProbability
 
@@ -159,103 +159,103 @@ computeOutcomeProbability threshold =
 fateChartStandard : FateChart
 fateChartStandard = 
     [ ChaosFactorOutcomeProbabilities 1 1
-        [ outcomeProbability 50
-        , outcomeProbability 35
-        , outcomeProbability 25
-        , outcomeProbability 15
-        , outcomeProbability 10
-        , outcomeProbability 5
-        , outcomeProbability 1
-        , outcomeProbability 1
-        , outcomeProbability 1
+        [ outcomeProbabilityForThreshold 50
+        , outcomeProbabilityForThreshold 35
+        , outcomeProbabilityForThreshold 25
+        , outcomeProbabilityForThreshold 15
+        , outcomeProbabilityForThreshold 10
+        , outcomeProbabilityForThreshold 5
+        , outcomeProbabilityForThreshold 1
+        , outcomeProbabilityForThreshold 1
+        , outcomeProbabilityForThreshold 1
         ]
     , ChaosFactorOutcomeProbabilities 2 2
-        [ outcomeProbability 65
-        , outcomeProbability 50
-        , outcomeProbability 35
-        , outcomeProbability 25
-        , outcomeProbability 15
-        , outcomeProbability 10
-        , outcomeProbability 5
-        , outcomeProbability 1
-        , outcomeProbability 1
+        [ outcomeProbabilityForThreshold 65
+        , outcomeProbabilityForThreshold 50
+        , outcomeProbabilityForThreshold 35
+        , outcomeProbabilityForThreshold 25
+        , outcomeProbabilityForThreshold 15
+        , outcomeProbabilityForThreshold 10
+        , outcomeProbabilityForThreshold 5
+        , outcomeProbabilityForThreshold 1
+        , outcomeProbabilityForThreshold 1
         ]
     , ChaosFactorOutcomeProbabilities 3 3
-        [ outcomeProbability 75
-        , outcomeProbability 65
-        , outcomeProbability 50
-        , outcomeProbability 35
-        , outcomeProbability 25
-        , outcomeProbability 15
-        , outcomeProbability 10
-        , outcomeProbability 5
-        , outcomeProbability 1
+        [ outcomeProbabilityForThreshold 75
+        , outcomeProbabilityForThreshold 65
+        , outcomeProbabilityForThreshold 50
+        , outcomeProbabilityForThreshold 35
+        , outcomeProbabilityForThreshold 25
+        , outcomeProbabilityForThreshold 15
+        , outcomeProbabilityForThreshold 10
+        , outcomeProbabilityForThreshold 5
+        , outcomeProbabilityForThreshold 1
         ]
     , ChaosFactorOutcomeProbabilities 4 4
-        [ outcomeProbability 85
-        , outcomeProbability 75
-        , outcomeProbability 65
-        , outcomeProbability 50
-        , outcomeProbability 35
-        , outcomeProbability 25
-        , outcomeProbability 15
-        , outcomeProbability 10
-        , outcomeProbability 5
+        [ outcomeProbabilityForThreshold 85
+        , outcomeProbabilityForThreshold 75
+        , outcomeProbabilityForThreshold 65
+        , outcomeProbabilityForThreshold 50
+        , outcomeProbabilityForThreshold 35
+        , outcomeProbabilityForThreshold 25
+        , outcomeProbabilityForThreshold 15
+        , outcomeProbabilityForThreshold 10
+        , outcomeProbabilityForThreshold 5
         ]
     , ChaosFactorOutcomeProbabilities 5 5
-        [ outcomeProbability 90
-        , outcomeProbability 85
-        , outcomeProbability 75
-        , outcomeProbability 65
-        , outcomeProbability 50
-        , outcomeProbability 35
-        , outcomeProbability 25
-        , outcomeProbability 15
-        , outcomeProbability 10
+        [ outcomeProbabilityForThreshold 90
+        , outcomeProbabilityForThreshold 85
+        , outcomeProbabilityForThreshold 75
+        , outcomeProbabilityForThreshold 65
+        , outcomeProbabilityForThreshold 50
+        , outcomeProbabilityForThreshold 35
+        , outcomeProbabilityForThreshold 25
+        , outcomeProbabilityForThreshold 15
+        , outcomeProbabilityForThreshold 10
         ]
     , ChaosFactorOutcomeProbabilities 6 6
-        [ outcomeProbability 95
-        , outcomeProbability 90
-        , outcomeProbability 85
-        , outcomeProbability 75
-        , outcomeProbability 65
-        , outcomeProbability 50
-        , outcomeProbability 35
-        , outcomeProbability 25
-        , outcomeProbability 15
+        [ outcomeProbabilityForThreshold 95
+        , outcomeProbabilityForThreshold 90
+        , outcomeProbabilityForThreshold 85
+        , outcomeProbabilityForThreshold 75
+        , outcomeProbabilityForThreshold 65
+        , outcomeProbabilityForThreshold 50
+        , outcomeProbabilityForThreshold 35
+        , outcomeProbabilityForThreshold 25
+        , outcomeProbabilityForThreshold 15
         ]
     , ChaosFactorOutcomeProbabilities 7 7
-        [ outcomeProbability 99
-        , outcomeProbability 95
-        , outcomeProbability 90
-        , outcomeProbability 85
-        , outcomeProbability 75
-        , outcomeProbability 65
-        , outcomeProbability 50
-        , outcomeProbability 35
-        , outcomeProbability 25
+        [ outcomeProbabilityForThreshold 99
+        , outcomeProbabilityForThreshold 95
+        , outcomeProbabilityForThreshold 90
+        , outcomeProbabilityForThreshold 85
+        , outcomeProbabilityForThreshold 75
+        , outcomeProbabilityForThreshold 65
+        , outcomeProbabilityForThreshold 50
+        , outcomeProbabilityForThreshold 35
+        , outcomeProbabilityForThreshold 25
         ]
     , ChaosFactorOutcomeProbabilities 8 8
-        [ outcomeProbability 99
-        , outcomeProbability 99
-        , outcomeProbability 95
-        , outcomeProbability 90
-        , outcomeProbability 85
-        , outcomeProbability 75
-        , outcomeProbability 65
-        , outcomeProbability 50
-        , outcomeProbability 35
+        [ outcomeProbabilityForThreshold 99
+        , outcomeProbabilityForThreshold 99
+        , outcomeProbabilityForThreshold 95
+        , outcomeProbabilityForThreshold 90
+        , outcomeProbabilityForThreshold 85
+        , outcomeProbabilityForThreshold 75
+        , outcomeProbabilityForThreshold 65
+        , outcomeProbabilityForThreshold 50
+        , outcomeProbabilityForThreshold 35
         ]
     , ChaosFactorOutcomeProbabilities 9 9
-        [ outcomeProbability 99
-        , outcomeProbability 99
-        , outcomeProbability 99
-        , outcomeProbability 95
-        , outcomeProbability 90
-        , outcomeProbability 85
-        , outcomeProbability 75
-        , outcomeProbability 65
-        , outcomeProbability 50
+        [ outcomeProbabilityForThreshold 99
+        , outcomeProbabilityForThreshold 99
+        , outcomeProbabilityForThreshold 99
+        , outcomeProbabilityForThreshold 95
+        , outcomeProbabilityForThreshold 90
+        , outcomeProbabilityForThreshold 85
+        , outcomeProbabilityForThreshold 75
+        , outcomeProbabilityForThreshold 65
+        , outcomeProbabilityForThreshold 50
         ]
   ]
 
@@ -289,7 +289,7 @@ buildChaosFactorFromChart : Int -> Int -> Int -> FateChart -> ChaosFactorOutcome
 buildChaosFactorFromChart min max index chart =
     let
         probabilities = ListX.getAt index chart
-        |> Maybe.withDefault fallbackChaosFactor
-        |> .outcomeProbabilities
+            |> Maybe.withDefault fallbackChaosFactor
+            |> .outcomeProbabilities
     in
     ChaosFactorOutcomeProbabilities min max probabilities
