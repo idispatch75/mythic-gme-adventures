@@ -1,11 +1,11 @@
 module ChaosFactor exposing 
-  ( ChaosFactor
-  , toInt
-  )
+    ( ChaosFactor
+    , toInt
+    )
 
 type ChaosFactor
-  = ChaosFactor Int
+    = ChaosFactor Int
 
 toInt : ChaosFactor -> Int
 toInt (ChaosFactor int) =
-  int
+    int

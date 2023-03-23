@@ -14,7 +14,7 @@ import Json.Decode as Decode exposing (Decoder, int)
 
 main : Program () Model2 Msg
 main =
-  Browser.sandbox { init = init, update = update, view = view }
+    Browser.sandbox { init = init, update = update, view = view }
 
 
 
@@ -24,37 +24,37 @@ main =
 type alias Model2 = Int
 
 type alias Model =
-  { campain : Maybe Campaign
-  , campaigns : List Campaign
-  , globalSettings : GlobalSettings
-  }
+    { campain : Maybe Campaign
+    , campaigns : List Campaign
+    , globalSettings : GlobalSettings
+    }
 
 type alias Campaign =
-  { id : Int
-  , name : String
-  , chaosFactor : Int
-  , scenes : List Scene
-  , threadList : List Int
-  , characterList : List CharacterId
-  , threads : List Thread
-  , characters : List Character
-  , playableCharacters : List PlayableCharacter
-  , rollLog : List RollLogEntry
-  , notes : List CampaignNote
-  , settings : CampaignSettings
-  }
+    { id : Int
+    , name : String
+    , chaosFactor : Int
+    , scenes : List Scene
+    , threadList : List Int
+    , characterList : List CharacterId
+    , threads : List Thread
+    , characters : List Character
+    , playableCharacters : List PlayableCharacter
+    , rollLog : List RollLogEntry
+    , notes : List CampaignNote
+    , settings : CampaignSettings
+    }
 
 
 type alias Scene =
-  { summary : Maybe String
-  , notes : Maybe String
-  }
+    { summary : Maybe String
+    , notes : Maybe String
+    }
 
 
 type SceneType 
-  = Expected
-  | Altered
-  | Interrupted
+    = Expected
+    | Altered
+    | Interrupted
 
 
 testExpectedScene : Int -> SceneType
@@ -71,14 +71,14 @@ rollPlayableCharacter model =
 
 
 type alias Character =
-  { id : CharacterId
-  , name : String 
-  , summary : Maybe String
-  , notes : Maybe String
-  }
+    { id : CharacterId
+    , name : String 
+    , summary : Maybe String
+    , notes : Maybe String
+    }
 
 type CharacterId 
-  = CharacterId Int
+    = CharacterId Int
 
 characterIdDecoder : Decoder CharacterId
 characterIdDecoder =
@@ -86,38 +86,38 @@ characterIdDecoder =
 
 
 type alias PlayableCharacter =
-  { name : String
-  }
+    { name : String
+    }
 
 type alias Thread =
-  { id : Int
-  , name : String
-  , notes : String
-  }
+    { id : Int
+    , name : String
+    , notes : String
+    }
 
 type alias CampaignNote =
-  { title : Maybe String
-  , text : String
-  }
+    { title : Maybe String
+    , text : String
+    }
 
 type alias RollLogEntry =
-  { table : Maybe String
-  , values : List Int
-  , result : String
-  }
+    { table : Maybe String
+    , values : List Int
+    , result : String
+    }
 
 type alias CampaignSettings =
-  { fateChartType : FateChart.Type
-  }
+    { fateChartType : FateChart.Type
+    }
 
 type alias GlobalSettings =
-  { fateChartType: FateChart.Type
-  }
+    { fateChartType: FateChart.Type
+    }
 
 
 init : Model2
 init =
-  0
+    0
 
 
 
@@ -125,18 +125,18 @@ init =
 
 
 type Msg
-  = Increment
-  | Decrement
+    = Increment
+    | Decrement
 
 
 update : Msg -> Model2 -> Model2
 update msg model =
-  case msg of
-    Increment ->
-      model + 1
+    case msg of
+        Increment ->
+        model + 1
 
-    Decrement ->
-      model - 1
+        Decrement ->
+        model - 1
 
 
 
@@ -145,8 +145,8 @@ update msg model =
 
 view : Model2 -> Html Msg
 view model =
-  div []
-    [ button [ onClick Decrement ] [ text "-" ]
-    , div [] [ text (String.fromInt model) ]
-    , button [ onClick Increment ] [ text "+" ]
-    ]
+    div []
+        [ button [ onClick Decrement ] [ text "-" ]
+        , div [] [ text (String.fromInt model) ]
+        , button [ onClick Increment ] [ text "+" ]
+        ]
