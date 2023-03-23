@@ -5,6 +5,7 @@ import Html exposing (Html, button, div, text)
 import Html.Events exposing (onClick)
 import FateChart
 import List.Extra as ListX
+import Json.Decode as Decode exposing (Decoder, int)
 
 
 
@@ -29,11 +30,12 @@ type alias Model =
   }
 
 type alias Campaign =
-  { name : String
+  { id : Int
+  , name : String
   , chaosFactor : Int
   , scenes : List Scene
   , threadList : List Int
-  , characterList : List Int
+  , characterList : List CharacterId
   , threads : List Thread
   , characters : List Character
   , playableCharacters : List PlayableCharacter
@@ -42,8 +44,10 @@ type alias Campaign =
   , settings : CampaignSettings
   }
 
+
 type alias Scene =
   { summary : Maybe String
+  , notes : Maybe String
   }
 
 
@@ -67,11 +71,19 @@ rollPlayableCharacter model =
 
 
 type alias Character =
-  { id : Int
+  { id : CharacterId
   , name : String 
   , summary : Maybe String
   , notes : Maybe String
   }
+
+type CharacterId 
+  = CharacterId Int
+
+characterIdDecoder : Decoder CharacterId
+characterIdDecoder =
+    Decode.map CharacterId int
+
 
 type alias PlayableCharacter =
   { name : String

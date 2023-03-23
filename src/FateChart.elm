@@ -6,6 +6,7 @@ module FateChart exposing
 import Random
 import List.Extra as ListX
 import Dict exposing (Dict)
+import ChaosFactor exposing (ChaosFactor)
 
 
 type Type
@@ -15,10 +16,10 @@ type Type
   | None
 
 
-type alias FateChart = List ChaosFactor
+type alias FateChart = List ChaosFactorOutcomeProbabilities
 
 
-type alias ChaosFactor = 
+type alias ChaosFactorOutcomeProbabilities = 
   { min : Int
   , max : Int
   , outcomeProbabilities : List OutcomeProbability
@@ -52,16 +53,17 @@ type Outcome
 
 
 {-| Returns an Outcome generator for a probability on a chart type. -}
-rollFateChart : Type -> Probability -> Int -> Random.Generator Outcome
+rollFateChart : Type -> Probability -> ChaosFactor -> Random.Generator Outcome
 rollFateChart chartType probability chaosFactor =
   Random.map (determineOutcome chartType probability chaosFactor) rollDie
 
 
 {-| Returns an Outcome generator for a probability on a chart type. -}
-determineOutcome : Type -> Probability -> Int -> Int -> Outcome
+determineOutcome : Type -> Probability -> ChaosFactor -> Int -> Outcome
 determineOutcome chartType probability chaosFactor dieRoll =
   let
-    outcomeProbability = ListX.find (\x -> chaosFactor >= x.min && chaosFactor <= x.max) (chartFromType chartType)
+    chaosFactorInt = ChaosFactor.toInt chaosFactor
+    outcomeProbability = ListX.find (\x -> chaosFactorInt >= x.min && chaosFactorInt <= x.max) (chartFromType chartType)
       |> Maybe.withDefault fallbackChaosFactor
       |> .outcomeProbabilities
       |> ListX.getAt (probabilityToIndex probability)
@@ -107,8 +109,8 @@ rollDie : Random.Generator Int
 rollDie = Random.int 1 100
 
 
-fallbackChaosFactor : ChaosFactor
-fallbackChaosFactor = ChaosFactor 1 9
+fallbackChaosFactor : ChaosFactorOutcomeProbabilities
+fallbackChaosFactor = ChaosFactorOutcomeProbabilities 1 9
   [ outcomeProbability 90
   , outcomeProbability 85
   , outcomeProbability 75
@@ -122,18 +124,21 @@ fallbackChaosFactor = ChaosFactor 1 9
 
 
 fallbackOutcomeProbability : OutcomeProbability
-fallbackOutcomeProbability = Dict.get 50 outcomeProbabilities |> Maybe.withDefault (OutcomeProbability 10 50 91)
+fallbackOutcomeProbability = 
+  Dict.get 50 availableOutcomeProbabilities 
+    |> Maybe.withDefault (OutcomeProbability 10 50 91)
 
 
 {-| Returns the OutcomeProbability with the specified threshold. -}
 outcomeProbability : Int -> OutcomeProbability
 outcomeProbability threshold =
-  Dict.get threshold outcomeProbabilities |> Maybe.withDefault fallbackOutcomeProbability
+  Dict.get threshold availableOutcomeProbabilities 
+    |> Maybe.withDefault fallbackOutcomeProbability
 
 
 {-| The OutcomeProbabilities by threshold. -}
-outcomeProbabilities : Dict Int OutcomeProbability
-outcomeProbabilities =
+availableOutcomeProbabilities : Dict Int OutcomeProbability
+availableOutcomeProbabilities =
   [5, 10, 15, 25, 35, 50, 65, 75, 85, 90, 95]
     |> List.map (\i -> (i, computeOutcomeProbability i))
     |> Dict.fromList
@@ -153,7 +158,7 @@ computeOutcomeProbability threshold =
 
 fateChartStandard : FateChart
 fateChartStandard = 
-  [ ChaosFactor 1 1
+  [ ChaosFactorOutcomeProbabilities 1 1
     [ outcomeProbability 50
     , outcomeProbability 35
     , outcomeProbability 25
@@ -164,7 +169,7 @@ fateChartStandard =
     , outcomeProbability 1
     , outcomeProbability 1
     ]
-  , ChaosFactor 2 2
+  , ChaosFactorOutcomeProbabilities 2 2
     [ outcomeProbability 65
     , outcomeProbability 50
     , outcomeProbability 35
@@ -175,7 +180,7 @@ fateChartStandard =
     , outcomeProbability 1
     , outcomeProbability 1
     ]
-  , ChaosFactor 3 3
+  , ChaosFactorOutcomeProbabilities 3 3
     [ outcomeProbability 75
     , outcomeProbability 65
     , outcomeProbability 50
@@ -186,7 +191,7 @@ fateChartStandard =
     , outcomeProbability 5
     , outcomeProbability 1
     ]
-  , ChaosFactor 4 4
+  , ChaosFactorOutcomeProbabilities 4 4
     [ outcomeProbability 85
     , outcomeProbability 75
     , outcomeProbability 65
@@ -197,7 +202,7 @@ fateChartStandard =
     , outcomeProbability 10
     , outcomeProbability 5
     ]
-  , ChaosFactor 5 5
+  , ChaosFactorOutcomeProbabilities 5 5
     [ outcomeProbability 90
     , outcomeProbability 85
     , outcomeProbability 75
@@ -208,7 +213,7 @@ fateChartStandard =
     , outcomeProbability 15
     , outcomeProbability 10
     ]
-  , ChaosFactor 6 6
+  , ChaosFactorOutcomeProbabilities 6 6
     [ outcomeProbability 95
     , outcomeProbability 90
     , outcomeProbability 85
@@ -219,7 +224,7 @@ fateChartStandard =
     , outcomeProbability 25
     , outcomeProbability 15
     ]
-  , ChaosFactor 7 7
+  , ChaosFactorOutcomeProbabilities 7 7
     [ outcomeProbability 99
     , outcomeProbability 95
     , outcomeProbability 90
@@ -230,7 +235,7 @@ fateChartStandard =
     , outcomeProbability 35
     , outcomeProbability 25
     ]
-  , ChaosFactor 8 8
+  , ChaosFactorOutcomeProbabilities 8 8
     [ outcomeProbability 99
     , outcomeProbability 99
     , outcomeProbability 95
@@ -241,7 +246,7 @@ fateChartStandard =
     , outcomeProbability 50
     , outcomeProbability 35
     ]
-  , ChaosFactor 9 9
+  , ChaosFactorOutcomeProbabilities 9 9
     [ outcomeProbability 99
     , outcomeProbability 99
     , outcomeProbability 99
@@ -257,34 +262,34 @@ fateChartStandard =
 
 fateChartMid : FateChart
 fateChartMid = 
-  [ buildChaosFactor 1 1 2 fateChartStandard
-  , buildChaosFactor 2 3 3 fateChartStandard
-  , buildChaosFactor 4 6 4 fateChartStandard
-  , buildChaosFactor 7 8 5 fateChartStandard
-  , buildChaosFactor 9 9 6 fateChartStandard
+  [ buildChaosFactorFromChart 1 1 2 fateChartStandard
+  , buildChaosFactorFromChart 2 3 3 fateChartStandard
+  , buildChaosFactorFromChart 4 6 4 fateChartStandard
+  , buildChaosFactorFromChart 7 8 5 fateChartStandard
+  , buildChaosFactorFromChart 9 9 6 fateChartStandard
   ]
 
 
 fateChartLow : FateChart
 fateChartLow = 
-  [ buildChaosFactor 1 2 3 fateChartStandard
-  , buildChaosFactor 3 7 4 fateChartStandard
-  , buildChaosFactor 8 9 5 fateChartStandard
+  [ buildChaosFactorFromChart 1 2 3 fateChartStandard
+  , buildChaosFactorFromChart 3 7 4 fateChartStandard
+  , buildChaosFactorFromChart 8 9 5 fateChartStandard
   ]
 
 
 fateChartNone : FateChart
 fateChartNone = 
-  [ buildChaosFactor 1 9 4 fateChartStandard
+  [ buildChaosFactorFromChart 1 9 4 fateChartStandard
   ]
 
 
 {-| Creates a ChaosFactor based on the outcomeProbabilities of the chaos factor at the specified index in a chart. -}
-buildChaosFactor : Int -> Int -> Int -> FateChart -> ChaosFactor
-buildChaosFactor min max index chart =
+buildChaosFactorFromChart : Int -> Int -> Int -> FateChart -> ChaosFactorOutcomeProbabilities
+buildChaosFactorFromChart min max index chart =
   let
     probabilities = ListX.getAt index chart
       |> Maybe.withDefault fallbackChaosFactor
       |> .outcomeProbabilities
   in
-    ChaosFactor min max probabilities
+    ChaosFactorOutcomeProbabilities min max probabilities
