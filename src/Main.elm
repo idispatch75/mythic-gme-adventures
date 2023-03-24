@@ -6,6 +6,7 @@ import Html.Events exposing (onClick)
 import FateChart
 import List.Extra as ListX
 import Json.Decode as Decode exposing (Decoder, int)
+import I18Next exposing (Translations)
 
 
 
@@ -16,20 +17,19 @@ main : Program () Model2 Msg
 main =
     Browser.sandbox { init = init, update = update, view = view }
 
-
-
 -- MODEL
 
 
 type alias Model2 = Int
 
 type alias Model =
-    { campain : Maybe Campaign
-    , campaigns : List Campaign
+    { adventure : Maybe Adventure
+    , adventures : List Adventure
     , globalSettings : GlobalSettings
+    , translations : List Translations
     }
 
-type alias Campaign =
+type alias Adventure =
     { id : Int
     , name : String
     , chaosFactor : Int
@@ -40,8 +40,10 @@ type alias Campaign =
     , characters : List Character
     , playerCharacters : List PlayerCharacter
     , rollLog : List RollLogEntry
-    , notes : List CampaignNote
-    , settings : CampaignSettings
+    , notes : List AdventureNote
+    , settings : AdventureSettings
+    -- TODO thread progress track
+    -- TODO keyed scenes
     }
 
 
@@ -66,7 +68,7 @@ rollSceneAdjustment = [ "Remove A Character" ]
 
 rollPlayerCharacter : Model -> Maybe PlayerCharacter
 rollPlayerCharacter model =
-    model.campain
+    model.adventure
     |> Maybe.andThen (\x ->  List.head x.playerCharacters) -- TODO
 
 
@@ -95,7 +97,7 @@ type alias Thread =
     , notes : String
     }
 
-type alias CampaignNote =
+type alias AdventureNote =
     { title : Maybe String
     , text : String
     }
@@ -106,7 +108,7 @@ type alias RollLogEntry =
     , result : String
     }
 
-type alias CampaignSettings =
+type alias AdventureSettings =
     { fateChartType : FateChart.Type
     }
 

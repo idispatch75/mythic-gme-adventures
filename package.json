@@ -1,5 +1,5 @@
 {
-  "name": "mythic-gme-campaign",
+  "name": "mythic-gme-adventures",
   "source": "index.html",
   "scripts": {
     "start": "parcel",
