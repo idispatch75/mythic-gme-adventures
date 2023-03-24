@@ -1,12 +1,14 @@
 module FateChart exposing 
-    ( Type, Probability, Outcome
+    ( Type(..), Probability(..), Outcome(..)
     , rollFateChart
+    , typeCodec
     )
 
 import Random
 import List.Extra as ListX
 import Dict exposing (Dict)
 import ChaosFactor exposing (ChaosFactor)
+import Serialize
 
 
 type Type
@@ -14,6 +16,27 @@ type Type
     | Mid
     | Low
     | None
+
+
+typeCodec : Serialize.Codec e Type
+typeCodec =
+    Serialize.customType
+        (\standardEncoder midEncoder lowEncoder noneEncoder value ->
+            case value of
+                Standard ->
+                    standardEncoder
+                Mid ->
+                    midEncoder
+                Low ->
+                    lowEncoder
+                None ->
+                    noneEncoder
+        )
+        |> Serialize.variant0 Standard
+        |> Serialize.variant0 Mid
+        |> Serialize.variant0 Low
+        |> Serialize.variant0 None
+        |> Serialize.finishCustomType
 
 
 type alias FateChart = List ChaosFactorOutcomeProbabilities

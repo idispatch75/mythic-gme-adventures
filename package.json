@@ -13,5 +13,8 @@
     "elm-review": "^2.9.2",
     "elm-test": "^0.19.1-revision12",
     "parcel": "^2.8.3"
+  },
+  "dependencies": {
+    "elm-localstorage": "^1.0.1"
   }
 }
