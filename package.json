@@ -4,14 +4,14 @@
   "scripts": {
     "start": "parcel",
     "build": "parcel build",
-    "test": "elm-test"
+    "test": "elm-test",
+    "postinstall": "elm-tooling install"
   },
   "devDependencies": {
     "@parcel/transformer-elm": "^2.8.3",
-    "elm": "^0.19.1-5",
-    "elm-format": "^0.8.6",
     "elm-review": "^2.9.2",
     "elm-test": "^0.19.1-revision12",
+    "elm-tooling": "^1.13.1",
     "parcel": "^2.8.3"
   },
   "dependencies": {

@@ -1,15 +1,20 @@
-module ChaosFactor exposing 
+module ChaosFactor exposing
     ( ChaosFactor(..)
-    , toInt, codec
+    , codec
+    , toInt
     )
+
 import Serialize
+
 
 type ChaosFactor
     = ChaosFactor Int
 
+
 toInt : ChaosFactor -> Int
 toInt (ChaosFactor int) =
     int
+
 
 codec : Serialize.Codec e ChaosFactor
 codec =

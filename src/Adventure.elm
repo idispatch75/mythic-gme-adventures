@@ -1,13 +1,15 @@
-module Adventure exposing 
-    ( Adventure, AdventureId(..)
-    , serialize, deserialize
+module Adventure exposing
+    ( Adventure
+    , AdventureId(..)
     , adventureIdToInt
+    , deserialize
+    , serialize
     )
 
-import FateChart
-import Serialize
 import ChaosFactor exposing (ChaosFactor)
+import FateChart
 import Json.Encode exposing (Value)
+import Serialize
 
 
 type alias Adventure =
@@ -23,6 +25,7 @@ type alias Adventure =
     , rollLog : List RollLogEntry
     , notes : List AdventureNote
     , settings : AdventureSettings
+
     -- TODO thread progress track
     -- TODO keyed scenes
     }
@@ -46,13 +49,14 @@ adventureCodec =
         |> Serialize.finishRecord
 
 
-type AdventureId 
+type AdventureId
     = AdventureId Int
 
 
 adventureIdToInt : AdventureId -> Int
 adventureIdToInt (AdventureId int) =
     int
+
 
 adventureIdCodec : Serialize.Codec e AdventureId
 adventureIdCodec =
@@ -64,6 +68,7 @@ type alias Scene =
     , notes : Maybe String
     }
 
+
 sceneCodec : Serialize.Codec e Scene
 sceneCodec =
     Serialize.record Scene
@@ -71,18 +76,23 @@ sceneCodec =
         |> Serialize.field .notes (Serialize.maybe Serialize.string)
         |> Serialize.finishRecord
 
-type SceneType 
+
+type SceneType
     = Expected
     | Altered
     | Interrupted
 
 
 testExpectedScene : Int -> SceneType
-testExpectedScene chaosFactor = Expected
+testExpectedScene chaosFactor =
+    Expected
 
 
 rollSceneAdjustment : List String
-rollSceneAdjustment = [ "Remove A Character" ]
+rollSceneAdjustment =
+    [ "Remove A Character" ]
+
+
 
 -- rollPlayerCharacter : Model -> Maybe PlayerCharacter
 -- rollPlayerCharacter model =
@@ -92,10 +102,11 @@ rollSceneAdjustment = [ "Remove A Character" ]
 
 type alias Character =
     { id : CharacterId
-    , name : String 
+    , name : String
     , summary : Maybe String
     , notes : Maybe String
     }
+
 
 characterCodec : Serialize.Codec e Character
 characterCodec =
@@ -106,12 +117,16 @@ characterCodec =
         |> Serialize.field .notes (Serialize.maybe Serialize.string)
         |> Serialize.finishRecord
 
-type CharacterId 
+
+type CharacterId
     = CharacterId Int
+
 
 characterIdCodec : Serialize.Codec e CharacterId
 characterIdCodec =
     Serialize.int |> Serialize.map CharacterId (\(CharacterId id) -> id)
+
+
 
 -- characterIdDecoder : Decoder CharacterId
 -- characterIdDecoder =
@@ -136,6 +151,7 @@ type alias Thread =
     , notes : Maybe String
     }
 
+
 threadCodec : Serialize.Codec e Thread
 threadCodec =
     Serialize.record Thread
@@ -145,7 +161,7 @@ threadCodec =
         |> Serialize.finishRecord
 
 
-type ThreadId 
+type ThreadId
     = ThreadId Int
 
 
@@ -170,7 +186,8 @@ adventureNoteCodec =
 
 type alias RollLogEntry =
     { table : Maybe String
-    , results : List RollResult    
+    , results : List RollResult
+
     -- actions based on roll
     }
 
@@ -221,7 +238,7 @@ deserialize value =
 
 type SerializationVersions
     = V1 Adventure
-    
+
 
 versionCodec : Serialize.Codec e Adventure
 versionCodec =
