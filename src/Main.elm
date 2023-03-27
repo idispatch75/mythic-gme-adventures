@@ -48,7 +48,7 @@ type GlobalSettingsVersions
 
 type alias GlobalSettings =
     { fateChartType : FateChart.Type
-    , adventureNextId : Int
+    , nextId : Int
     }
 
 
@@ -58,7 +58,7 @@ init _ =
       , adventures = []
       , globalSettings =
             { fateChartType = FateChart.Standard
-            , adventureNextId = 1
+            , nextId = 1
             }
       , translations = []
       , error = Nothing
@@ -107,7 +107,6 @@ update msg orgModel =
 
                 Err error ->
                     let
-                        errorMessage : String
                         errorMessage =
                             case error of
                                 NotFound key ->
@@ -116,7 +115,7 @@ update msg orgModel =
                                 JsonError err ->
                                     "JsonError: " ++ Json.Decode.errorToString err
 
-                                FormatError ->
+                                SerializationError ->
                                     "FormatError"
 
                                 InteropError err ->
@@ -182,7 +181,7 @@ loadData adventureId =
                         Task.succeed value
 
                     Err _ ->
-                        Task.fail FormatError
+                        Task.fail SerializationError
             )
         |> Task.attempt (\result -> DataLoaded (Result.map (\adventure -> ( key, adventure )) result))
 
@@ -194,13 +193,13 @@ putJson key jsonValue =
 
 adventureStorageKey : AdventureId -> LocalStorage.Key
 adventureStorageKey id =
-    "adventure_" ++ String.fromInt (Adventure.adventureIdToInt id)
+    "adventures/" ++ String.fromInt (Adventure.adventureIdToInt id)
 
 
 type StorageError
     = NotFound LocalStorage.Key
     | JsonError Json.Decode.Error
-    | FormatError
+    | SerializationError
     | InteropError TaskPort.Error
 
 
