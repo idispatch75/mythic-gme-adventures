@@ -3,6 +3,7 @@ module Main exposing (main)
 import Adventure exposing (Adventure, AdventureId(..))
 import Browser exposing (Document)
 import ChaosFactor exposing (ChaosFactor(..))
+import Dropbox
 import FateChart
 import Html exposing (Html, button, div, text)
 import Html.Events exposing (onClick)
@@ -13,19 +14,21 @@ import Json.Encode
 import LocalStorage
 import Task
 import TaskPort
+import Url exposing (Url)
 
 
 
 -- MAIN
 
 
-main : Program () Model Msg
+main : Program () Model (Dropbox.Msg Msg)
 main =
-    Browser.document
-        { init = init
+    Dropbox.application
+        { init = \_ location -> ( init location, Cmd.none )
         , update = update
         , view = view
         , subscriptions = \_ -> Sub.none
+        , onAuth = DropboxAuthResponseReceived
         }
 
 
@@ -39,32 +42,39 @@ type alias Model =
     , globalSettings : GlobalSettings
     , translations : List Translations
     , error : Maybe String
+    , location : Url
+    , dropboxInfo : Maybe DropboxInfo
+    }
+
+
+type alias DropboxInfo =
+    { userAuth : Dropbox.UserAuth
     }
 
 
 type GlobalSettingsVersions
-    = V1 GlobalSettings
+    = GlobalSettings_v1 GlobalSettings
 
 
 type alias GlobalSettings =
     { fateChartType : FateChart.Type
-    , nextId : Int
+    , saveTimestamp : Int
     }
 
 
-init : () -> ( Model, Cmd Msg )
-init _ =
-    ( { adventure = Nothing
-      , adventures = []
-      , globalSettings =
-            { fateChartType = FateChart.Standard
-            , nextId = 1
-            }
-      , translations = []
-      , error = Nothing
-      }
-    , Cmd.none
-    )
+init : Url -> Model
+init location =
+    { adventure = Nothing
+    , adventures = []
+    , globalSettings =
+        { fateChartType = FateChart.Standard
+        , saveTimestamp = 0
+        }
+    , translations = []
+    , error = Nothing
+    , location = location
+    , dropboxInfo = Nothing
+    }
 
 
 
@@ -76,6 +86,8 @@ type Msg
     | DataSaved (Result TaskPort.Error ())
     | LoadData
     | DataLoaded (Result StorageError ( LocalStorage.Key, Adventure ))
+    | LoginToDropbox
+    | DropboxAuthResponseReceived Dropbox.AuthorizeResult
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -123,6 +135,31 @@ update msg orgModel =
                     in
                     ( { model | error = Just errorMessage }, Cmd.none )
 
+        LoginToDropbox ->
+            ( model
+            , Dropbox.authorize
+                { clientId = dropboxAppKey
+                , state = Nothing
+                , requireRole = Nothing
+                , forceReapprove = False
+                , disableSignup = False
+                , locale = Nothing
+                , forceReauthentication = False
+                }
+                model.location
+            )
+
+        DropboxAuthResponseReceived (Dropbox.AuthorizeOk auth) ->
+            ( { model | dropboxInfo = Just { userAuth = auth.userAuth } }
+            , Cmd.none
+            )
+
+        DropboxAuthResponseReceived (Dropbox.DropboxAuthorizeErr error) ->
+            Debug.todo "branch 'DropboxAuthResponseReceived (DropboxAuthorizeErr _)' not implemented"
+
+        DropboxAuthResponseReceived (Dropbox.UnknownAccessTokenErr error) ->
+            Debug.todo "branch 'DropboxAuthResponseReceived (UnknownAccessTokenErr _)' not implemented"
+
 
 
 -- VIEW
@@ -135,20 +172,27 @@ view model =
         [ div []
             [ button [ onClick SaveData ] [ text "Save" ]
             , button [ onClick LoadData ] [ text "Load" ]
-            , div [] [ viewAdventure model.adventure ]
+            , button [ onClick LoginToDropbox ] [ text "Login" ]
+            , div [] [ HtmlX.viewMaybe viewAdventure model.adventure ]
+            , div [] [ text (Url.toString model.location) ]
+            , div []
+                [ model.dropboxInfo
+                    |> Maybe.map (\_ -> "Login OK")
+                    |> HtmlX.viewMaybe (\res -> text res)
+                ]
             ]
         ]
     }
 
 
-viewAdventure : Maybe Adventure -> Html Msg
-viewAdventure maybeAdventure =
-    case maybeAdventure of
-        Just adventure ->
-            text adventure.name
+viewAdventure : Adventure -> Html Msg
+viewAdventure adventure =
+    text adventure.name
 
-        Nothing ->
-            HtmlX.nothing
+
+dropboxAppKey : String
+dropboxAppKey =
+    "9bebip9kkxmuo6g"
 
 
 saveData : Model -> Cmd Msg
@@ -239,4 +283,5 @@ defaultAdventure =
     , settings =
         { fateChartType = FateChart.Standard
         }
+    , saveTimestamp = 0
     }

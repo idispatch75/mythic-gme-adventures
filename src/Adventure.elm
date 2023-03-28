@@ -3,7 +3,9 @@ module Adventure exposing
     , AdventureId(..)
     , adventureIdToInt
     , deserialize
+    , deserializeIndex
     , serialize
+    , serializeIndex
     )
 
 import ChaosFactor exposing (ChaosFactor)
@@ -25,6 +27,7 @@ type alias Adventure =
     , rollLog : List RollLogEntry
     , notes : List AdventureNote
     , settings : AdventureSettings
+    , saveTimestamp : Int
 
     -- TODO thread progress track
     -- TODO keyed scenes
@@ -46,6 +49,7 @@ adventureCodec =
         |> Serialize.field .rollLog (Serialize.list rollLogEntryCodec)
         |> Serialize.field .notes (Serialize.list adventureNoteCodec)
         |> Serialize.field .settings adventureSettingsCodec
+        |> Serialize.field .saveTimestamp Serialize.int
         |> Serialize.finishRecord
 
 
@@ -61,6 +65,34 @@ adventureIdToInt (AdventureId int) =
 adventureIdCodec : Serialize.Codec e AdventureId
 adventureIdCodec =
     Serialize.int |> Serialize.map AdventureId (\(AdventureId id) -> id)
+
+
+type alias AdventureIndex =
+    { adventures : List IndexAdventure
+    , saveTimestamp : Int
+    }
+
+
+adventureIndexCodec : Serialize.Codec e AdventureIndex
+adventureIndexCodec =
+    Serialize.record AdventureIndex
+        |> Serialize.field .adventures (Serialize.list indexAdventureCodec)
+        |> Serialize.field .saveTimestamp Serialize.int
+        |> Serialize.finishRecord
+
+
+type alias IndexAdventure =
+    { id : AdventureId
+    , name : String
+    }
+
+
+indexAdventureCodec : Serialize.Codec e IndexAdventure
+indexAdventureCodec =
+    Serialize.record IndexAdventure
+        |> Serialize.field .id adventureIdCodec
+        |> Serialize.field .name Serialize.string
+        |> Serialize.finishRecord
 
 
 type alias Scene =
@@ -236,8 +268,22 @@ deserialize value =
     Serialize.decodeFromJson versionCodec value
 
 
+serializeIndex : AdventureIndex -> Value
+serializeIndex index =
+    Serialize.encodeToJson indexVersionCodec index
+
+
+deserializeIndex : Value -> Result (Serialize.Error e) AdventureIndex
+deserializeIndex value =
+    Serialize.decodeFromJson indexVersionCodec value
+
+
 type SerializationVersions
-    = V1 Adventure
+    = Adventure_v1 Adventure
+
+
+type IndexSerializationVersions
+    = Index_v1 AdventureIndex
 
 
 versionCodec : Serialize.Codec e Adventure
@@ -245,15 +291,34 @@ versionCodec =
     Serialize.customType
         (\v1Encoder value ->
             case value of
-                V1 adventure ->
+                Adventure_v1 adventure ->
                     v1Encoder adventure
         )
-        |> Serialize.variant1 V1 adventureCodec
+        |> Serialize.variant1 Adventure_v1 adventureCodec
         |> Serialize.finishCustomType
         |> Serialize.map
             (\value ->
                 case value of
-                    V1 adventure ->
+                    Adventure_v1 adventure ->
                         adventure
             )
-            (\value -> V1 value)
+            (\value -> Adventure_v1 value)
+
+
+indexVersionCodec : Serialize.Codec e AdventureIndex
+indexVersionCodec =
+    Serialize.customType
+        (\v1Encoder value ->
+            case value of
+                Index_v1 index ->
+                    v1Encoder index
+        )
+        |> Serialize.variant1 Index_v1 adventureIndexCodec
+        |> Serialize.finishCustomType
+        |> Serialize.map
+            (\value ->
+                case value of
+                    Index_v1 index ->
+                        index
+            )
+            (\value -> Index_v1 value)
