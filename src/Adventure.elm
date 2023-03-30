@@ -1,7 +1,13 @@
 module Adventure exposing
     ( Adventure
-    , AdventureId(..)
+    , AdventureId
+    , AdventureIndex
+    , IndexAdventure
+    , addAdventure
+    , adventureIdCodec
     , adventureIdToInt
+    , createAdventure
+    , createAdventureIndex
     , deserialize
     , deserializeIndex
     , serialize
@@ -12,6 +18,8 @@ import ChaosFactor exposing (ChaosFactor)
 import FateChart
 import Json.Encode exposing (Value)
 import Serialize
+import Task exposing (Task)
+import Time
 
 
 type alias Adventure =
@@ -57,14 +65,38 @@ type AdventureId
     = AdventureId Int
 
 
+adventureIdCodec : Serialize.Codec e AdventureId
+adventureIdCodec =
+    Serialize.int |> Serialize.map AdventureId (\(AdventureId id) -> id)
+
+
 adventureIdToInt : AdventureId -> Int
 adventureIdToInt (AdventureId int) =
     int
 
 
-adventureIdCodec : Serialize.Codec e AdventureId
-adventureIdCodec =
-    Serialize.int |> Serialize.map AdventureId (\(AdventureId id) -> id)
+createAdventure : Task x Adventure
+createAdventure =
+    Time.now
+        |> Task.map
+            (\now ->
+                { id = AdventureId (Time.posixToMillis now)
+                , name = "New adventure"
+                , chaosFactor = ChaosFactor.fromInt 5
+                , scenes = []
+                , threadList = []
+                , characterList = []
+                , threads = []
+                , characters = []
+                , playerCharacters = []
+                , rollLog = []
+                , notes = []
+                , settings =
+                    { fateChartType = FateChart.Standard
+                    }
+                , saveTimestamp = 0
+                }
+            )
 
 
 type alias AdventureIndex =
@@ -93,6 +125,18 @@ indexAdventureCodec =
         |> Serialize.field .id adventureIdCodec
         |> Serialize.field .name Serialize.string
         |> Serialize.finishRecord
+
+
+createAdventureIndex : AdventureIndex
+createAdventureIndex =
+    { adventures = []
+    , saveTimestamp = 0
+    }
+
+
+addAdventure : Adventure -> AdventureIndex -> AdventureIndex
+addAdventure adventure index =
+    { index | adventures = IndexAdventure adventure.id adventure.name :: index.adventures }
 
 
 type alias Scene =
@@ -268,22 +312,8 @@ deserialize value =
     Serialize.decodeFromJson versionCodec value
 
 
-serializeIndex : AdventureIndex -> Value
-serializeIndex index =
-    Serialize.encodeToJson indexVersionCodec index
-
-
-deserializeIndex : Value -> Result (Serialize.Error e) AdventureIndex
-deserializeIndex value =
-    Serialize.decodeFromJson indexVersionCodec value
-
-
 type SerializationVersions
     = Adventure_v1 Adventure
-
-
-type IndexSerializationVersions
-    = Index_v1 AdventureIndex
 
 
 versionCodec : Serialize.Codec e Adventure
@@ -303,6 +333,20 @@ versionCodec =
                         adventure
             )
             (\value -> Adventure_v1 value)
+
+
+serializeIndex : AdventureIndex -> Value
+serializeIndex index =
+    Serialize.encodeToJson indexVersionCodec index
+
+
+deserializeIndex : Value -> Result (Serialize.Error e) AdventureIndex
+deserializeIndex value =
+    Serialize.decodeFromJson indexVersionCodec value
+
+
+type IndexSerializationVersions
+    = Index_v1 AdventureIndex
 
 
 indexVersionCodec : Serialize.Codec e AdventureIndex

@@ -1,16 +1,17 @@
 module Main exposing (main)
 
-import Adventure exposing (Adventure, AdventureId(..))
+import Adventure exposing (Adventure, AdventureId(..), AdventureIndex, IndexAdventure, createAdventureIndex)
 import Browser exposing (Document)
-import ChaosFactor exposing (ChaosFactor(..))
+import DataStorage
 import Dropbox
 import FateChart
-import Html exposing (Html, button, div, text)
+import GlobalSettings exposing (GlobalSettings)
+import Html exposing (Html, button, div, li, text)
 import Html.Events exposing (onClick)
 import Html.Extra as HtmlX
+import Html.Keyed exposing (ul)
 import I18Next exposing (Translations)
 import Json.Decode
-import Json.Encode
 import LocalStorage
 import Task
 import TaskPort
@@ -38,7 +39,7 @@ main =
 
 type alias Model =
     { adventure : Maybe Adventure
-    , adventures : List Adventure
+    , adventureIndex : AdventureIndex
     , globalSettings : GlobalSettings
     , translations : List Translations
     , error : Maybe String
@@ -52,22 +53,13 @@ type alias DropboxInfo =
     }
 
 
-type GlobalSettingsVersions
-    = GlobalSettings_v1 GlobalSettings
-
-
-type alias GlobalSettings =
-    { fateChartType : FateChart.Type
-    , saveTimestamp : Int
-    }
-
-
 init : Url -> Model
 init location =
     { adventure = Nothing
-    , adventures = []
+    , adventureIndex = createAdventureIndex
     , globalSettings =
         { fateChartType = FateChart.Standard
+        , latestAdventureId = Nothing
         , saveTimestamp = 0
         }
     , translations = []
@@ -82,10 +74,12 @@ init location =
 
 
 type Msg
-    = SaveData
-    | DataSaved (Result TaskPort.Error ())
+    = CreateAdventure
+    | AdventureCreated Adventure
+    | SaveData
+    | LocalDataSaved (Result DataStorage.SaveError ())
     | LoadData
-    | DataLoaded (Result StorageError ( LocalStorage.Key, Adventure ))
+    | DataLoaded (Result DataStorage.LoadError ( LocalStorage.Key, Adventure ))
     | LoginToDropbox
     | DropboxAuthResponseReceived Dropbox.AuthorizeResult
 
@@ -98,19 +92,35 @@ update msg orgModel =
             { orgModel | error = Nothing }
     in
     case msg of
+        CreateAdventure ->
+            ( model, Adventure.createAdventure |> Task.perform (\adventure -> AdventureCreated adventure) )
+
+        AdventureCreated adventure ->
+            let
+                index : AdventureIndex
+                index =
+                    Adventure.addAdventure adventure model.adventureIndex
+            in
+            ( { model
+                | adventure = Just adventure
+                , adventureIndex = index
+              }
+            , saveData model
+            )
+
         SaveData ->
             ( model, saveData model )
 
-        DataSaved result ->
+        LocalDataSaved result ->
             case result of
                 Err error ->
-                    ( { model | error = Just (TaskPort.errorToString error) }, Cmd.none )
+                    ( { model | error = Just "Error" }, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
 
         LoadData ->
-            ( model, loadData (AdventureId 1) )
+            Debug.todo "branch 'LoadData' not implemented"
 
         DataLoaded result ->
             case result of
@@ -121,16 +131,16 @@ update msg orgModel =
                     let
                         errorMessage =
                             case error of
-                                NotFound key ->
+                                DataStorage.NotFound key ->
                                     "NotFound: " ++ key
 
-                                JsonError err ->
+                                DataStorage.JsonDecodeError err ->
                                     "JsonError: " ++ Json.Decode.errorToString err
 
-                                SerializationError ->
+                                DataStorage.SerializationError ->
                                     "FormatError"
 
-                                InteropError err ->
+                                DataStorage.LoadInteropError err ->
                                     "InteropError: " ++ TaskPort.errorToString err
                     in
                     ( { model | error = Just errorMessage }, Cmd.none )
@@ -172,6 +182,10 @@ view model =
         [ div []
             [ button [ onClick SaveData ] [ text "Save" ]
             , button [ onClick LoadData ] [ text "Load" ]
+            , button [ onClick CreateAdventure ] [ text "Create adventure" ]
+            , div []
+                [ ul [] (List.map viewIndexAdventure model.adventureIndex.adventures)
+                ]
             , button [ onClick LoginToDropbox ] [ text "Login" ]
             , div [] [ HtmlX.viewMaybe viewAdventure model.adventure ]
             , div [] [ text (Url.toString model.location) ]
@@ -190,6 +204,14 @@ viewAdventure adventure =
     text adventure.name
 
 
+viewIndexAdventure : IndexAdventure -> ( String, Html Msg )
+viewIndexAdventure adventure =
+    ( String.fromInt (Adventure.adventureIdToInt adventure.id)
+    , div []
+        [ text adventure.name ]
+    )
+
+
 dropboxAppKey : String
 dropboxAppKey =
     "9bebip9kkxmuo6g"
@@ -197,91 +219,11 @@ dropboxAppKey =
 
 saveData : Model -> Cmd Msg
 saveData model =
-    let
-        adventure : Adventure
-        adventure =
-            Maybe.withDefault defaultAdventure model.adventure
-
-        serialized : Json.Encode.Value
-        serialized =
-            Adventure.serialize adventure
-    in
-    putJson (adventureStorageKey adventure.id) serialized
-        |> Task.attempt DataSaved
+    DataStorage.saveLocal model.adventureIndex model.adventure model.globalSettings
+        |> Task.attempt (\result -> LocalDataSaved result)
 
 
-loadData : AdventureId -> Cmd Msg
-loadData adventureId =
-    let
-        key : LocalStorage.Key
-        key =
-            adventureStorageKey adventureId
-    in
-    getJson key
-        |> Task.andThen
-            (\jsonValue ->
-                case Adventure.deserialize jsonValue of
-                    Ok value ->
-                        Task.succeed value
 
-                    Err _ ->
-                        Task.fail SerializationError
-            )
-        |> Task.attempt (\result -> DataLoaded (Result.map (\adventure -> ( key, adventure )) result))
-
-
-putJson : LocalStorage.Key -> Json.Encode.Value -> TaskPort.Task ()
-putJson key jsonValue =
-    LocalStorage.localPut key (Json.Encode.encode 0 jsonValue)
-
-
-adventureStorageKey : AdventureId -> LocalStorage.Key
-adventureStorageKey id =
-    "adventures/" ++ String.fromInt (Adventure.adventureIdToInt id)
-
-
-type StorageError
-    = NotFound LocalStorage.Key
-    | JsonError Json.Decode.Error
-    | SerializationError
-    | InteropError TaskPort.Error
-
-
-getJson : LocalStorage.Key -> Task.Task StorageError Json.Decode.Value
-getJson key =
-    LocalStorage.localGet key
-        |> Task.onError (\error -> Task.fail (InteropError error))
-        |> Task.andThen
-            (\maybeStringValue ->
-                case maybeStringValue of
-                    Just stringValue ->
-                        case Json.Decode.decodeString Json.Decode.value stringValue of
-                            Ok value ->
-                                Task.succeed value
-
-                            Err error ->
-                                Task.fail (JsonError error)
-
-                    Nothing ->
-                        Task.fail (NotFound key)
-            )
-
-
-defaultAdventure : Adventure
-defaultAdventure =
-    { id = AdventureId 1
-    , name = "default"
-    , chaosFactor = ChaosFactor 5
-    , scenes = []
-    , threadList = []
-    , characterList = []
-    , threads = []
-    , characters = []
-    , playerCharacters = []
-    , rollLog = []
-    , notes = []
-    , settings =
-        { fateChartType = FateChart.Standard
-        }
-    , saveTimestamp = 0
-    }
+-- ol : List (Attribute msg) -> List ( String, Html msg ) -> Html msg
+-- ol =
+--   node "ol"

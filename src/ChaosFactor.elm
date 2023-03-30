@@ -1,9 +1,11 @@
 module ChaosFactor exposing
-    ( ChaosFactor(..)
+    ( ChaosFactor
     , codec
+    , fromInt
     , toInt
     )
 
+import Basics.Extra as BasicX
 import Serialize
 
 
@@ -14,6 +16,11 @@ type ChaosFactor
 toInt : ChaosFactor -> Int
 toInt (ChaosFactor int) =
     int
+
+
+fromInt : Int -> ChaosFactor
+fromInt int =
+    ChaosFactor (int |> BasicX.atLeast 1 |> BasicX.atMost 9)
 
 
 codec : Serialize.Codec e ChaosFactor
