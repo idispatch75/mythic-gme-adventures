@@ -9,6 +9,7 @@ import Serialize
 type alias GlobalSettings =
     { fateChartType : FateChart.Type
     , latestAdventureId : Maybe AdventureId
+    , favoriteElementTables : List String
     , saveTimestamp : Int
     }
 
@@ -18,6 +19,7 @@ globalSettingsCodec =
     Serialize.record GlobalSettings
         |> Serialize.field .fateChartType FateChart.typeCodec
         |> Serialize.field .latestAdventureId (Serialize.maybe Adventure.adventureIdCodec)
+        |> Serialize.field .favoriteElementTables (Serialize.list Serialize.string)
         |> Serialize.field .saveTimestamp Serialize.int
         |> Serialize.finishRecord
 

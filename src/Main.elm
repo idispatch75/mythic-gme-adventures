@@ -4,18 +4,18 @@ import Adventure exposing (Adventure, AdventureId(..), AdventureIndex, IndexAdve
 import Browser exposing (Document)
 import DataStorage
 import Dropbox
+import Element exposing (..)
 import FateChart
 import GlobalSettings exposing (GlobalSettings)
-import Html exposing (Html, button, div, li, text)
-import Html.Events exposing (onClick)
-import Html.Extra as HtmlX
-import Html.Keyed exposing (ul)
 import I18Next exposing (Translations)
 import Json.Decode
 import LocalStorage
+import Styles
 import Task
 import TaskPort
 import Url exposing (Url)
+import Widget
+import Widget.Material as Material
 
 
 
@@ -60,6 +60,7 @@ init location =
     , globalSettings =
         { fateChartType = FateChart.Standard
         , latestAdventureId = Nothing
+        , favoriteElementTables = []
         , saveTimestamp = 0
         }
     , translations = []
@@ -179,36 +180,119 @@ view : Model -> Document Msg
 view model =
     { title = "Mythic GME Adventures"
     , body =
-        [ div []
-            [ button [ onClick SaveData ] [ text "Save" ]
-            , button [ onClick LoadData ] [ text "Load" ]
-            , button [ onClick CreateAdventure ] [ text "Create adventure" ]
-            , div []
-                [ ul [] (List.map viewIndexAdventure model.adventureIndex.adventures)
+        [ layout [] <|
+            column [ width fill, explain Debug.todo ]
+                [ el [ width fill, centerX ] viewAppBar
+                , el [ width fill, centerX ] viewMain
                 ]
-            , button [ onClick LoginToDropbox ] [ text "Login" ]
-            , div [] [ HtmlX.viewMaybe viewAdventure model.adventure ]
-            , div [] [ text (Url.toString model.location) ]
-            , div []
-                [ model.dropboxInfo
-                    |> Maybe.map (\_ -> "Login OK")
-                    |> HtmlX.viewMaybe (\res -> text res)
-                ]
-            ]
         ]
     }
 
 
-viewAdventure : Adventure -> Html Msg
-viewAdventure adventure =
-    text adventure.name
+viewAppBar : Element Msg
+viewAppBar =
+    text "app bar"
 
 
-viewIndexAdventure : IndexAdventure -> ( String, Html Msg )
+viewMain : Element Msg
+viewMain =
+    row [ width fill, spacing 10, explain Debug.todo ]
+        [ el [ width (px 200), centerX, alignTop ] viewRollTables
+        , el [ width (px 200), centerX, alignTop ] viewRollLog
+        , el [ width fill, centerX, alignTop ] viewAdventure
+        ]
+
+
+viewRollTables : Element Msg
+viewRollTables =
+    column []
+        [ viewContentWithHeader "Fate Chart" (text "Fate Chart content")
+        , viewContentWithHeader "Meaning tables" (text "Meaning tables content")
+        ]
+
+
+viewRollLog : Element Msg
+viewRollLog =
+    column []
+        [ viewRollLogEntry
+        , viewRollLogEntry
+        , viewRollLogEntry
+        ]
+
+
+viewRollLogEntry : Element Msg
+viewRollLogEntry =
+    text "roll log entry"
+
+
+viewAdventure : Element Msg
+viewAdventure =
+    column []
+        [ viewAdventureHeader
+        , viewAdventureLists
+        , viewAdventureComponents
+        ]
+
+
+viewAdventureHeader : Element Msg
+viewAdventureHeader =
+    text "adventure header"
+
+
+viewAdventureLists : Element Msg
+viewAdventureLists =
+    text "adventure lists"
+
+
+viewAdventureComponents : Element Msg
+viewAdventureComponents =
+    text "adventure components"
+
+
+viewContentWithHeader : String -> Element Msg -> Element Msg
+viewContentWithHeader headerText content =
+    column []
+        [ el [ width fill, centerX ] (text headerText)
+        , content
+        ]
+
+
+
+-- Widget.textButton Styles.containedButton
+--                     { text = "Save"
+--                     , onPress = Just SaveData
+--                     }
+-- view model =
+--     { title = "Mythic GME Adventures"
+--     , body =
+--         [ div []
+--             [ button [ onClick SaveData ] [ text "Save" ]
+--             , button [ onClick LoadData ] [ text "Load" ]
+--             , button [ onClick CreateAdventure ] [ text "Create adventure" ]
+--             , div []
+--                 [ ul [] (List.map viewIndexAdventure model.adventureIndex.adventures)
+--                 ]
+--             , button [ onClick LoginToDropbox ] [ text "Login" ]
+--             , div [] [ HtmlX.viewMaybe viewAdventure model.adventure ]
+--             , div [] [ text (Url.toString model.location) ]
+--             , div []
+--                 [ model.dropboxInfo
+--                     |> Maybe.map (\_ -> "Login OK")
+--                     |> HtmlX.viewMaybe (\res -> text res)
+--                 ]
+--             ]
+--         ]
+--     }
+-- viewAdventure : Adventure -> Element Msg
+-- viewAdventure adventure =
+--     text adventure.name
+
+
+viewIndexAdventure : IndexAdventure -> ( String, Element Msg )
 viewIndexAdventure adventure =
     ( String.fromInt (Adventure.adventureIdToInt adventure.id)
-    , div []
-        [ text adventure.name ]
+    , el [] <|
+        text adventure.name
     )
 
 
