@@ -1,6 +1,9 @@
 module Styles exposing (..)
 
+import Html exposing (Html)
+import Material.Icons.Types
 import Widget exposing (..)
+import Widget.Icon
 import Widget.Material as Material exposing (Palette)
 
 
@@ -22,3 +25,13 @@ textButton =
 outlinedButton : ButtonStyle msg
 outlinedButton =
     Material.outlinedButton appPalette
+
+
+iconButton : ButtonStyle msg
+iconButton =
+    Material.iconButton appPalette
+
+
+iconMapper : Material.Icons.Types.Icon msg -> Widget.Icon.Icon msg
+iconMapper icon =
+    Widget.Icon.elmMaterialIcons Material.Icons.Types.Color icon

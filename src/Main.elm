@@ -10,12 +10,14 @@ import GlobalSettings exposing (GlobalSettings)
 import I18Next exposing (Translations)
 import Json.Decode
 import LocalStorage
+import Material.Icons as MaterialIcons
+import Material.Icons.Types
 import Styles
 import Task
 import TaskPort
 import Url exposing (Url)
 import Widget
-import Widget.Material as Material
+import Widget.Icon
 
 
 
@@ -181,9 +183,14 @@ view model =
     { title = "Mythic GME Adventures"
     , body =
         [ layout [] <|
-            column [ width fill, explain Debug.todo ]
+            column
+                [ width (fill |> maximum 1200)
+                , centerX
+                , height fill
+                , explain Debug.todo
+                ]
                 [ el [ width fill, centerX ] viewAppBar
-                , el [ width fill, centerX ] viewMain
+                , el [ width fill, height fill, centerX ] viewMain
                 ]
         ]
     }
@@ -196,7 +203,12 @@ viewAppBar =
 
 viewMain : Element Msg
 viewMain =
-    row [ width fill, spacing 10, explain Debug.todo ]
+    row
+        [ width fill
+        , height fill
+        , spacing 10
+        , explain Debug.todo
+        ]
         [ el [ width (px 200), centerX, alignTop ] viewRollTables
         , el [ width (px 200), centerX, alignTop ] viewRollLog
         , el [ width fill, centerX, alignTop ] viewAdventure
@@ -213,7 +225,7 @@ viewRollTables =
 
 viewRollLog : Element Msg
 viewRollLog =
-    column []
+    column [ height fill ]
         [ viewRollLogEntry
         , viewRollLogEntry
         , viewRollLogEntry
@@ -230,13 +242,33 @@ viewAdventure =
     column []
         [ viewAdventureHeader
         , viewAdventureLists
-        , viewAdventureComponents
+        , viewAdventureContents
         ]
 
 
 viewAdventureHeader : Element Msg
 viewAdventureHeader =
-    text "adventure header"
+    row []
+        [ viewChaosFactor
+        , text "Adventure name"
+        ]
+
+
+viewChaosFactor : Element Msg
+viewChaosFactor =
+    row []
+        [ Widget.iconButton Styles.iconButton
+            { text = "Decrement Chaos Factor"
+            , icon = MaterialIcons.chevron_left |> Styles.iconMapper
+            , onPress = Nothing
+            }
+        , text "5"
+        , Widget.iconButton Styles.iconButton
+            { text = "Increment Chaos Factor"
+            , icon = MaterialIcons.chevron_right |> Styles.iconMapper
+            , onPress = Nothing
+            }
+        ]
 
 
 viewAdventureLists : Element Msg
@@ -244,9 +276,9 @@ viewAdventureLists =
     text "adventure lists"
 
 
-viewAdventureComponents : Element Msg
-viewAdventureComponents =
-    text "adventure components"
+viewAdventureContents : Element Msg
+viewAdventureContents =
+    text "adventure contents"
 
 
 viewContentWithHeader : String -> Element Msg -> Element Msg
