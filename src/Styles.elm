@@ -1,6 +1,5 @@
 module Styles exposing (..)
 
-import Html exposing (Html)
 import Material.Icons.Types
 import Widget exposing (..)
 import Widget.Icon
@@ -35,3 +34,8 @@ iconButton =
 iconMapper : Material.Icons.Types.Icon msg -> Widget.Icon.Icon msg
 iconMapper icon =
     Widget.Icon.elmMaterialIcons Material.Icons.Types.Color icon
+
+
+tab : TabStyle msg
+tab =
+    Material.tab appPalette

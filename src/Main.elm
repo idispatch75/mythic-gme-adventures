@@ -1,7 +1,8 @@
 module Main exposing (main)
 
-import Adventure exposing (Adventure, AdventureId(..), AdventureIndex, IndexAdventure, createAdventureIndex)
+import Adventure exposing (Adventure, AdventureId(..), AdventureIndex, IndexAdventure, Scene, createAdventureIndex)
 import Browser exposing (Document)
+import Browser.Navigation exposing (load)
 import DataStorage
 import Dropbox
 import Element exposing (..)
@@ -9,15 +10,15 @@ import FateChart
 import GlobalSettings exposing (GlobalSettings)
 import I18Next exposing (Translations)
 import Json.Decode
-import LocalStorage
-import Material.Icons as MaterialIcons
-import Material.Icons.Types
+import Material.Icons as MaterialIcons exposing (one_two_three)
+import Maybe.Extra as MaybeX
 import Styles
 import Task
 import TaskPort
 import Url exposing (Url)
 import Widget
-import Widget.Icon
+import Widget.Material
+import Widget.Material.Color as MaterialColor exposing (textAndBackground)
 
 
 
@@ -27,7 +28,7 @@ import Widget.Icon
 main : Program () Model (Dropbox.Msg Msg)
 main =
     Dropbox.application
-        { init = \_ location -> ( init location, Cmd.none )
+        { init = \_ location -> ( init location, loadGlobalData )
         , update = update
         , view = view
         , subscriptions = \_ -> Sub.none
@@ -47,6 +48,7 @@ type alias Model =
     , error : Maybe String
     , location : Url
     , dropboxInfo : Maybe DropboxInfo
+    , selectedAdventureContentTab : Int
     }
 
 
@@ -69,6 +71,7 @@ init location =
     , error = Nothing
     , location = location
     , dropboxInfo = Nothing
+    , selectedAdventureContentTab = 0
     }
 
 
@@ -77,12 +80,15 @@ init location =
 
 
 type Msg
-    = CreateAdventure
+    = LoadGlobalData
+    | GlobalDataLoaded (Result DataStorage.LoadError ( AdventureIndex, GlobalSettings ))
+    | CreateAdventure
     | AdventureCreated Adventure
+    | LoadAdventure AdventureId
+    | AdventureLoaded (Result DataStorage.LoadError Adventure)
     | SaveData
     | LocalDataSaved (Result DataStorage.SaveError ())
-    | LoadData
-    | DataLoaded (Result DataStorage.LoadError ( LocalStorage.Key, Adventure ))
+    | AvdentureContentTabUpdated Int
     | LoginToDropbox
     | DropboxAuthResponseReceived Dropbox.AuthorizeResult
 
@@ -95,21 +101,57 @@ update msg orgModel =
             { orgModel | error = Nothing }
     in
     case msg of
+        LoadGlobalData ->
+            ( model, loadGlobalData )
+
+        GlobalDataLoaded result ->
+            case result of
+                Ok ( adventureIndex, settings ) ->
+                    let
+                        command =
+                            case adventureIndex.adventures of
+                                adventure :: _ ->
+                                    loadAdventure adventure.id
+
+                                [] ->
+                                    Cmd.none
+                    in
+                    ( { model | adventureIndex = adventureIndex, globalSettings = settings }, command )
+
+                Err error ->
+                    handleLoadError model error
+
         CreateAdventure ->
-            ( model, Adventure.createAdventure |> Task.perform (\adventure -> AdventureCreated adventure) )
+            ( model
+            , Adventure.createAdventure |> Task.perform (\adventure -> AdventureCreated adventure)
+            )
 
         AdventureCreated adventure ->
             let
                 index : AdventureIndex
                 index =
                     Adventure.addAdventure adventure model.adventureIndex
+
+                updatedModel =
+                    { model
+                        | adventure = Just adventure
+                        , adventureIndex = index
+                    }
             in
-            ( { model
-                | adventure = Just adventure
-                , adventureIndex = index
-              }
-            , saveData model
+            ( updatedModel
+            , saveData updatedModel
             )
+
+        LoadAdventure id ->
+            ( model, loadAdventure id )
+
+        AdventureLoaded result ->
+            case result of
+                Ok adventure ->
+                    ( { model | adventure = Just adventure }, Cmd.none )
+
+                Err error ->
+                    handleLoadError model error
 
         SaveData ->
             ( model, saveData model )
@@ -122,31 +164,10 @@ update msg orgModel =
                 _ ->
                     ( model, Cmd.none )
 
-        LoadData ->
-            Debug.todo "branch 'LoadData' not implemented"
-
-        DataLoaded result ->
-            case result of
-                Ok ( _, adventure ) ->
-                    ( { model | adventure = Just adventure }, Cmd.none )
-
-                Err error ->
-                    let
-                        errorMessage =
-                            case error of
-                                DataStorage.NotFound key ->
-                                    "NotFound: " ++ key
-
-                                DataStorage.JsonDecodeError err ->
-                                    "JsonError: " ++ Json.Decode.errorToString err
-
-                                DataStorage.SerializationError ->
-                                    "FormatError"
-
-                                DataStorage.LoadInteropError err ->
-                                    "InteropError: " ++ TaskPort.errorToString err
-                    in
-                    ( { model | error = Just errorMessage }, Cmd.none )
+        AvdentureContentTabUpdated index ->
+            ( { model | selectedAdventureContentTab = index }
+            , Cmd.none
+            )
 
         LoginToDropbox ->
             ( model
@@ -174,12 +195,42 @@ update msg orgModel =
             Debug.todo "branch 'DropboxAuthResponseReceived (UnknownAccessTokenErr _)' not implemented"
 
 
+handleLoadError : Model -> DataStorage.LoadError -> ( Model, Cmd Msg )
+handleLoadError model error =
+    let
+        errorMessage =
+            case error of
+                DataStorage.NotFound key ->
+                    "NotFound: " ++ key
+
+                DataStorage.JsonDecodeError err ->
+                    "JsonError: " ++ Json.Decode.errorToString err
+
+                DataStorage.SerializationError ->
+                    "FormatError"
+
+                DataStorage.LoadInteropError err ->
+                    "InteropError: " ++ TaskPort.errorToString err
+    in
+    ( { model | error = Just errorMessage }, Cmd.none )
+
+
 
 -- VIEW
 
 
 view : Model -> Document Msg
 view model =
+    let
+        mainView : Element Msg
+        mainView =
+            case model.adventure of
+                Just adventure ->
+                    viewMain adventure
+
+                Nothing ->
+                    viewHome model
+    in
     { title = "Mythic GME Adventures"
     , body =
         [ layout [] <|
@@ -190,7 +241,7 @@ view model =
                 , explain Debug.todo
                 ]
                 [ el [ width fill, centerX ] viewAppBar
-                , el [ width fill, height fill, centerX ] viewMain
+                , el [ width fill, height fill, centerX ] mainView
                 ]
         ]
     }
@@ -201,25 +252,25 @@ viewAppBar =
     text "app bar"
 
 
-viewMain : Element Msg
-viewMain =
+viewMain : Adventure -> Element Msg
+viewMain adventure =
     row
         [ width fill
         , height fill
         , spacing 10
         , explain Debug.todo
         ]
-        [ el [ width (px 200), centerX, alignTop ] viewRollTables
-        , el [ width (px 200), centerX, alignTop ] viewRollLog
-        , el [ width fill, centerX, alignTop ] viewAdventure
+        [ el [ width (px 250), centerX, alignTop ] viewRollTables
+        , el [ width (px 250), centerX, alignTop ] viewRollLog
+        , el [ width fill, centerX, alignTop ] (viewAdventure adventure)
         ]
 
 
 viewRollTables : Element Msg
 viewRollTables =
-    column []
-        [ viewContentWithHeader "Fate Chart" (text "Fate Chart content")
-        , viewContentWithHeader "Meaning tables" (text "Meaning tables content")
+    column [ width fill ]
+        [ viewContentWithHeader "Fate Chart" fill (text "Fate Chart content")
+        , viewContentWithHeader "Meaning tables" fill (text "Meaning tables content")
         ]
 
 
@@ -237,54 +288,134 @@ viewRollLogEntry =
     text "roll log entry"
 
 
-viewAdventure : Element Msg
-viewAdventure =
-    column []
+viewAdventure : Adventure -> Element Msg
+viewAdventure adventure =
+    column [ width fill ]
         [ viewAdventureHeader
         , viewAdventureLists
-        , viewAdventureContents
+        , viewAdventureContents adventure
         ]
 
 
 viewAdventureHeader : Element Msg
 viewAdventureHeader =
-    row []
+    row [ width fill ]
         [ viewChaosFactor
-        , text "Adventure name"
+        , el [ centerX ] (text "Adventure name")
+        , el [ alignRight ] <|
+            Widget.iconButton Styles.iconButton
+                { text = "Toggle edit"
+                , icon = MaterialIcons.edit |> Styles.iconMapper
+                , onPress = Nothing
+                }
+        , Widget.iconButton Styles.iconButton
+            { text = "Delete"
+            , icon = MaterialIcons.delete |> Styles.iconMapper
+            , onPress = Nothing
+            }
         ]
 
 
 viewChaosFactor : Element Msg
 viewChaosFactor =
-    row []
-        [ Widget.iconButton Styles.iconButton
-            { text = "Decrement Chaos Factor"
-            , icon = MaterialIcons.chevron_left |> Styles.iconMapper
-            , onPress = Nothing
-            }
-        , text "5"
-        , Widget.iconButton Styles.iconButton
-            { text = "Increment Chaos Factor"
-            , icon = MaterialIcons.chevron_right |> Styles.iconMapper
-            , onPress = Nothing
-            }
-        ]
+    viewContentWithHeader "Chaos Factor" shrink <|
+        row [ centerX ]
+            [ Widget.iconButton Styles.iconButton
+                { text = "Decrement Chaos Factor"
+                , icon = MaterialIcons.chevron_left |> Styles.iconMapper
+                , onPress = Nothing
+                }
+            , text "5"
+            , Widget.iconButton Styles.iconButton
+                { text = "Increment Chaos Factor"
+                , icon = MaterialIcons.chevron_right |> Styles.iconMapper
+                , onPress = Nothing
+                }
+            ]
 
 
 viewAdventureLists : Element Msg
 viewAdventureLists =
-    text "adventure lists"
+    row [ width fill, spacing 4 ]
+        [ el [ width fill ] <|
+            viewContentWithHeader "Threads" fill <|
+                viewListThread
+        , el [ width fill ] <|
+            viewContentWithHeader "Characters" fill <|
+                viewListCharacter
+        ]
 
 
-viewAdventureContents : Element Msg
-viewAdventureContents =
-    text "adventure contents"
+viewListThread : Element Msg
+viewListThread =
+    text "Thread"
 
 
-viewContentWithHeader : String -> Element Msg -> Element Msg
-viewContentWithHeader headerText content =
-    column []
-        [ el [ width fill, centerX ] (text headerText)
+viewListCharacter : Element Msg
+viewListCharacter =
+    text "Character"
+
+
+viewAdventureContents : Adventure -> Element Msg
+viewAdventureContents adventure =
+    let
+        tabOptions : List { text : String, icon : b -> Element msg }
+        tabOptions =
+            [ { text = "Scenes"
+              , icon = always Element.none
+              }
+            , { text = "Threads"
+              , icon = always Element.none
+              }
+            , { text = "Characters"
+              , icon = always Element.none
+              }
+            , { text = "Players"
+              , icon = always Element.none
+              }
+            , { text = "Notes"
+              , icon = always Element.none
+              }
+            ]
+    in
+    Widget.tab Styles.tab
+        { tabs =
+            { selected = Just 0
+            , options = tabOptions
+            , onSelect =
+                \index ->
+                    if index >= 0 && index <= List.length tabOptions then
+                        Just (AvdentureContentTabUpdated index)
+
+                    else
+                        Nothing
+            }
+        , content =
+            \index ->
+                case index of
+                    Just 0 ->
+                        viewScenes adventure.scenes
+
+                    _ ->
+                        viewScenes adventure.scenes
+        }
+
+
+viewScenes : List Scene -> Element Msg
+viewScenes scenes =
+    column [] (scenes |> List.indexedMap viewScene)
+
+
+viewScene : Int -> Scene -> Element Msg
+viewScene index scene =
+    text ("Scene" ++ String.fromInt index)
+
+
+viewContentWithHeader : String -> Length -> Element Msg -> Element Msg
+viewContentWithHeader headerText widthLength content =
+    column [ width widthLength ]
+        [ el ([ centerX, width fill ] ++ textAndBackground MaterialColor.dark) <|
+            el [ centerX, paddingXY 8 4 ] (text headerText)
         , content
         ]
 
@@ -320,12 +451,27 @@ viewContentWithHeader headerText content =
 --     text adventure.name
 
 
-viewIndexAdventure : IndexAdventure -> ( String, Element Msg )
-viewIndexAdventure adventure =
-    ( String.fromInt (Adventure.adventureIdToInt adventure.id)
-    , el [] <|
-        text adventure.name
-    )
+viewHome : Model -> Element Msg
+viewHome model =
+    row [ centerX, centerY ]
+        [ model.adventureIndex.adventures
+            |> List.map
+                (\adventure ->
+                    Widget.fullBleedItem (Widget.Material.fullBleedItem Styles.appPalette)
+                        { onPress = Just (LoadAdventure adventure.id)
+                        , icon = always Element.none
+                        , text = adventure.name
+                        }
+                )
+            |> Widget.itemList (Widget.Material.cardColumn Styles.appPalette)
+        , column [ alignTop ]
+            [ Widget.iconButton Styles.containedButton <|
+                { text = "New adventure"
+                , icon = MaterialIcons.add |> Styles.iconMapper
+                , onPress = Just CreateAdventure
+                }
+            ]
+        ]
 
 
 dropboxAppKey : String
@@ -333,10 +479,24 @@ dropboxAppKey =
     "9bebip9kkxmuo6g"
 
 
+{-| Saves the adventures index, the current adventure and the global settings.
+-}
 saveData : Model -> Cmd Msg
 saveData model =
     DataStorage.saveLocal model.adventureIndex model.adventure model.globalSettings
         |> Task.attempt (\result -> LocalDataSaved result)
+
+
+loadGlobalData : Cmd Msg
+loadGlobalData =
+    DataStorage.loadLocal
+        |> Task.attempt (\result -> GlobalDataLoaded result)
+
+
+loadAdventure : AdventureId -> Cmd Msg
+loadAdventure id =
+    DataStorage.loadAdventure id
+        |> Task.attempt (\result -> AdventureLoaded result)
 
 
 

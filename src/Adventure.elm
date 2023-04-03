@@ -2,7 +2,14 @@ module Adventure exposing
     ( Adventure
     , AdventureId
     , AdventureIndex
+    , AdventureNote
+    , AdventureSettings
+    , Character
     , IndexAdventure
+    , PlayerCharacter
+    , RollLogEntry
+    , Scene
+    , Thread
     , addAdventure
     , adventureIdCodec
     , adventureIdToInt

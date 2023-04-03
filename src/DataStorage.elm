@@ -49,6 +49,8 @@ saveLocal adventureIndex maybeAdventure settings =
         |> Task.andThen (\_ -> adventureTask)
 
 
+{-| Loads the adventure index and the global settings.
+-}
 loadLocal : Task LoadError ( AdventureIndex, GlobalSettings )
 loadLocal =
     Task.map2 (\index settings -> ( index, settings )) loadLocalAdventureIndex loadGlobalSettings
