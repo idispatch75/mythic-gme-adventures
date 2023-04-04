@@ -1,24 +1,35 @@
 module Main exposing (main)
 
-import Adventure exposing (Adventure, AdventureId(..), AdventureIndex, IndexAdventure, Scene, createAdventureIndex)
+import Adventure exposing (Adventure, AdventureId(..), AdventureIndex, Scene, createAdventureIndex)
 import Browser exposing (Document)
-import Browser.Navigation exposing (load)
+import ChaosFactor exposing (ChaosFactor)
+import Color
 import DataStorage
 import Dropbox
 import Element exposing (..)
+import Element.Background
+import Element.Border
+import Element.Font as Font
+import Element.Input
 import FateChart
 import GlobalSettings exposing (GlobalSettings)
+import Html.Attributes
 import I18Next exposing (Translations)
 import Json.Decode
-import Material.Icons as MaterialIcons exposing (one_two_three)
+import Material.Icons as MaterialIcons
 import Maybe.Extra as MaybeX
+import Random
+import RollLog exposing (FateChartRoll, RollLogEntry(..))
 import Styles
 import Task
 import TaskPort
+import Time
 import Url exposing (Url)
+import Utils exposing (randomToTask, timestamp)
 import Widget
 import Widget.Material
 import Widget.Material.Color as MaterialColor exposing (textAndBackground)
+import Widget.Material.Typography exposing (body1, h5)
 
 
 
@@ -28,7 +39,7 @@ import Widget.Material.Color as MaterialColor exposing (textAndBackground)
 main : Program () Model (Dropbox.Msg Msg)
 main =
     Dropbox.application
-        { init = \_ location -> ( init location, loadGlobalData )
+        { init = \_ location -> ( init location, Cmd.none ) --( init location, loadGlobalData )
         , update = update
         , view = view
         , subscriptions = \_ -> Sub.none
@@ -44,22 +55,31 @@ type alias Model =
     { adventure : Maybe Adventure
     , adventureIndex : AdventureIndex
     , globalSettings : GlobalSettings
+    , localSettings : LocalSettings
     , translations : List Translations
     , error : Maybe String
     , location : Url
-    , dropboxInfo : Maybe DropboxInfo
     , selectedAdventureContentTab : Int
     }
 
 
-type alias DropboxInfo =
-    { userAuth : Dropbox.UserAuth
-    }
+type alias LocalSettings =
+    { dropboxUserAuth : Maybe Dropbox.UserAuth }
+
+
+asLocalSettingsIn : Model -> LocalSettings -> Model
+asLocalSettingsIn model settings =
+    { model | localSettings = settings }
+
+
+asAdventureIn : Model -> Adventure -> Model
+asAdventureIn model adventure =
+    { model | adventure = Just adventure }
 
 
 init : Url -> Model
 init location =
-    { adventure = Nothing
+    { adventure = Just testAdventure -- Nothing
     , adventureIndex = createAdventureIndex
     , globalSettings =
         { fateChartType = FateChart.Standard
@@ -67,10 +87,11 @@ init location =
         , favoriteElementTables = []
         , saveTimestamp = 0
         }
+    , localSettings =
+        { dropboxUserAuth = Nothing }
     , translations = []
     , error = Nothing
     , location = location
-    , dropboxInfo = Nothing
     , selectedAdventureContentTab = 0
     }
 
@@ -89,6 +110,8 @@ type Msg
     | SaveData
     | LocalDataSaved (Result DataStorage.SaveError ())
     | AvdentureContentTabUpdated Int
+    | RollFateChart FateChart.Probability
+    | CreateRollLogEntry RollLogEntry
     | LoginToDropbox
     | DropboxAuthResponseReceived Dropbox.AuthorizeResult
 
@@ -169,6 +192,27 @@ update msg orgModel =
             , Cmd.none
             )
 
+        RollFateChart probability ->
+            case model.adventure of
+                Just adventure ->
+                    ( model
+                    , RollLog.rollFateChart adventure.settings.fateChartType probability adventure.chaosFactor
+                        |> Task.perform CreateRollLogEntry
+                    )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+        CreateRollLogEntry entry ->
+            case model.adventure of
+                Just adventure ->
+                    ( { model | adventure = Just (Adventure.addRollLogEntry entry adventure) }
+                    , Cmd.none
+                    )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
         LoginToDropbox ->
             ( model
             , Dropbox.authorize
@@ -184,7 +228,12 @@ update msg orgModel =
             )
 
         DropboxAuthResponseReceived (Dropbox.AuthorizeOk auth) ->
-            ( { model | dropboxInfo = Just { userAuth = auth.userAuth } }
+            let
+                localSettings : LocalSettings
+                localSettings =
+                    model.localSettings
+            in
+            ( { localSettings | dropboxUserAuth = Just auth.userAuth } |> asLocalSettingsIn model
             , Cmd.none
             )
 
@@ -233,13 +282,16 @@ view model =
     in
     { title = "Mythic GME Adventures"
     , body =
-        [ layout [] <|
+        [ layout [ Element.Background.color (rgb255 225 225 240) ] <|
             column
-                [ width (fill |> maximum 1200)
-                , centerX
-                , height fill
-                , explain Debug.todo
-                ]
+                ([ width (fill |> maximum 1200)
+                 , centerX
+                 , height fill
+                 , Font.family [ Font.typeface "Roboto", Font.typeface "Helvetica" ]
+                 , Element.Background.color (rgb255 255 255 255)
+                 ]
+                    ++ body1
+                )
                 [ el [ width fill, centerX ] viewAppBar
                 , el [ width fill, height fill, centerX ] mainView
                 ]
@@ -249,7 +301,7 @@ view model =
 
 viewAppBar : Element Msg
 viewAppBar =
-    text "app bar"
+    text "Mythic GME Adventures"
 
 
 viewMain : Adventure -> Element Msg
@@ -257,11 +309,10 @@ viewMain adventure =
     row
         [ width fill
         , height fill
-        , spacing 10
-        , explain Debug.todo
+        , spacing 4
         ]
         [ el [ width (px 250), centerX, alignTop ] viewRollTables
-        , el [ width (px 250), centerX, alignTop ] viewRollLog
+        , el [ width (px 250), centerX, alignTop ] (viewRollLog adventure)
         , el [ width fill, centerX, alignTop ] (viewAdventure adventure)
         ]
 
@@ -269,39 +320,81 @@ viewMain adventure =
 viewRollTables : Element Msg
 viewRollTables =
     column [ width fill ]
-        [ viewContentWithHeader "Fate Chart" fill (text "Fate Chart content")
-        , viewContentWithHeader "Meaning tables" fill (text "Meaning tables content")
+        [ viewContentWithHeader "Fate Chart" fill False viewFateChart
+        , viewContentWithHeader "Meaning tables" fill True (text "Meaning tables content")
         ]
 
 
-viewRollLog : Element Msg
-viewRollLog =
+viewFateChart : Element Msg
+viewFateChart =
+    column [ width fill, Font.size 11 ]
+        [ row [ width fill ]
+            [ fateChartButton FateChart.Impossible
+            , fateChartButton FateChart.NearlyImpossible
+            ]
+        , row [ width fill ]
+            [ fateChartButton FateChart.VeryUnlikely
+            , fateChartButton FateChart.Unlikely
+            ]
+        , fateChartButton FateChart.FiftyFifty
+        , row [ width fill ]
+            [ fateChartButton FateChart.Likely
+            , fateChartButton FateChart.VeryLikely
+            ]
+        , row [ width fill ]
+            [ fateChartButton FateChart.NearlyCertain
+            , fateChartButton FateChart.Certain
+            ]
+        ]
+
+
+fateChartButton : FateChart.Probability -> Element Msg
+fateChartButton probability =
+    Element.Input.button
+        [ width fill
+        , paddingXY 4 8
+        , contentWithHeaderBorderColor
+        , Element.Border.width 1
+        , Font.center
+        , Element.focused []
+        ]
+        { label = text (String.toUpper (FateChart.probabilityToString probability))
+        , onPress = Just (RollFateChart probability)
+        }
+
+
+viewRollLog : Adventure -> Element Msg
+viewRollLog adventure =
     column [ height fill ]
-        [ viewRollLogEntry
-        , viewRollLogEntry
-        , viewRollLogEntry
-        ]
+        (List.map viewRollLogEntry adventure.rollLog)
 
 
-viewRollLogEntry : Element Msg
-viewRollLogEntry =
-    text "roll log entry"
+viewRollLogEntry : RollLogEntry -> Element Msg
+viewRollLogEntry entry =
+    case entry of
+        RollLog.FateChartRollEntry roll ->
+            viewFateChartRoll roll
+
+
+viewFateChartRoll : FateChartRoll -> Element Msg
+viewFateChartRoll roll =
+    el [] (text "FateChartRoll")
 
 
 viewAdventure : Adventure -> Element Msg
 viewAdventure adventure =
     column [ width fill ]
-        [ viewAdventureHeader
+        [ viewAdventureHeader adventure
         , viewAdventureLists
         , viewAdventureContents adventure
         ]
 
 
-viewAdventureHeader : Element Msg
-viewAdventureHeader =
+viewAdventureHeader : Adventure -> Element Msg
+viewAdventureHeader adventure =
     row [ width fill ]
         [ viewChaosFactor
-        , el [ centerX ] (text "Adventure name")
+        , el [ centerX, Font.size 24 ] (text adventure.name)
         , el [ alignRight ] <|
             Widget.iconButton Styles.iconButton
                 { text = "Toggle edit"
@@ -318,8 +411,8 @@ viewAdventureHeader =
 
 viewChaosFactor : Element Msg
 viewChaosFactor =
-    viewContentWithHeader "Chaos Factor" shrink <|
-        row [ centerX ]
+    viewContentWithHeader "Chaos Factor" shrink True <|
+        row [ centerX, Font.size 32 ]
             [ Widget.iconButton Styles.iconButton
                 { text = "Decrement Chaos Factor"
                 , icon = MaterialIcons.chevron_left |> Styles.iconMapper
@@ -338,10 +431,10 @@ viewAdventureLists : Element Msg
 viewAdventureLists =
     row [ width fill, spacing 4 ]
         [ el [ width fill ] <|
-            viewContentWithHeader "Threads" fill <|
+            viewContentWithHeader "Threads" fill True <|
                 viewListThread
-        , el [ width fill ] <|
-            viewContentWithHeader "Characters" fill <|
+        , el [ width (px 250) ] <|
+            viewContentWithHeader "Characters" fill True <|
                 viewListCharacter
         ]
 
@@ -408,16 +501,34 @@ viewScenes scenes =
 
 viewScene : Int -> Scene -> Element Msg
 viewScene index scene =
-    text ("Scene" ++ String.fromInt index)
+    text ("Scene " ++ String.fromInt index)
 
 
-viewContentWithHeader : String -> Length -> Element Msg -> Element Msg
-viewContentWithHeader headerText widthLength content =
-    column [ width widthLength ]
-        [ el ([ centerX, width fill ] ++ textAndBackground MaterialColor.dark) <|
+viewContentWithHeader : String -> Length -> Bool -> Element Msg -> Element Msg
+viewContentWithHeader headerText viewWidth withPadding content =
+    let
+        contentPadding =
+            if withPadding then
+                padding 4
+
+            else
+                padding 0
+    in
+    column [ width viewWidth, contentWithHeaderBorderColor, Element.Border.width 1 ]
+        [ el ([ centerX, width fill ] ++ textAndBackground contentWithHeaderColor) <|
             el [ centerX, paddingXY 8 4 ] (text headerText)
-        , content
+        , el [ width fill, contentPadding ] content
         ]
+
+
+contentWithHeaderBorderColor : Attr decorative Msg
+contentWithHeaderBorderColor =
+    Element.Border.color (MaterialColor.fromColor contentWithHeaderColor)
+
+
+contentWithHeaderColor : Color.Color
+contentWithHeaderColor =
+    MaterialColor.dark
 
 
 
@@ -503,3 +614,23 @@ loadAdventure id =
 -- ol : List (Attribute msg) -> List ( String, Html msg ) -> Html msg
 -- ol =
 --   node "ol"
+
+
+testAdventure : Adventure
+testAdventure =
+    { id = AdventureId 1
+    , name = "New adventure"
+    , chaosFactor = ChaosFactor.fromInt 5
+    , scenes = []
+    , threadList = []
+    , characterList = []
+    , threads = []
+    , characters = []
+    , playerCharacters = []
+    , rollLog = []
+    , notes = []
+    , settings =
+        { fateChartType = FateChart.Standard
+        }
+    , saveTimestamp = 0
+    }

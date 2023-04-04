@@ -2,6 +2,10 @@ module FateChart exposing
     ( Outcome(..)
     , Probability(..)
     , Type(..)
+    , outcomeCodec
+    , outcomeToString
+    , probabilityToString
+    , probabiltyCodec
     , rollFateChart
     , typeCodec
     )
@@ -74,6 +78,50 @@ type Probability
     | Impossible
 
 
+probabiltyCodec : Serialize.Codec e Probability
+probabiltyCodec =
+    Serialize.customType
+        (\certainEncoder nearlyCertainEncoder veryLikelyEncoder likelyEncoder fiftyFiftyEncoder unlikelyEncoder veryUnlikelyEncoder nearlyImpossibleEncoder impossibleEncoder value ->
+            case value of
+                Certain ->
+                    certainEncoder
+
+                NearlyCertain ->
+                    nearlyCertainEncoder
+
+                VeryLikely ->
+                    veryLikelyEncoder
+
+                Likely ->
+                    likelyEncoder
+
+                FiftyFifty ->
+                    fiftyFiftyEncoder
+
+                Unlikely ->
+                    unlikelyEncoder
+
+                VeryUnlikely ->
+                    veryUnlikelyEncoder
+
+                NearlyImpossible ->
+                    nearlyImpossibleEncoder
+
+                Impossible ->
+                    impossibleEncoder
+        )
+        |> Serialize.variant0 Certain
+        |> Serialize.variant0 NearlyCertain
+        |> Serialize.variant0 VeryLikely
+        |> Serialize.variant0 Likely
+        |> Serialize.variant0 FiftyFifty
+        |> Serialize.variant0 Unlikely
+        |> Serialize.variant0 VeryUnlikely
+        |> Serialize.variant0 NearlyImpossible
+        |> Serialize.variant0 Impossible
+        |> Serialize.finishCustomType
+
+
 type Outcome
     = ExtremeYes
     | Yes
@@ -81,16 +129,56 @@ type Outcome
     | ExtremeNo
 
 
+outcomeCodec : Serialize.Codec e Outcome
+outcomeCodec =
+    Serialize.customType
+        (\extremeYesEncoder yesEncoder noEncoder extremeNoEncoder value ->
+            case value of
+                ExtremeYes ->
+                    extremeYesEncoder
+
+                Yes ->
+                    yesEncoder
+
+                No ->
+                    noEncoder
+
+                ExtremeNo ->
+                    extremeNoEncoder
+        )
+        |> Serialize.variant0 ExtremeYes
+        |> Serialize.variant0 Yes
+        |> Serialize.variant0 No
+        |> Serialize.variant0 ExtremeNo
+        |> Serialize.finishCustomType
+
+
+outcomeToString : Outcome -> String
+outcomeToString outcome =
+    case outcome of
+        ExtremeYes ->
+            "Extreme Yes"
+
+        Yes ->
+            "Yes"
+
+        No ->
+            "No"
+
+        ExtremeNo ->
+            "Extreme No"
+
+
 {-| Returns an Outcome generator for a probability on a chart type.
 -}
-rollFateChart : Type -> Probability -> ChaosFactor -> Random.Generator Outcome
+rollFateChart : Type -> Probability -> ChaosFactor -> Random.Generator ( Int, Outcome )
 rollFateChart chartType probability chaosFactor =
     Random.map (determineOutcome chartType probability chaosFactor) rollDie
 
 
 {-| Returns an Outcome generator for a probability on a chart type.
 -}
-determineOutcome : Type -> Probability -> ChaosFactor -> Int -> Outcome
+determineOutcome : Type -> Probability -> ChaosFactor -> Int -> ( Int, Outcome )
 determineOutcome chartType probability chaosFactor dieRoll =
     let
         chaosFactorInt : Int
@@ -106,16 +194,16 @@ determineOutcome chartType probability chaosFactor dieRoll =
                 |> Maybe.withDefault fallbackOutcomeProbability
     in
     if dieRoll <= outcomeProbability.extremeYes then
-        ExtremeYes
+        ( dieRoll, ExtremeYes )
 
     else if dieRoll <= outcomeProbability.threshold then
-        Yes
+        ( dieRoll, Yes )
 
     else if dieRoll < outcomeProbability.extremeNo then
-        No
+        ( dieRoll, No )
 
     else
-        ExtremeNo
+        ( dieRoll, ExtremeNo )
 
 
 {-| Determines the index of a Probability in a ChaosFactor.outcomeProbabilities
@@ -149,6 +237,37 @@ probabilityToIndex probability =
 
         Impossible ->
             8
+
+
+probabilityToString : Probability -> String
+probabilityToString probability =
+    case probability of
+        Impossible ->
+            "Impossible"
+
+        NearlyImpossible ->
+            "Nearly Impossible"
+
+        VeryUnlikely ->
+            "Very Unlikely"
+
+        Unlikely ->
+            "Unlikely"
+
+        FiftyFifty ->
+            "50/50"
+
+        Likely ->
+            "Likely"
+
+        VeryLikely ->
+            "Very Likely"
+
+        NearlyCertain ->
+            "Nearly Certain"
+
+        Certain ->
+            "Certain"
 
 
 {-| Determines the chart to use based on its type

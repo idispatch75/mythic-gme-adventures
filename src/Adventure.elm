@@ -1,16 +1,16 @@
 module Adventure exposing
     ( Adventure
-    , AdventureId
+    , AdventureId(..)
     , AdventureIndex
     , AdventureNote
     , AdventureSettings
     , Character
     , IndexAdventure
     , PlayerCharacter
-    , RollLogEntry
     , Scene
     , Thread
     , addAdventure
+    , addRollLogEntry
     , adventureIdCodec
     , adventureIdToInt
     , createAdventure
@@ -24,6 +24,7 @@ module Adventure exposing
 import ChaosFactor exposing (ChaosFactor)
 import FateChart
 import Json.Encode exposing (Value)
+import RollLog exposing (RollLogEntry)
 import Serialize
 import Task exposing (Task)
 import Time
@@ -61,7 +62,7 @@ adventureCodec =
         |> Serialize.field .threads (Serialize.list threadCodec)
         |> Serialize.field .characters (Serialize.list characterCodec)
         |> Serialize.field .playerCharacters (Serialize.list playerCharacterCodec)
-        |> Serialize.field .rollLog (Serialize.list rollLogEntryCodec)
+        |> Serialize.field .rollLog (Serialize.list RollLog.rollLogEntryCodec)
         |> Serialize.field .notes (Serialize.list adventureNoteCodec)
         |> Serialize.field .settings adventureSettingsCodec
         |> Serialize.field .saveTimestamp Serialize.int
@@ -267,34 +268,9 @@ adventureNoteCodec =
         |> Serialize.finishRecord
 
 
-type alias RollLogEntry =
-    { table : Maybe String
-    , results : List RollResult
-
-    -- actions based on roll
-    }
-
-
-rollLogEntryCodec : Serialize.Codec e RollLogEntry
-rollLogEntryCodec =
-    Serialize.record RollLogEntry
-        |> Serialize.field .table (Serialize.maybe Serialize.string)
-        |> Serialize.field .results (Serialize.list rollResultCodec)
-        |> Serialize.finishRecord
-
-
-type alias RollResult =
-    { value : Int
-    , result : String
-    }
-
-
-rollResultCodec : Serialize.Codec e RollResult
-rollResultCodec =
-    Serialize.record RollResult
-        |> Serialize.field .value Serialize.int
-        |> Serialize.field .result Serialize.string
-        |> Serialize.finishRecord
+addRollLogEntry : RollLogEntry -> Adventure -> Adventure
+addRollLogEntry entry adventure =
+    { adventure | rollLog = entry :: adventure.rollLog }
 
 
 type alias AdventureSettings =
