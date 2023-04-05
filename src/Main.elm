@@ -1,7 +1,19 @@
 module Main exposing (main)
 
-import Adventure exposing (Adventure, AdventureId(..), AdventureIndex, Scene, createAdventureIndex)
+import Adventure
+    exposing
+        ( Adventure
+        , AdventureId(..)
+        , AdventureIndex
+        , FateChartRoll
+        , MeaningTableRoll
+        , RandomEventRoll
+        , RollLogEntry(..)
+        , Scene
+        , createAdventureIndex
+        )
 import Browser exposing (Document)
+import Browser.Dom
 import ChaosFactor exposing (ChaosFactor)
 import Color
 import DataStorage
@@ -13,33 +25,34 @@ import Element.Font as Font
 import Element.Input
 import FateChart
 import GlobalSettings exposing (GlobalSettings)
-import Html.Attributes
-import I18Next exposing (Translations)
+import Html.Attributes exposing (id)
+import I18Next exposing (Translations, tf, translationsDecoder)
 import Json.Decode
+import Json.Encode
+import List.Extra as ListX
 import Material.Icons as MaterialIcons
 import Maybe.Extra as MaybeX
-import Random
-import RollLog exposing (FateChartRoll, RollLogEntry(..))
+import RandomEvent
+import RollLog
 import Styles
 import Task
 import TaskPort
-import Time
 import Url exposing (Url)
-import Utils exposing (randomToTask, timestamp)
+import Utils
 import Widget
 import Widget.Material
 import Widget.Material.Color as MaterialColor exposing (textAndBackground)
-import Widget.Material.Typography exposing (body1, h5)
+import Widget.Material.Typography exposing (body1)
 
 
 
 -- MAIN
 
 
-main : Program () Model (Dropbox.Msg Msg)
+main : Program Json.Encode.Value Model (Dropbox.Msg Msg)
 main =
     Dropbox.application
-        { init = \_ location -> ( init location, Cmd.none ) --( init location, loadGlobalData )
+        { init = \flags location -> ( init flags location, Cmd.none ) --( init location, loadGlobalData )
         , update = update
         , view = view
         , subscriptions = \_ -> Sub.none
@@ -77,8 +90,17 @@ asAdventureIn model adventure =
     { model | adventure = Just adventure }
 
 
-init : Url -> Model
-init location =
+init : Json.Encode.Value -> Url -> Model
+init flags location =
+    let
+        translations =
+            case Json.Decode.decodeValue translationsDecoder flags of
+                Ok trans ->
+                    [ trans, I18Next.initialTranslations ]
+
+                Err _ ->
+                    []
+    in
     { adventure = Just testAdventure -- Nothing
     , adventureIndex = createAdventureIndex
     , globalSettings =
@@ -89,7 +111,7 @@ init location =
         }
     , localSettings =
         { dropboxUserAuth = Nothing }
-    , translations = []
+    , translations = translations
     , error = Nothing
     , location = location
     , selectedAdventureContentTab = 0
@@ -112,8 +134,10 @@ type Msg
     | AvdentureContentTabUpdated Int
     | RollFateChart FateChart.Probability
     | CreateRollLogEntry RollLogEntry
+    | RollMeaningTable String
     | LoginToDropbox
     | DropboxAuthResponseReceived Dropbox.AuthorizeResult
+    | NoOp
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -171,7 +195,7 @@ update msg orgModel =
         AdventureLoaded result ->
             case result of
                 Ok adventure ->
-                    ( { model | adventure = Just adventure }, Cmd.none )
+                    ( { model | adventure = Just adventure }, jumpToBottom rollLogId )
 
                 Err error ->
                     handleLoadError model error
@@ -203,11 +227,17 @@ update msg orgModel =
                 Nothing ->
                     ( model, Cmd.none )
 
+        RollMeaningTable table ->
+            ( model
+            , RollLog.rollMeaningTable table
+                |> Task.perform CreateRollLogEntry
+            )
+
         CreateRollLogEntry entry ->
             case model.adventure of
                 Just adventure ->
                     ( { model | adventure = Just (Adventure.addRollLogEntry entry adventure) }
-                    , Cmd.none
+                    , jumpToBottom rollLogId
                     )
 
                 Nothing ->
@@ -243,6 +273,9 @@ update msg orgModel =
         DropboxAuthResponseReceived (Dropbox.UnknownAccessTokenErr error) ->
             Debug.todo "branch 'DropboxAuthResponseReceived (UnknownAccessTokenErr _)' not implemented"
 
+        NoOp ->
+            ( model, Cmd.none )
+
 
 handleLoadError : Model -> DataStorage.LoadError -> ( Model, Cmd Msg )
 handleLoadError model error =
@@ -275,7 +308,7 @@ view model =
         mainView =
             case model.adventure of
                 Just adventure ->
-                    viewMain adventure
+                    viewMain model.translations adventure
 
                 Nothing ->
                     viewHome model
@@ -284,13 +317,12 @@ view model =
     , body =
         [ layout [ Element.Background.color (rgb255 225 225 240) ] <|
             column
-                ([ width (fill |> maximum 1200)
-                 , centerX
-                 , height fill
-                 , Font.family [ Font.typeface "Roboto", Font.typeface "Helvetica" ]
-                 , Element.Background.color (rgb255 255 255 255)
-                 ]
-                    ++ body1
+                (body1
+                    ++ [ width (fill |> maximum 1200)
+                       , centerX
+                       , Font.family [ Font.typeface "Roboto", Font.typeface "Helvetica" ]
+                       , Element.Background.color (rgb255 255 255 255)
+                       ]
                 )
                 [ el [ width fill, centerX ] viewAppBar
                 , el [ width fill, height fill, centerX ] mainView
@@ -304,24 +336,29 @@ viewAppBar =
     text "Mythic GME Adventures"
 
 
-viewMain : Adventure -> Element Msg
-viewMain adventure =
+viewMain : List Translations -> Adventure -> Element Msg
+viewMain translations adventure =
     row
         [ width fill
         , height fill
         , spacing 4
         ]
-        [ el [ width (px 250), centerX, alignTop ] viewRollTables
-        , el [ width (px 250), centerX, alignTop ] (viewRollLog adventure)
+        [ el [ width (px 250), centerX, height fill ] (viewRollTables translations)
+        , el
+            [ width (px 250)
+            , centerX
+            , height fill
+            ]
+            (viewRollLog translations adventure)
         , el [ width fill, centerX, alignTop ] (viewAdventure adventure)
         ]
 
 
-viewRollTables : Element Msg
-viewRollTables =
+viewRollTables : List Translations -> Element Msg
+viewRollTables translations =
     column [ width fill ]
         [ viewContentWithHeader "Fate Chart" fill False viewFateChart
-        , viewContentWithHeader "Meaning tables" fill True (text "Meaning tables content")
+        , viewContentWithHeader "Meaning tables" fill False (viewMeaningTables translations meaningTables)
         ]
 
 
@@ -329,27 +366,32 @@ viewFateChart : Element Msg
 viewFateChart =
     column [ width fill, Font.size 11 ]
         [ row [ width fill ]
-            [ fateChartButton FateChart.Impossible
-            , fateChartButton FateChart.NearlyImpossible
+            [ fateChartButton FateChart.Certain
+            , fateChartButton FateChart.NearlyCertain
             ]
         , row [ width fill ]
-            [ fateChartButton FateChart.VeryUnlikely
-            , fateChartButton FateChart.Unlikely
+            [ fateChartButton FateChart.VeryLikely
+            , fateChartButton FateChart.Likely
             ]
         , fateChartButton FateChart.FiftyFifty
         , row [ width fill ]
-            [ fateChartButton FateChart.Likely
-            , fateChartButton FateChart.VeryLikely
+            [ fateChartButton FateChart.Unlikely
+            , fateChartButton FateChart.VeryUnlikely
             ]
         , row [ width fill ]
-            [ fateChartButton FateChart.NearlyCertain
-            , fateChartButton FateChart.Certain
+            [ fateChartButton FateChart.NearlyImpossible
+            , fateChartButton FateChart.Impossible
             ]
         ]
 
 
 fateChartButton : FateChart.Probability -> Element Msg
 fateChartButton probability =
+    simpleButton (FateChart.probabilityToString probability) (Just (RollFateChart probability))
+
+
+simpleButton : String -> Maybe Msg -> Element Msg
+simpleButton label onPress =
     Element.Input.button
         [ width fill
         , paddingXY 4 8
@@ -358,27 +400,138 @@ fateChartButton probability =
         , Font.center
         , Element.focused []
         ]
-        { label = text (String.toUpper (FateChart.probabilityToString probability))
-        , onPress = Just (RollFateChart probability)
+        { label = text (String.toUpper label)
+        , onPress = onPress
         }
 
 
-viewRollLog : Adventure -> Element Msg
-viewRollLog adventure =
-    column [ height fill ]
-        (List.map viewRollLogEntry adventure.rollLog)
+meaningTables : List String
+meaningTables =
+    [ "actions"
+    , "descriptions"
+    , "character_actions_combat"
+    ]
 
 
-viewRollLogEntry : RollLogEntry -> Element Msg
-viewRollLogEntry entry =
+viewMeaningTables : List Translations -> List String -> Element Msg
+viewMeaningTables translations tables =
+    column
+        [ width fill
+        , height fill
+        , Font.size 14
+        ]
+        (tables |> List.map (\x -> viewMeaningTable translations x))
+
+
+viewMeaningTable : List Translations -> String -> Element Msg
+viewMeaningTable translations table =
+    simpleButton (tf translations ("meaning_tables." ++ table ++ ".name")) (Just (RollMeaningTable table))
+
+
+rollLogId : String
+rollLogId =
+    "rollLog"
+
+
+viewRollLog : List Translations -> Adventure -> Element Msg
+viewRollLog translations adventure =
+    column
+        [ Element.htmlAttribute (id rollLogId)
+        , width fill
+        , height fill
+        , spacing 4
+        , scrollbarY
+        , Utils.maxHeightVh 90
+        ]
+        (adventure.rollLog |> List.map (\entry -> viewRollLogEntry translations entry))
+
+
+viewRollLogEntry : List Translations -> RollLogEntry -> Element Msg
+viewRollLogEntry translations entry =
     case entry of
-        RollLog.FateChartRollEntry roll ->
+        FateChartRollEntry roll ->
             viewFateChartRoll roll
+
+        MeaningTableRollEntry roll ->
+            viewMeaningTableRoll translations roll
+
+        RandomEventRollEntry roll ->
+            viewRandomEventRoll roll
+
+
+viewRollHeader : String -> Element Msg
+viewRollHeader header =
+    el [ width fill ] (text header)
 
 
 viewFateChartRoll : FateChartRoll -> Element Msg
 viewFateChartRoll roll =
-    el [] (text "FateChartRoll")
+    let
+        digits : List Int
+        digits =
+            if roll.value > 10 then
+                [ roll.value // 10, modBy 10 roll.value ]
+
+            else
+                [ roll.value ]
+
+        hasEvent : Bool
+        hasEvent =
+            case digits of
+                digit1 :: digit2 :: _ ->
+                    digit1 == digit2 && digit1 <= ChaosFactor.toInt roll.chaosFactor
+
+                _ ->
+                    False
+    in
+    column [ width fill ]
+        [ viewRollHeader (FateChart.probabilityToString roll.probability)
+        , viewRollResult roll.value (FateChart.outcomeToString roll.outcome)
+        , if hasEvent then
+            simpleButton "Roll random event" Nothing
+
+          else
+            Element.none
+        ]
+
+
+viewMeaningTableRoll : List Translations -> MeaningTableRoll -> Element Msg
+viewMeaningTableRoll translations roll =
+    let
+        header : Element Msg
+        header =
+            viewRollHeader (tf translations ("meaning_tables." ++ roll.table ++ ".name"))
+
+        results : List (Element Msg)
+        results =
+            roll.results
+                |> List.map
+                    (\result ->
+                        let
+                            translationKey =
+                                "meaning_tables." ++ result.table ++ "." ++ String.fromInt result.value
+                        in
+                        viewRollResult result.value (tf translations translationKey)
+                    )
+    in
+    column [ width fill ]
+        (header :: results)
+
+
+viewRandomEventRoll : RandomEventRoll -> Element Msg
+viewRandomEventRoll roll =
+    column [ width fill ]
+        [ viewRollHeader "Random Event"
+        , viewRollResult roll.value (RandomEvent.focusToString roll.focus)
+        ]
+
+
+viewRollResult : Int -> String -> Element Msg
+viewRollResult value result =
+    row [ width fill ]
+        [ el [ width fill ] (text result)
+        , el [ alignRight, Font.size 12, centerY ] (text (String.fromInt value))
+        ]
 
 
 viewAdventure : Adventure -> Element Msg
@@ -429,11 +582,11 @@ viewChaosFactor =
 
 viewAdventureLists : Element Msg
 viewAdventureLists =
-    row [ width fill, spacing 4 ]
-        [ el [ width fill ] <|
+    row [ width fill, spacing 4, height (fill |> minimum 300) ]
+        [ el [ width fill, alignTop, height fill, scrollbarY ] <|
             viewContentWithHeader "Threads" fill True <|
                 viewListThread
-        , el [ width (px 250) ] <|
+        , el [ width (px 250), alignTop, height fill, scrollbarY ] <|
             viewContentWithHeader "Characters" fill True <|
                 viewListCharacter
         ]
@@ -471,27 +624,28 @@ viewAdventureContents adventure =
               }
             ]
     in
-    Widget.tab Styles.tab
-        { tabs =
-            { selected = Just 0
-            , options = tabOptions
-            , onSelect =
+    el [ width fill, height (fill |> minimum 300) ] <|
+        Widget.tab Styles.tab
+            { tabs =
+                { selected = Just 0
+                , options = tabOptions
+                , onSelect =
+                    \index ->
+                        if index >= 0 && index <= List.length tabOptions then
+                            Just (AvdentureContentTabUpdated index)
+
+                        else
+                            Nothing
+                }
+            , content =
                 \index ->
-                    if index >= 0 && index <= List.length tabOptions then
-                        Just (AvdentureContentTabUpdated index)
+                    case index of
+                        Just 0 ->
+                            viewScenes adventure.scenes
 
-                    else
-                        Nothing
+                        _ ->
+                            viewScenes adventure.scenes
             }
-        , content =
-            \index ->
-                case index of
-                    Just 0 ->
-                        viewScenes adventure.scenes
-
-                    _ ->
-                        viewScenes adventure.scenes
-        }
 
 
 viewScenes : List Scene -> Element Msg
@@ -608,6 +762,13 @@ loadAdventure : AdventureId -> Cmd Msg
 loadAdventure id =
     DataStorage.loadAdventure id
         |> Task.attempt (\result -> AdventureLoaded result)
+
+
+jumpToBottom : String -> Cmd Msg
+jumpToBottom id =
+    Browser.Dom.getViewportOf id
+        |> Task.andThen (\info -> Browser.Dom.setViewportOf id 0 info.scene.height)
+        |> Task.attempt (always NoOp)
 
 
 

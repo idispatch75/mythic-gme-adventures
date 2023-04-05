@@ -5,8 +5,13 @@ module Adventure exposing
     , AdventureNote
     , AdventureSettings
     , Character
+    , FateChartRoll
     , IndexAdventure
+    , MeaningTableRoll
+    , MeaningTableSubRoll
     , PlayerCharacter
+    , RandomEventRoll
+    , RollLogEntry(..)
     , Scene
     , Thread
     , addAdventure
@@ -24,7 +29,7 @@ module Adventure exposing
 import ChaosFactor exposing (ChaosFactor)
 import FateChart
 import Json.Encode exposing (Value)
-import RollLog exposing (RollLogEntry)
+import RandomEvent exposing (RandomEventFocus)
 import Serialize
 import Task exposing (Task)
 import Time
@@ -62,7 +67,7 @@ adventureCodec =
         |> Serialize.field .threads (Serialize.list threadCodec)
         |> Serialize.field .characters (Serialize.list characterCodec)
         |> Serialize.field .playerCharacters (Serialize.list playerCharacterCodec)
-        |> Serialize.field .rollLog (Serialize.list RollLog.rollLogEntryCodec)
+        |> Serialize.field .rollLog (Serialize.list rollLogEntryCodec)
         |> Serialize.field .notes (Serialize.list adventureNoteCodec)
         |> Serialize.field .settings adventureSettingsCodec
         |> Serialize.field .saveTimestamp Serialize.int
@@ -268,9 +273,101 @@ adventureNoteCodec =
         |> Serialize.finishRecord
 
 
+type RollLogEntry
+    = FateChartRollEntry FateChartRoll
+    | MeaningTableRollEntry MeaningTableRoll
+    | RandomEventRollEntry RandomEventRoll
+
+
+type alias FateChartRoll =
+    { probability : FateChart.Probability
+    , chaosFactor : ChaosFactor
+    , value : Int
+    , outcome : FateChart.Outcome
+    , timestamp : Int
+    }
+
+
+fateChartRollCodec : Serialize.Codec e FateChartRoll
+fateChartRollCodec =
+    Serialize.record FateChartRoll
+        |> Serialize.field .probability FateChart.probabiltyCodec
+        |> Serialize.field .chaosFactor ChaosFactor.codec
+        |> Serialize.field .value Serialize.int
+        |> Serialize.field .outcome FateChart.outcomeCodec
+        |> Serialize.field .timestamp Serialize.int
+        |> Serialize.finishRecord
+
+
+type alias MeaningTableRoll =
+    { table : String
+    , results : List MeaningTableSubRoll
+    , timestamp : Int
+    }
+
+
+meaningTableRollCodec : Serialize.Codec e MeaningTableRoll
+meaningTableRollCodec =
+    Serialize.record MeaningTableRoll
+        |> Serialize.field .table Serialize.string
+        |> Serialize.field .results (Serialize.list meaningTableSubRollCodec)
+        |> Serialize.field .timestamp Serialize.int
+        |> Serialize.finishRecord
+
+
+type alias MeaningTableSubRoll =
+    { value : Int
+    , table : String
+    }
+
+
+meaningTableSubRollCodec : Serialize.Codec e MeaningTableSubRoll
+meaningTableSubRollCodec =
+    Serialize.record MeaningTableSubRoll
+        |> Serialize.field .value Serialize.int
+        |> Serialize.field .table Serialize.string
+        |> Serialize.finishRecord
+
+
+type alias RandomEventRoll =
+    { focus : RandomEventFocus
+    , value : Int
+    , timestamp : Int
+    }
+
+
+randomEventRollCodec : Serialize.Codec e RandomEventRoll
+randomEventRollCodec =
+    Serialize.record RandomEventRoll
+        |> Serialize.field .focus RandomEvent.focusCodec
+        |> Serialize.field .value Serialize.int
+        |> Serialize.field .timestamp Serialize.int
+        |> Serialize.finishRecord
+
+
+rollLogEntryCodec : Serialize.Codec e RollLogEntry
+rollLogEntryCodec =
+    Serialize.customType
+        (\fateChartEncoder meaningTableEncoder randomEventEncoder value ->
+            case value of
+                FateChartRollEntry roll ->
+                    fateChartEncoder roll
+
+                MeaningTableRollEntry roll ->
+                    meaningTableEncoder roll
+
+                RandomEventRollEntry roll ->
+                    randomEventEncoder roll
+        )
+        |> Serialize.variant1 FateChartRollEntry fateChartRollCodec
+        |> Serialize.variant1 MeaningTableRollEntry meaningTableRollCodec
+        |> Serialize.variant1 RandomEventRollEntry randomEventRollCodec
+        |> Serialize.finishCustomType
+
+
 addRollLogEntry : RollLogEntry -> Adventure -> Adventure
 addRollLogEntry entry adventure =
-    { adventure | rollLog = entry :: adventure.rollLog }
+    { adventure | rollLog = List.append adventure.rollLog (List.singleton entry) |> List.take 100 }
 
 
 type alias AdventureSettings =
