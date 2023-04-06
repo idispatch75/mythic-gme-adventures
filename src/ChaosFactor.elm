@@ -2,7 +2,9 @@ module ChaosFactor exposing
     ( ChaosFactor
     , codec
     , fromInt
+    , offset
     , toInt
+    , toString
     )
 
 import Basics.Extra as BasicX
@@ -21,6 +23,16 @@ toInt (ChaosFactor int) =
 fromInt : Int -> ChaosFactor
 fromInt int =
     ChaosFactor (int |> BasicX.atLeast 1 |> BasicX.atMost 9)
+
+
+toString : ChaosFactor -> String
+toString (ChaosFactor int) =
+    String.fromInt int
+
+
+offset : Int -> ChaosFactor -> ChaosFactor
+offset amount chaosFactor =
+    fromInt (toInt chaosFactor + amount)
 
 
 codec : Serialize.Codec e ChaosFactor

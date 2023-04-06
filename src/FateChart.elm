@@ -1,5 +1,5 @@
 module FateChart exposing
-    ( Outcome(..)
+    ( Outcome
     , Probability(..)
     , Type(..)
     , outcomeCodec
@@ -123,50 +123,26 @@ probabiltyCodec =
 
 
 type Outcome
-    = ExtremeYes
-    | Yes
-    | No
-    | ExtremeNo
+    = Outcome String
 
 
 outcomeCodec : Serialize.Codec e Outcome
 outcomeCodec =
     Serialize.customType
-        (\extremeYesEncoder yesEncoder noEncoder extremeNoEncoder value ->
+        (\encoder value ->
             case value of
-                ExtremeYes ->
-                    extremeYesEncoder
-
-                Yes ->
-                    yesEncoder
-
-                No ->
-                    noEncoder
-
-                ExtremeNo ->
-                    extremeNoEncoder
+                Outcome name ->
+                    encoder name
         )
-        |> Serialize.variant0 ExtremeYes
-        |> Serialize.variant0 Yes
-        |> Serialize.variant0 No
-        |> Serialize.variant0 ExtremeNo
+        |> Serialize.variant1 Outcome Serialize.string
         |> Serialize.finishCustomType
 
 
 outcomeToString : Outcome -> String
 outcomeToString outcome =
     case outcome of
-        ExtremeYes ->
-            "Extreme Yes"
-
-        Yes ->
-            "Yes"
-
-        No ->
-            "No"
-
-        ExtremeNo ->
-            "Extreme No"
+        Outcome name ->
+            name
 
 
 {-| Returns an Outcome generator for a probability on a chart type.
@@ -194,16 +170,16 @@ determineOutcome chartType probability chaosFactor dieRoll =
                 |> Maybe.withDefault fallbackOutcomeProbability
     in
     if dieRoll <= outcomeProbability.extremeYes then
-        ( dieRoll, ExtremeYes )
+        ( dieRoll, Outcome "Extreme Yes" )
 
     else if dieRoll <= outcomeProbability.threshold then
-        ( dieRoll, Yes )
+        ( dieRoll, Outcome "Yes" )
 
     else if dieRoll < outcomeProbability.extremeNo then
-        ( dieRoll, No )
+        ( dieRoll, Outcome "No" )
 
     else
-        ( dieRoll, ExtremeNo )
+        ( dieRoll, Outcome "Extreme No" )
 
 
 {-| Determines the index of a Probability in a ChaosFactor.outcomeProbabilities

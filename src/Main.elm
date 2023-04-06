@@ -10,6 +10,7 @@ import Adventure
         , RandomEventRoll
         , RollLogEntry(..)
         , Scene
+        , Thread
         , createAdventureIndex
         )
 import Browser exposing (Document)
@@ -25,6 +26,7 @@ import Element.Font as Font
 import Element.Input
 import FateChart
 import GlobalSettings exposing (GlobalSettings)
+import Html
 import Html.Attributes exposing (id)
 import I18Next exposing (Translations, tf, translationsDecoder)
 import Json.Decode
@@ -32,13 +34,13 @@ import Json.Encode
 import List.Extra as ListX
 import Material.Icons as MaterialIcons
 import Maybe.Extra as MaybeX
-import RandomEvent
+import RandomEvent exposing (RandomEventFocus(..))
 import RollLog
 import Styles
 import Task
 import TaskPort
 import Url exposing (Url)
-import Utils
+import Utils exposing (heightPercent, heightVh, maxHeightVh)
 import Widget
 import Widget.Material
 import Widget.Material.Color as MaterialColor exposing (textAndBackground)
@@ -133,8 +135,11 @@ type Msg
     | LocalDataSaved (Result DataStorage.SaveError ())
     | AvdentureContentTabUpdated Int
     | RollFateChart FateChart.Probability
-    | CreateRollLogEntry RollLogEntry
     | RollMeaningTable String
+    | RollRandomEvent
+    | CreateRollLogEntry RollLogEntry
+    | IncreaseChaosFactor
+    | DecreaseChaosFactor
     | LoginToDropbox
     | DropboxAuthResponseReceived Dropbox.AuthorizeResult
     | NoOp
@@ -217,15 +222,14 @@ update msg orgModel =
             )
 
         RollFateChart probability ->
-            case model.adventure of
-                Just adventure ->
+            handleAdventureMsg
+                (\adventure ->
                     ( model
                     , RollLog.rollFateChart adventure.settings.fateChartType probability adventure.chaosFactor
                         |> Task.perform CreateRollLogEntry
                     )
-
-                Nothing ->
-                    ( model, Cmd.none )
+                )
+                model
 
         RollMeaningTable table ->
             ( model
@@ -233,15 +237,42 @@ update msg orgModel =
                 |> Task.perform CreateRollLogEntry
             )
 
+        RollRandomEvent ->
+            handleAdventureMsg
+                (\adventure ->
+                    ( model
+                    , RollLog.rollRandomEvent adventure.characters adventure.threads adventure.playerCharacters
+                        |> Task.perform CreateRollLogEntry
+                    )
+                )
+                model
+
         CreateRollLogEntry entry ->
-            case model.adventure of
-                Just adventure ->
+            handleAdventureMsg
+                (\adventure ->
                     ( { model | adventure = Just (Adventure.addRollLogEntry entry adventure) }
                     , jumpToBottom rollLogId
                     )
+                )
+                model
 
-                Nothing ->
-                    ( model, Cmd.none )
+        IncreaseChaosFactor ->
+            handleAdventureMsg
+                (\adventure ->
+                    ( { adventure | chaosFactor = ChaosFactor.offset 1 adventure.chaosFactor } |> asAdventureIn model
+                    , Cmd.none
+                    )
+                )
+                model
+
+        DecreaseChaosFactor ->
+            handleAdventureMsg
+                (\adventure ->
+                    ( { adventure | chaosFactor = ChaosFactor.offset -1 adventure.chaosFactor } |> asAdventureIn model
+                    , Cmd.none
+                    )
+                )
+                model
 
         LoginToDropbox ->
             ( model
@@ -274,6 +305,16 @@ update msg orgModel =
             Debug.todo "branch 'DropboxAuthResponseReceived (UnknownAccessTokenErr _)' not implemented"
 
         NoOp ->
+            ( model, Cmd.none )
+
+
+handleAdventureMsg : (Adventure -> ( Model, Cmd Msg )) -> Model -> ( Model, Cmd Msg )
+handleAdventureMsg handler model =
+    case model.adventure of
+        Just adventure ->
+            handler adventure
+
+        Nothing ->
             ( model, Cmd.none )
 
 
@@ -315,17 +356,18 @@ view model =
     in
     { title = "Mythic GME Adventures"
     , body =
-        [ layout [ Element.Background.color (rgb255 225 225 240) ] <|
+        [ layout [ Element.Background.color (rgb255 225 225 240), heightPercent 100 ] <|
             column
                 (body1
                     ++ [ width (fill |> maximum 1200)
                        , centerX
                        , Font.family [ Font.typeface "Roboto", Font.typeface "Helvetica" ]
                        , Element.Background.color (rgb255 255 255 255)
+                       , height fill
                        ]
                 )
-                [ el [ width fill, centerX ] viewAppBar
-                , el [ width fill, height fill, centerX ] mainView
+                [ el [ width fill, centerX, height (px 32) ] viewAppBar
+                , el [ width fill, centerX, height fill ] mainView
                 ]
         ]
     }
@@ -364,7 +406,7 @@ viewRollTables translations =
 
 viewFateChart : Element Msg
 viewFateChart =
-    column [ width fill, Font.size 11 ]
+    column [ width fill, Font.size 11, Styles.fateChartBackgroundColor ]
         [ row [ width fill ]
             [ fateChartButton FateChart.Certain
             , fateChartButton FateChart.NearlyCertain
@@ -419,6 +461,7 @@ viewMeaningTables translations tables =
         [ width fill
         , height fill
         , Font.size 14
+        , Styles.meaningTableBackgroundColor
         ]
         (tables |> List.map (\x -> viewMeaningTable translations x))
 
@@ -428,6 +471,8 @@ viewMeaningTable translations table =
     simpleButton (tf translations ("meaning_tables." ++ table ++ ".name")) (Just (RollMeaningTable table))
 
 
+{-| The ID of the roll log column, used to scroll to the bottom of the column when a entry is added.
+-}
 rollLogId : String
 rollLogId =
     "rollLog"
@@ -441,7 +486,7 @@ viewRollLog translations adventure =
         , height fill
         , spacing 4
         , scrollbarY
-        , Utils.maxHeightVh 90
+        , maxHeightVh 95
         ]
         (adventure.rollLog |> List.map (\entry -> viewRollLogEntry translations entry))
 
@@ -484,11 +529,11 @@ viewFateChartRoll roll =
                 _ ->
                     False
     in
-    column [ width fill ]
+    column [ width fill, Styles.fateChartBackgroundColor ]
         [ viewRollHeader (FateChart.probabilityToString roll.probability)
         , viewRollResult roll.value (FateChart.outcomeToString roll.outcome)
         , if hasEvent then
-            simpleButton "Roll random event" Nothing
+            simpleButton "Roll random event" (Just RollRandomEvent)
 
           else
             Element.none
@@ -514,15 +559,37 @@ viewMeaningTableRoll translations roll =
                         viewRollResult result.value (tf translations translationKey)
                     )
     in
-    column [ width fill ]
+    column [ width fill, Styles.meaningTableBackgroundColor ]
         (header :: results)
 
 
 viewRandomEventRoll : RandomEventRoll -> Element Msg
 viewRandomEventRoll roll =
-    column [ width fill ]
+    let
+        focusTarget : Maybe String
+        focusTarget =
+            case roll.focus of
+                RandomEvent.NpcEvent _ target ->
+                    Just target
+
+                RandomEvent.ThreadEvent _ target ->
+                    Just target
+
+                RandomEvent.PcEvent _ (Just target) ->
+                    Just target
+
+                _ ->
+                    Nothing
+    in
+    column [ width fill, Styles.randomEventBackgroundColor ]
         [ viewRollHeader "Random Event"
         , viewRollResult roll.value (RandomEvent.focusToString roll.focus)
+        , case focusTarget of
+            Just target ->
+                textWithEllipse target
+
+            Nothing ->
+                Element.none
         ]
 
 
@@ -536,9 +603,9 @@ viewRollResult value result =
 
 viewAdventure : Adventure -> Element Msg
 viewAdventure adventure =
-    column [ width fill ]
+    column [ width fill, spacing 4, height fill ]
         [ viewAdventureHeader adventure
-        , viewAdventureLists
+        , viewAdventureLists adventure
         , viewAdventureContents adventure
         ]
 
@@ -546,15 +613,15 @@ viewAdventure adventure =
 viewAdventureHeader : Adventure -> Element Msg
 viewAdventureHeader adventure =
     row [ width fill ]
-        [ viewChaosFactor
+        [ viewChaosFactor adventure.chaosFactor
         , el [ centerX, Font.size 24 ] (text adventure.name)
         , el [ alignRight ] <|
-            Widget.iconButton Styles.iconButton
+            Widget.iconButton Styles.smallIconButton
                 { text = "Toggle edit"
-                , icon = MaterialIcons.edit |> Styles.iconMapper
+                , icon = MaterialIcons.lock |> Styles.iconMapper
                 , onPress = Nothing
                 }
-        , Widget.iconButton Styles.iconButton
+        , Widget.iconButton Styles.smallIconButton
             { text = "Delete"
             , icon = MaterialIcons.delete |> Styles.iconMapper
             , onPress = Nothing
@@ -562,39 +629,64 @@ viewAdventureHeader adventure =
         ]
 
 
-viewChaosFactor : Element Msg
-viewChaosFactor =
+viewChaosFactor : ChaosFactor -> Element Msg
+viewChaosFactor chaosFactor =
     viewContentWithHeader "Chaos Factor" shrink True <|
         row [ centerX, Font.size 32 ]
             [ Widget.iconButton Styles.iconButton
-                { text = "Decrement Chaos Factor"
+                { text = "Decrease Chaos Factor"
                 , icon = MaterialIcons.chevron_left |> Styles.iconMapper
-                , onPress = Nothing
+                , onPress = Just DecreaseChaosFactor
                 }
-            , text "5"
+            , text (ChaosFactor.toString chaosFactor)
             , Widget.iconButton Styles.iconButton
-                { text = "Increment Chaos Factor"
+                { text = "Increase Chaos Factor"
                 , icon = MaterialIcons.chevron_right |> Styles.iconMapper
-                , onPress = Nothing
+                , onPress = Just IncreaseChaosFactor
                 }
             ]
 
 
-viewAdventureLists : Element Msg
-viewAdventureLists =
-    row [ width fill, spacing 4, height (fill |> minimum 300) ]
-        [ el [ width fill, alignTop, height fill, scrollbarY ] <|
+viewAdventureLists : Adventure -> Element Msg
+viewAdventureLists adventure =
+    row [ width fill, height fill, spacing 4 ]
+        [ el [ width fill, alignTop, height fill ] <|
             viewContentWithHeader "Threads" fill True <|
-                viewListThread
-        , el [ width (px 250), alignTop, height fill, scrollbarY ] <|
+                viewListThreads adventure
+        , el [ width (px 250), alignTop, height fill ] <|
             viewContentWithHeader "Characters" fill True <|
                 viewListCharacter
         ]
 
 
-viewListThread : Element Msg
-viewListThread =
-    text "Thread"
+viewListThreads : Adventure -> Element Msg
+viewListThreads adventure =
+    column [ width (px 429), height (px 250), scrollbarY ] <|
+        (ListX.joinOn
+            (\_ thread -> thread)
+            identity
+            .id
+            adventure.threadList
+            adventure.threads
+            |> List.map viewListThread
+        )
+
+
+viewListThread : Thread -> Element Msg
+viewListThread thread =
+    row [ width fill ]
+        [ textWithEllipse thread.name
+        , Widget.iconButton Styles.smallIconButton
+            { text = "Duplicate"
+            , icon = MaterialIcons.content_copy |> Styles.iconMapper
+            , onPress = Nothing
+            }
+        , Widget.iconButton Styles.smallIconButton
+            { text = "Delete"
+            , icon = MaterialIcons.delete |> Styles.iconMapper
+            , onPress = Nothing
+            }
+        ]
 
 
 viewListCharacter : Element Msg
@@ -624,7 +716,7 @@ viewAdventureContents adventure =
               }
             ]
     in
-    el [ width fill, height (fill |> minimum 300) ] <|
+    el [ width fill, height fill ] <|
         Widget.tab Styles.tab
             { tabs =
                 { selected = Just 0
@@ -655,7 +747,7 @@ viewScenes scenes =
 
 viewScene : Int -> Scene -> Element Msg
 viewScene index scene =
-    text ("Scene " ++ String.fromInt index)
+    text ("Scene " ++ String.fromInt index ++ " - " ++ MaybeX.unwrap "" identity scene.summary)
 
 
 viewContentWithHeader : String -> Length -> Bool -> Element Msg -> Element Msg
@@ -668,10 +760,10 @@ viewContentWithHeader headerText viewWidth withPadding content =
             else
                 padding 0
     in
-    column [ width viewWidth, contentWithHeaderBorderColor, Element.Border.width 1 ]
+    column [ width viewWidth, height fill, contentWithHeaderBorderColor, Element.Border.width 1 ]
         [ el ([ centerX, width fill ] ++ textAndBackground contentWithHeaderColor) <|
             el [ centerX, paddingXY 8 4 ] (text headerText)
-        , el [ width fill, contentPadding ] content
+        , el [ width fill, height fill, contentPadding ] content
         ]
 
 
@@ -771,6 +863,19 @@ jumpToBottom id =
         |> Task.attempt (always NoOp)
 
 
+textWithEllipse : String -> Element msg
+textWithEllipse text =
+    Html.div
+        [ Html.Attributes.style "text-overflow" "ellipsis"
+        , Html.Attributes.style "white-space" "nowrap"
+        , Html.Attributes.style "overflow" "hidden"
+        , Html.Attributes.style "width" "100%"
+        , Html.Attributes.style "flex-basis" "auto"
+        ]
+        [ Html.text text ]
+        |> Element.html
+
+
 
 -- ol : List (Attribute msg) -> List ( String, Html msg ) -> Html msg
 -- ol =
@@ -781,14 +886,14 @@ testAdventure : Adventure
 testAdventure =
     { id = AdventureId 1
     , name = "New adventure"
-    , chaosFactor = ChaosFactor.fromInt 5
-    , scenes = []
-    , threadList = []
-    , characterList = []
-    , threads = []
-    , characters = []
+    , chaosFactor = ChaosFactor.fromInt 9
+    , scenes = [ { summary = Just "The hero meets the bad guy", notes = Nothing } ]
+    , threadList = [ 1, 2, 1, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1 ]
+    , characterList = [ 1, 2 ]
+    , threads = [ { id = 1, name = "Thread with a very long name bigger than the menght of the most lentghy whatever", notes = Nothing }, { id = 2, name = "Thread 2", notes = Nothing } ]
+    , characters = [ { id = 1, name = "Char 1", summary = Nothing, notes = Nothing }, { id = 2, name = "Char 2", summary = Nothing, notes = Nothing } ]
     , playerCharacters = []
-    , rollLog = []
+    , rollLog = [ RandomEventRollEntry { focus = ThreadEvent "positive" "Thread with a very long name that deos not fit", value = 1, timestamp = 1 } ]
     , notes = []
     , settings =
         { fateChartType = FateChart.Standard

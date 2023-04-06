@@ -41,7 +41,7 @@ type alias Adventure =
     , chaosFactor : ChaosFactor
     , scenes : List Scene
     , threadList : List Int
-    , characterList : List CharacterId
+    , characterList : List Int
     , threads : List Thread
     , characters : List Character
     , playerCharacters : List PlayerCharacter
@@ -63,7 +63,7 @@ adventureCodec =
         |> Serialize.field .chaosFactor ChaosFactor.codec
         |> Serialize.field .scenes (Serialize.list sceneCodec)
         |> Serialize.field .threadList (Serialize.list Serialize.int)
-        |> Serialize.field .characterList (Serialize.list characterIdCodec)
+        |> Serialize.field .characterList (Serialize.list Serialize.int)
         |> Serialize.field .threads (Serialize.list threadCodec)
         |> Serialize.field .characters (Serialize.list characterCodec)
         |> Serialize.field .playerCharacters (Serialize.list playerCharacterCodec)
@@ -190,7 +190,7 @@ rollSceneAdjustment =
 
 
 type alias Character =
-    { id : CharacterId
+    { id : Int
     , name : String
     , summary : Maybe String
     , notes : Maybe String
@@ -200,20 +200,11 @@ type alias Character =
 characterCodec : Serialize.Codec e Character
 characterCodec =
     Serialize.record Character
-        |> Serialize.field .id characterIdCodec
+        |> Serialize.field .id Serialize.int
         |> Serialize.field .name Serialize.string
         |> Serialize.field .summary (Serialize.maybe Serialize.string)
         |> Serialize.field .notes (Serialize.maybe Serialize.string)
         |> Serialize.finishRecord
-
-
-type CharacterId
-    = CharacterId Int
-
-
-characterIdCodec : Serialize.Codec e CharacterId
-characterIdCodec =
-    Serialize.int |> Serialize.map CharacterId (\(CharacterId id) -> id)
 
 
 
@@ -235,7 +226,7 @@ playerCharacterCodec =
 
 
 type alias Thread =
-    { id : ThreadId
+    { id : Int
     , name : String
     , notes : Maybe String
     }
@@ -244,19 +235,10 @@ type alias Thread =
 threadCodec : Serialize.Codec e Thread
 threadCodec =
     Serialize.record Thread
-        |> Serialize.field .id threadIdCodec
+        |> Serialize.field .id Serialize.int
         |> Serialize.field .name Serialize.string
         |> Serialize.field .notes (Serialize.maybe Serialize.string)
         |> Serialize.finishRecord
-
-
-type ThreadId
-    = ThreadId Int
-
-
-threadIdCodec : Serialize.Codec e ThreadId
-threadIdCodec =
-    Serialize.int |> Serialize.map ThreadId (\(ThreadId id) -> id)
 
 
 type alias AdventureNote =

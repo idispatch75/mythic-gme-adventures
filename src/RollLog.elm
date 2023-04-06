@@ -76,28 +76,28 @@ rollRandomEvent characters threads players =
                         RandomEvent.NewNpc
 
                     else if roll.value <= 40 then
-                        roll.character |> MaybeX.unwrap RandomEvent.CurrentContext (\x -> RandomEvent.NpcAction x.name)
+                        roll.character |> MaybeX.unwrap RandomEvent.CurrentContext (\x -> RandomEvent.NpcEvent "NPC Action" x.name)
 
                     else if roll.value <= 45 then
-                        roll.character |> MaybeX.unwrap RandomEvent.CurrentContext (\x -> RandomEvent.NpcNegative x.name)
+                        roll.character |> MaybeX.unwrap RandomEvent.CurrentContext (\x -> RandomEvent.NpcEvent "NPC negative" x.name)
 
                     else if roll.value <= 50 then
-                        roll.character |> MaybeX.unwrap RandomEvent.CurrentContext (\x -> RandomEvent.NpcPositive x.name)
+                        roll.character |> MaybeX.unwrap RandomEvent.CurrentContext (\x -> RandomEvent.NpcEvent "NPC Positive" x.name)
 
                     else if roll.value <= 55 then
-                        roll.thread |> MaybeX.unwrap RandomEvent.CurrentContext (\x -> RandomEvent.MoveTowardThread x.name)
+                        roll.thread |> MaybeX.unwrap RandomEvent.CurrentContext (\x -> RandomEvent.ThreadEvent "Move toward a Thread" x.name)
 
                     else if roll.value <= 65 then
-                        roll.thread |> MaybeX.unwrap RandomEvent.CurrentContext (\x -> RandomEvent.MoveAwayFromThread x.name)
+                        roll.thread |> MaybeX.unwrap RandomEvent.CurrentContext (\x -> RandomEvent.ThreadEvent "Move away from a Thread" x.name)
 
                     else if roll.value <= 70 then
-                        roll.thread |> MaybeX.unwrap RandomEvent.CurrentContext (\x -> RandomEvent.CloseThread x.name)
+                        roll.thread |> MaybeX.unwrap RandomEvent.CurrentContext (\x -> RandomEvent.ThreadEvent "Close a Thread" x.name)
 
                     else if roll.value <= 80 then
-                        RandomEvent.PcNegative (roll.player |> Maybe.map .name)
+                        RandomEvent.PcEvent "PC Positive" (roll.player |> Maybe.map .name)
 
                     else if roll.value <= 85 then
-                        RandomEvent.PcNegative (roll.player |> Maybe.map .name)
+                        RandomEvent.PcEvent "PC Negative" (roll.player |> Maybe.map .name)
 
                     else
                         RandomEvent.CurrentContext

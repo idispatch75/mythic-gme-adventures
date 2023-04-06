@@ -7,21 +7,16 @@ type RandomEventFocus
     = RemoteEvent
     | AmbiguousEvent
     | NewNpc
-    | NpcAction String
-    | NpcNegative String
-    | NpcPositive String
-    | MoveTowardThread String
-    | MoveAwayFromThread String
-    | CloseThread String
-    | PcNegative (Maybe String)
-    | PcPositive (Maybe String)
+    | NpcEvent String String
+    | ThreadEvent String String
+    | PcEvent String (Maybe String)
     | CurrentContext
 
 
 focusCodec : Serialize.Codec e RandomEventFocus
 focusCodec =
     Serialize.customType
-        (\remoteEventEncoder ambiguousEventEncoder newNpcEncoder npcActionEncoder npcNegativeActionEncoder npcPositiveActionEncoder moveTowardThreadEncoder moveAwayFromThreadEncoder closeThreadEncoder pcNegativeEncoder pcPositiveEncoder currentContextEncoder value ->
+        (\remoteEventEncoder ambiguousEventEncoder newNpcEncoder npcEventEncoder threadEventEncoder pcEventEncoder currentContextEncoder value ->
             case value of
                 RemoteEvent ->
                     remoteEventEncoder
@@ -32,29 +27,14 @@ focusCodec =
                 NewNpc ->
                     newNpcEncoder
 
-                NpcAction item ->
-                    npcActionEncoder item
+                NpcEvent name target ->
+                    npcEventEncoder name target
 
-                NpcNegative item ->
-                    npcNegativeActionEncoder item
+                ThreadEvent name target ->
+                    threadEventEncoder name target
 
-                NpcPositive item ->
-                    npcPositiveActionEncoder item
-
-                MoveTowardThread item ->
-                    moveTowardThreadEncoder item
-
-                MoveAwayFromThread item ->
-                    moveAwayFromThreadEncoder item
-
-                CloseThread item ->
-                    closeThreadEncoder item
-
-                PcNegative item ->
-                    pcNegativeEncoder item
-
-                PcPositive item ->
-                    pcPositiveEncoder item
+                PcEvent name target ->
+                    pcEventEncoder name target
 
                 CurrentContext ->
                     currentContextEncoder
@@ -62,14 +42,9 @@ focusCodec =
         |> Serialize.variant0 RemoteEvent
         |> Serialize.variant0 AmbiguousEvent
         |> Serialize.variant0 NewNpc
-        |> Serialize.variant1 NpcAction Serialize.string
-        |> Serialize.variant1 NpcNegative Serialize.string
-        |> Serialize.variant1 NpcPositive Serialize.string
-        |> Serialize.variant1 MoveTowardThread Serialize.string
-        |> Serialize.variant1 MoveAwayFromThread Serialize.string
-        |> Serialize.variant1 CloseThread Serialize.string
-        |> Serialize.variant1 PcNegative (Serialize.maybe Serialize.string)
-        |> Serialize.variant1 PcPositive (Serialize.maybe Serialize.string)
+        |> Serialize.variant2 NpcEvent Serialize.string Serialize.string
+        |> Serialize.variant2 ThreadEvent Serialize.string Serialize.string
+        |> Serialize.variant2 PcEvent Serialize.string (Serialize.maybe Serialize.string)
         |> Serialize.variant0 CurrentContext
         |> Serialize.finishCustomType
 
@@ -86,29 +61,14 @@ focusToString focus =
         NewNpc ->
             "New NPC"
 
-        NpcAction _ ->
-            "NPC Action"
+        NpcEvent name _ ->
+            name
 
-        NpcNegative _ ->
-            "NPC Negative"
+        ThreadEvent name _ ->
+            name
 
-        NpcPositive _ ->
-            "NPC Positive"
-
-        MoveTowardThread _ ->
-            "Move toward a Thread"
-
-        MoveAwayFromThread _ ->
-            "Move away from a Thread"
-
-        CloseThread _ ->
-            "Close a Thread"
-
-        PcNegative _ ->
-            "PC Negative"
-
-        PcPositive _ ->
-            "PC Positive"
+        PcEvent name _ ->
+            name
 
         CurrentContext ->
             "Current Context"

@@ -22,3 +22,13 @@ randomToTask generator =
 maxHeightVh : Int -> Attribute msg
 maxHeightVh height =
     Element.htmlAttribute (Html.Attributes.style "max-height" (String.fromInt height ++ "vh"))
+
+
+heightVh : Int -> Attribute msg
+heightVh height =
+    Element.htmlAttribute (Html.Attributes.style "height" (String.fromInt height ++ "vh"))
+
+
+heightPercent : Int -> Attribute msg
+heightPercent height =
+    Element.htmlAttribute (Html.Attributes.style "height" (String.fromInt height ++ "%"))
