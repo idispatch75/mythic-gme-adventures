@@ -39,8 +39,10 @@ import RollLog
 import Styles
 import Task
 import TaskPort
+import UI.Badge
+import UI.RenderConfig
 import Url exposing (Url)
-import Utils exposing (heightPercent, heightVh, maxHeightVh)
+import Utils exposing (heightPercent, maxHeightVh)
 import Widget
 import Widget.Material
 import Widget.Material.Color as MaterialColor exposing (textAndBackground)
@@ -140,6 +142,7 @@ type Msg
     | CreateRollLogEntry RollLogEntry
     | IncreaseChaosFactor
     | DecreaseChaosFactor
+    | ToggleAdventureNameEdit
     | LoginToDropbox
     | DropboxAuthResponseReceived Dropbox.AuthorizeResult
     | NoOp
@@ -248,27 +251,36 @@ update msg orgModel =
                 model
 
         CreateRollLogEntry entry ->
-            handleAdventureMsg
+            handleAdventureUpdateMsg
                 (\adventure ->
-                    ( { model | adventure = Just (Adventure.addRollLogEntry entry adventure) }
+                    ( Adventure.addRollLogEntry entry adventure
                     , jumpToBottom rollLogId
                     )
                 )
                 model
 
         IncreaseChaosFactor ->
-            handleAdventureMsg
+            handleAdventureUpdateMsg
                 (\adventure ->
-                    ( { adventure | chaosFactor = ChaosFactor.offset 1 adventure.chaosFactor } |> asAdventureIn model
+                    ( { adventure | chaosFactor = ChaosFactor.offset 1 adventure.chaosFactor }
                     , Cmd.none
                     )
                 )
                 model
 
         DecreaseChaosFactor ->
-            handleAdventureMsg
+            handleAdventureUpdateMsg
                 (\adventure ->
-                    ( { adventure | chaosFactor = ChaosFactor.offset -1 adventure.chaosFactor } |> asAdventureIn model
+                    ( { adventure | chaosFactor = ChaosFactor.offset -1 adventure.chaosFactor }
+                    , Cmd.none
+                    )
+                )
+                model
+
+        ToggleAdventureNameEdit ->
+            handleAdventureUpdateMsg
+                (\adventure ->
+                    ( { adventure | chaosFactor = ChaosFactor.offset -1 adventure.chaosFactor }
                     , Cmd.none
                     )
                 )
@@ -308,6 +320,16 @@ update msg orgModel =
             ( model, Cmd.none )
 
 
+handleAdventureUpdateMsg : (Adventure -> ( Adventure, Cmd Msg )) -> Model -> ( Model, Cmd Msg )
+handleAdventureUpdateMsg handler model =
+    case model.adventure of
+        Just adventure ->
+            handler adventure |> Tuple.mapFirst (asAdventureIn model)
+
+        Nothing ->
+            ( model, Cmd.none )
+
+
 handleAdventureMsg : (Adventure -> ( Model, Cmd Msg )) -> Model -> ( Model, Cmd Msg )
 handleAdventureMsg handler model =
     case model.adventure of
@@ -340,6 +362,15 @@ handleLoadError model error =
 
 
 -- VIEW
+
+
+renderConfig : UI.RenderConfig.RenderConfig
+renderConfig =
+    UI.RenderConfig.init
+        { width = 1000
+        , height = 1000
+        }
+        UI.RenderConfig.localeEnglish
 
 
 view : Model -> Document Msg
@@ -716,28 +747,37 @@ viewAdventureContents adventure =
               }
             ]
     in
-    el [ width fill, height fill ] <|
-        Widget.tab Styles.tab
-            { tabs =
-                { selected = Just 0
-                , options = tabOptions
-                , onSelect =
-                    \index ->
-                        if index >= 0 && index <= List.length tabOptions then
-                            Just (AvdentureContentTabUpdated index)
-
-                        else
-                            Nothing
-                }
-            , content =
+    Widget.tab Styles.tab
+        { tabs =
+            { selected = Just 0
+            , options = tabOptions
+            , onSelect =
                 \index ->
-                    case index of
-                        Just 0 ->
-                            viewScenes adventure.scenes
+                    if index >= 0 && index <= List.length tabOptions then
+                        Just (AvdentureContentTabUpdated index)
 
-                        _ ->
-                            viewScenes adventure.scenes
+                    else
+                        Nothing
             }
+        , content =
+            \index ->
+                case index of
+                    Just 0 ->
+                        viewScenes adventure.scenes
+
+                    _ ->
+                        viewScenes adventure.scenes
+        }
+
+
+
+-- el [ width fill, height fill ] <|
+--     (UI.Tabs.tabList (\_ -> NoOp)
+--         identity
+--         [ "Scenes", "Threads" ]
+--         "Scenes"
+--         |> UI.Tabs.renderElement renderConfig
+--     )
 
 
 viewScenes : List Scene -> Element Msg
@@ -747,7 +787,12 @@ viewScenes scenes =
 
 viewScene : Int -> Scene -> Element Msg
 viewScene index scene =
-    text ("Scene " ++ String.fromInt index ++ " - " ++ MaybeX.unwrap "" identity scene.summary)
+    row [ width fill, spacing 4 ]
+        [ UI.Badge.grayLight (String.fromInt (index + 1))
+            |> UI.Badge.renderElement renderConfig
+            |> el []
+        , text (MaybeX.unwrap "" identity scene.summary)
+        ]
 
 
 viewContentWithHeader : String -> Length -> Bool -> Element Msg -> Element Msg
@@ -898,5 +943,6 @@ testAdventure =
     , settings =
         { fateChartType = FateChart.Standard
         }
+    , editMode = False
     , saveTimestamp = 0
     }
