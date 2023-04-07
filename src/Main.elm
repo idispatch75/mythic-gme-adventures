@@ -41,9 +41,11 @@ import Task
 import TaskPort
 import UI.Badge
 import UI.RenderConfig
+import UI.TextField as TextField
 import Url exposing (Url)
 import Utils exposing (heightPercent, maxHeightVh)
 import Widget
+import Widget.Customize
 import Widget.Material
 import Widget.Material.Color as MaterialColor exposing (textAndBackground)
 import Widget.Material.Typography exposing (body1)
@@ -77,6 +79,8 @@ type alias Model =
     , error : Maybe String
     , location : Url
     , selectedAdventureContentTab : Int
+    , adventureEditMode : Bool
+    , renderConfig : UI.RenderConfig.RenderConfig
     }
 
 
@@ -119,6 +123,13 @@ init flags location =
     , error = Nothing
     , location = location
     , selectedAdventureContentTab = 0
+    , adventureEditMode = False
+    , renderConfig =
+        UI.RenderConfig.init
+            { width = 1000
+            , height = 1000
+            }
+            UI.RenderConfig.localeEnglish
     }
 
 
@@ -142,7 +153,8 @@ type Msg
     | CreateRollLogEntry RollLogEntry
     | IncreaseChaosFactor
     | DecreaseChaosFactor
-    | ToggleAdventureNameEdit
+    | ToggleAdventureEditMode
+    | OnAdventureNameChanged String
     | LoginToDropbox
     | DropboxAuthResponseReceived Dropbox.AuthorizeResult
     | NoOp
@@ -191,6 +203,7 @@ update msg orgModel =
                     { model
                         | adventure = Just adventure
                         , adventureIndex = index
+                        , adventureEditMode = True
                     }
             in
             ( updatedModel
@@ -277,10 +290,15 @@ update msg orgModel =
                 )
                 model
 
-        ToggleAdventureNameEdit ->
+        ToggleAdventureEditMode ->
+            ( { model | adventureEditMode = not model.adventureEditMode }
+            , Cmd.none
+            )
+
+        OnAdventureNameChanged name ->
             handleAdventureUpdateMsg
                 (\adventure ->
-                    ( { adventure | chaosFactor = ChaosFactor.offset -1 adventure.chaosFactor }
+                    ( { adventure | name = name }
                     , Cmd.none
                     )
                 )
@@ -364,15 +382,6 @@ handleLoadError model error =
 -- VIEW
 
 
-renderConfig : UI.RenderConfig.RenderConfig
-renderConfig =
-    UI.RenderConfig.init
-        { width = 1000
-        , height = 1000
-        }
-        UI.RenderConfig.localeEnglish
-
-
 view : Model -> Document Msg
 view model =
     let
@@ -380,14 +389,20 @@ view model =
         mainView =
             case model.adventure of
                 Just adventure ->
-                    viewMain model.translations adventure
+                    viewMain model adventure
 
                 Nothing ->
                     viewHome model
     in
-    { title = "Mythic GME Adventures"
+    { title =
+        case model.adventure of
+            Just adventure ->
+                adventure.name ++ " - Mythic GME Adventures"
+
+            Nothing ->
+                "Mythic GME Adventures"
     , body =
-        [ layout [ Element.Background.color (rgb255 225 225 240), heightPercent 100 ] <|
+        [ layout [ Element.Background.color (rgb255 225 225 240), heightPercent 100, Element.htmlAttribute (Html.Attributes.style "line-height" "1.25") ] <|
             column
                 (body1
                     ++ [ width (fill |> maximum 1200)
@@ -409,21 +424,21 @@ viewAppBar =
     text "Mythic GME Adventures"
 
 
-viewMain : List Translations -> Adventure -> Element Msg
-viewMain translations adventure =
+viewMain : Model -> Adventure -> Element Msg
+viewMain model adventure =
     row
         [ width fill
         , height fill
         , spacing 4
         ]
-        [ el [ width (px 250), centerX, height fill ] (viewRollTables translations)
+        [ el [ width (px 250), centerX, height fill ] (viewRollTables model.translations)
         , el
             [ width (px 250)
             , centerX
             , height fill
             ]
-            (viewRollLog translations adventure)
-        , el [ width fill, centerX, alignTop ] (viewAdventure adventure)
+            (viewRollLog model.translations adventure)
+        , el [ width fill, centerX, alignTop ] (viewAdventure model adventure)
         ]
 
 
@@ -437,7 +452,7 @@ viewRollTables translations =
 
 viewFateChart : Element Msg
 viewFateChart =
-    column [ width fill, Font.size 11, Styles.fateChartBackgroundColor ]
+    column [ width fill, Font.size 11, Styles.fateChartColors.background ]
         [ row [ width fill ]
             [ fateChartButton FateChart.Certain
             , fateChartButton FateChart.NearlyCertain
@@ -492,7 +507,7 @@ viewMeaningTables translations tables =
         [ width fill
         , height fill
         , Font.size 14
-        , Styles.meaningTableBackgroundColor
+        , Styles.meaningTableColors.background
         ]
         (tables |> List.map (\x -> viewMeaningTable translations x))
 
@@ -515,9 +530,9 @@ viewRollLog translations adventure =
         [ Element.htmlAttribute (id rollLogId)
         , width fill
         , height fill
-        , spacing 4
         , scrollbarY
         , maxHeightVh 95
+        , Element.Border.width 1
         ]
         (adventure.rollLog |> List.map (\entry -> viewRollLogEntry translations entry))
 
@@ -535,9 +550,9 @@ viewRollLogEntry translations entry =
             viewRandomEventRoll roll
 
 
-viewRollHeader : String -> Element Msg
-viewRollHeader header =
-    el [ width fill ] (text header)
+viewRollHeader : String -> Styles.RollColors decorative Msg -> Element Msg
+viewRollHeader header colors =
+    el ([ width fill, padding 4, Font.variant Font.smallCaps ] ++ colors.header) (text header)
 
 
 viewFateChartRoll : FateChartRoll -> Element Msg
@@ -560,11 +575,15 @@ viewFateChartRoll roll =
                 _ ->
                     False
     in
-    column [ width fill, Styles.fateChartBackgroundColor ]
-        [ viewRollHeader (FateChart.probabilityToString roll.probability)
+    column [ width fill, Styles.fateChartColors.background ]
+        [ viewRollHeader (FateChart.probabilityToString roll.probability) Styles.fateChartColors
         , viewRollResult roll.value (FateChart.outcomeToString roll.outcome)
         , if hasEvent then
-            simpleButton "Roll random event" (Just RollRandomEvent)
+            Widget.textButton (Styles.textButton |> Widget.Customize.elementButton [ Font.center ])
+                { text = "Roll random event"
+                , onPress = Just RollRandomEvent
+                }
+                |> el [ centerX ]
 
           else
             Element.none
@@ -576,7 +595,7 @@ viewMeaningTableRoll translations roll =
     let
         header : Element Msg
         header =
-            viewRollHeader (tf translations ("meaning_tables." ++ roll.table ++ ".name"))
+            viewRollHeader (tf translations ("meaning_tables." ++ roll.table ++ ".name")) Styles.meaningTableColors
 
         results : List (Element Msg)
         results =
@@ -590,7 +609,7 @@ viewMeaningTableRoll translations roll =
                         viewRollResult result.value (tf translations translationKey)
                     )
     in
-    column [ width fill, Styles.meaningTableBackgroundColor ]
+    column [ width fill, Styles.meaningTableColors.background ]
         (header :: results)
 
 
@@ -612,13 +631,14 @@ viewRandomEventRoll roll =
                 _ ->
                     Nothing
     in
-    column [ width fill, Styles.randomEventBackgroundColor ]
-        [ viewRollHeader "Random Event"
+    column [ width fill, Styles.randomEventColors.background ]
+        [ viewRollHeader "Random Event" Styles.randomEventColors
         , viewRollResult roll.value (RandomEvent.focusToString roll.focus)
         , case focusTarget of
             Just target ->
-                textWithEllipse target
+                el [ width fill, padding 4, Font.italic ] (textWithEllipse target)
 
+            --Html.Attributes.style "padding" "4px"
             Nothing ->
                 Element.none
         ]
@@ -626,31 +646,59 @@ viewRandomEventRoll roll =
 
 viewRollResult : Int -> String -> Element Msg
 viewRollResult value result =
-    row [ width fill ]
+    row [ width fill, padding 4 ]
         [ el [ width fill ] (text result)
         , el [ alignRight, Font.size 12, centerY ] (text (String.fromInt value))
         ]
 
 
-viewAdventure : Adventure -> Element Msg
-viewAdventure adventure =
+viewAdventure : Model -> Adventure -> Element Msg
+viewAdventure model adventure =
     column [ width fill, spacing 4, height fill ]
-        [ viewAdventureHeader adventure
+        [ viewAdventureHeader model adventure
         , viewAdventureLists adventure
-        , viewAdventureContents adventure
+        , viewAdventureContents model adventure
         ]
 
 
-viewAdventureHeader : Adventure -> Element Msg
-viewAdventureHeader adventure =
+viewAdventureHeader : Model -> Adventure -> Element Msg
+viewAdventureHeader model adventure =
+    let
+        adventureNameElement =
+            if model.adventureEditMode then
+                let
+                    input =
+                        TextField.singlelineText OnAdventureNameChanged "Adventure name" adventure.name
+                            |> TextField.withPlaceholder "Adventure name"
+                            |> TextField.withWidth TextField.widthFull
+                            |> (if String.length adventure.name == 0 then
+                                    TextField.withError "This field is required"
+
+                                else
+                                    identity
+                               )
+                            |> TextField.renderElement model.renderConfig
+                in
+                el [ centerX, padding 4, width fill ] input
+
+            else
+                paragraph [ centerX, Font.size 24, width fill, Font.center, padding 4 ] [ text adventure.name ]
+    in
     row [ width fill ]
         [ viewChaosFactor adventure.chaosFactor
-        , el [ centerX, Font.size 24 ] (text adventure.name)
+        , adventureNameElement
         , el [ alignRight ] <|
             Widget.iconButton Styles.smallIconButton
                 { text = "Toggle edit"
-                , icon = MaterialIcons.lock |> Styles.iconMapper
-                , onPress = Nothing
+                , icon =
+                    (if model.adventureEditMode then
+                        MaterialIcons.lock_open
+
+                     else
+                        MaterialIcons.lock
+                    )
+                        |> Styles.iconMapper
+                , onPress = Just ToggleAdventureEditMode
                 }
         , Widget.iconButton Styles.smallIconButton
             { text = "Delete"
@@ -725,8 +773,8 @@ viewListCharacter =
     text "Character"
 
 
-viewAdventureContents : Adventure -> Element Msg
-viewAdventureContents adventure =
+viewAdventureContents : Model -> Adventure -> Element Msg
+viewAdventureContents model adventure =
     let
         tabOptions : List { text : String, icon : b -> Element msg }
         tabOptions =
@@ -763,10 +811,10 @@ viewAdventureContents adventure =
             \index ->
                 case index of
                     Just 0 ->
-                        viewScenes adventure.scenes
+                        viewScenes model adventure.scenes
 
                     _ ->
-                        viewScenes adventure.scenes
+                        viewScenes model adventure.scenes
         }
 
 
@@ -780,16 +828,16 @@ viewAdventureContents adventure =
 --     )
 
 
-viewScenes : List Scene -> Element Msg
-viewScenes scenes =
-    column [] (scenes |> List.indexedMap viewScene)
+viewScenes : Model -> List Scene -> Element Msg
+viewScenes model scenes =
+    column [] (scenes |> List.indexedMap (\x -> viewScene model x))
 
 
-viewScene : Int -> Scene -> Element Msg
-viewScene index scene =
+viewScene : Model -> Int -> Scene -> Element Msg
+viewScene model index scene =
     row [ width fill, spacing 4 ]
         [ UI.Badge.grayLight (String.fromInt (index + 1))
-            |> UI.Badge.renderElement renderConfig
+            |> UI.Badge.renderElement model.renderConfig
             |> el []
         , text (MaybeX.unwrap "" identity scene.summary)
         ]
@@ -807,7 +855,7 @@ viewContentWithHeader headerText viewWidth withPadding content =
     in
     column [ width viewWidth, height fill, contentWithHeaderBorderColor, Element.Border.width 1 ]
         [ el ([ centerX, width fill ] ++ textAndBackground contentWithHeaderColor) <|
-            el [ centerX, paddingXY 8 4 ] (text headerText)
+            el [ centerX, paddingXY 8 4, Font.variant Font.smallCaps, Font.size 18 ] (text headerText)
         , el [ width fill, height fill, contentPadding ] content
         ]
 
@@ -914,7 +962,9 @@ textWithEllipse text =
         [ Html.Attributes.style "text-overflow" "ellipsis"
         , Html.Attributes.style "white-space" "nowrap"
         , Html.Attributes.style "overflow" "hidden"
+        , Html.Attributes.style "line-height" "1.1"
         , Html.Attributes.style "width" "100%"
+        , Html.Attributes.style "flex-basis" "auto"
         , Html.Attributes.style "flex-basis" "auto"
         ]
         [ Html.text text ]
@@ -930,7 +980,7 @@ textWithEllipse text =
 testAdventure : Adventure
 testAdventure =
     { id = AdventureId 1
-    , name = "New adventure"
+    , name = "New adventure with a very long name that is very long"
     , chaosFactor = ChaosFactor.fromInt 9
     , scenes = [ { summary = Just "The hero meets the bad guy", notes = Nothing } ]
     , threadList = [ 1, 2, 1, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1 ]
@@ -943,6 +993,5 @@ testAdventure =
     , settings =
         { fateChartType = FateChart.Standard
         }
-    , editMode = False
     , saveTimestamp = 0
     }

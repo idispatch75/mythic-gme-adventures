@@ -1,7 +1,8 @@
 module Styles exposing (..)
 
-import Color exposing (Color)
-import Element exposing (height, px, rgb255, width)
+import Color
+import Dropbox exposing (Msg)
+import Element exposing (height, px, width)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
@@ -11,7 +12,7 @@ import Widget exposing (..)
 import Widget.Customize
 import Widget.Icon
 import Widget.Material as Material exposing (Palette)
-import Widget.Material.Color as MaterialColor
+import Widget.Material.Color as MaterialColor exposing (textAndBackground)
 import Widget.Material.Typography as Typography
 
 
@@ -23,21 +24,25 @@ appPalette =
 containedButton : ButtonStyle msg
 containedButton =
     Material.containedButton appPalette
+        |> Widget.Customize.elementButton [ Element.focused [] ]
 
 
 textButton : ButtonStyle msg
 textButton =
     Material.textButton appPalette
+        |> Widget.Customize.elementButton [ Element.focused [] ]
 
 
 outlinedButton : ButtonStyle msg
 outlinedButton =
     Material.outlinedButton appPalette
+        |> Widget.Customize.elementButton [ Element.focused [] ]
 
 
 iconButton : ButtonStyle msg
 iconButton =
     Material.iconButton appPalette
+        |> Widget.Customize.elementButton [ Element.focused [] ]
 
 
 smallIconButton : ButtonStyle msg
@@ -50,6 +55,11 @@ smallIconButton =
             ]
 
 
+textInput : TextInputStyle msg
+textInput =
+    Material.textInput appPalette
+
+
 iconMapper : Material.Icons.Types.Icon msg -> Widget.Icon.Icon msg
 iconMapper icon =
     Widget.Icon.elmMaterialIcons Material.Icons.Types.Color icon
@@ -60,19 +70,31 @@ tab =
     Material.tab appPalette
 
 
-fateChartBackgroundColor : Element.Attr decorative msg
-fateChartBackgroundColor =
-    Background.color (rgb255 187 222 251)
+type alias RollColors decorative msg =
+    { background : Element.Attr decorative msg
+    , header : List (Element.Attr () msg)
+    }
 
 
-meaningTableBackgroundColor : Element.Attr decorative msg
-meaningTableBackgroundColor =
-    Background.color (rgb255 232 245 233)
+fateChartColors : RollColors decorative msg
+fateChartColors =
+    { background = Background.color (Element.rgb255 187 222 251)
+    , header = textAndBackground (Color.rgb255 13 71 161)
+    }
 
 
-randomEventBackgroundColor : Element.Attr decorative msg
-randomEventBackgroundColor =
-    Background.color (rgb255 251 233 231)
+meaningTableColors : RollColors decorative msg
+meaningTableColors =
+    { background = Background.color (Element.rgb255 232 245 233)
+    , header = textAndBackground (Color.rgb255 27 94 32)
+    }
+
+
+randomEventColors : RollColors decorative msg
+randomEventColors =
+    { background = Background.color (Element.rgb255 251 233 231)
+    , header = textAndBackground (Color.rgb255 191 54 12)
+    }
 
 
 baseButton : Palette -> ButtonStyle msg
@@ -115,7 +137,7 @@ baseButton palette =
     }
 
 
-gray : Palette -> Color
+gray : Palette -> Color.Color
 gray palette =
     palette.surface
         |> MaterialColor.withShade palette.on.surface 0.5

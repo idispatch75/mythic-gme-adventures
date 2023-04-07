@@ -48,7 +48,6 @@ type alias Adventure =
     , rollLog : List RollLogEntry
     , notes : List AdventureNote
     , settings : AdventureSettings
-    , editMode : Bool
     , saveTimestamp : Int
 
     -- TODO thread progress track
@@ -71,7 +70,6 @@ adventureCodec =
         |> Serialize.field .rollLog (Serialize.list rollLogEntryCodec)
         |> Serialize.field .notes (Serialize.list adventureNoteCodec)
         |> Serialize.field .settings adventureSettingsCodec
-        |> Serialize.field .editMode Serialize.bool
         |> Serialize.field .saveTimestamp Serialize.int
         |> Serialize.finishRecord
 
@@ -109,7 +107,6 @@ createAdventure =
                 , settings =
                     { fateChartType = FateChart.Standard
                     }
-                , editMode = True
                 , saveTimestamp = 0
                 }
             )
