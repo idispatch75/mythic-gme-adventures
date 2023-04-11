@@ -498,6 +498,16 @@ meaningTables =
     [ "actions"
     , "descriptions"
     , "character_actions_combat"
+    , "character_actions_general"
+    , "character_appearance"
+    , "character_background"
+    , "character_descriptors"
+    , "character_identity"
+    , "character_motivations"
+    , "character_personality"
+    , "character_skills"
+    , "character_traits_flaws"
+    , "city_descriptors"
     ]
 
 
@@ -671,6 +681,7 @@ viewAdventureHeader model adventure =
                         TextField.singlelineText OnAdventureNameChanged "Adventure name" adventure.name
                             |> TextField.withPlaceholder "Adventure name"
                             |> TextField.withWidth TextField.widthFull
+                            |> TextField.withOnEnterPressed ToggleAdventureEditMode
                             |> (if String.length adventure.name == 0 then
                                     TextField.withError "This field is required"
 

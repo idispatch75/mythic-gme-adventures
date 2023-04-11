@@ -1,0 +1,30 @@
+import actions from './actions.json';
+import descriptions from './descriptions.json';
+import character_actions_combat from './character_actions_combat.json';
+import character_actions_general from './character_actions_general.json';
+import character_appearance from './character_appearance.json';
+import character_background from './character_background.json';
+import character_descriptors from './character_descriptors.json';
+import character_identity from './character_identity.json';
+import character_motivations from './character_motivations.json';
+import character_personality from './character_personality.json';
+import character_skills from './character_skills.json';
+import character_traits_flaws from './character_traits_flaws.json';
+import city_descriptors from './city_descriptors.json';
+
+meaning_tables = {};
+Object.assign(meaning_tables, actions);
+Object.assign(meaning_tables, descriptions);
+Object.assign(meaning_tables, character_actions_combat);
+Object.assign(meaning_tables, character_actions_general);
+Object.assign(meaning_tables, character_appearance);
+Object.assign(meaning_tables, character_background);
+Object.assign(meaning_tables, character_descriptors);
+Object.assign(meaning_tables, character_identity);
+Object.assign(meaning_tables, character_motivations);
+Object.assign(meaning_tables, character_personality);
+Object.assign(meaning_tables, character_skills);
+Object.assign(meaning_tables, character_traits_flaws);
+Object.assign(meaning_tables, city_descriptors);
+
+export default meaning_tables;
