@@ -8,11 +8,12 @@
     "postinstall": "elm-tooling install"
   },
   "devDependencies": {
-    "@parcel/transformer-elm": "^2.8.3",
-    "elm-review": "^2.9.2",
+    "@parcel/transformer-elm": "^2.9.3",
+    "elm-review": "^2.10.3",
     "elm-test": "^0.19.1-revision12",
-    "elm-tooling": "^1.13.1",
-    "parcel": "^2.8.3"
+    "elm-tooling": "^1.15.0",
+    "elm-watch": "^1.2.0-beta.3",
+    "parcel": "^2.9.3"
   },
   "dependencies": {
     "elm-localstorage": "^1.0.1"

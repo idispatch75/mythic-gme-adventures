@@ -267,7 +267,8 @@ update msg orgModel =
             handleAdventureUpdateMsg
                 (\adventure ->
                     ( Adventure.addRollLogEntry entry adventure
-                    , jumpToBottom rollLogId
+                    , Cmd.none
+                      -- jumpToBottom rollLogId
                     )
                 )
                 model

@@ -349,7 +349,7 @@ rollLogEntryCodec =
 
 addRollLogEntry : RollLogEntry -> Adventure -> Adventure
 addRollLogEntry entry adventure =
-    { adventure | rollLog = List.append adventure.rollLog (List.singleton entry) |> List.take 100 }
+    { adventure | rollLog = List.append (List.singleton entry) adventure.rollLog |> List.take 100 }
 
 
 type alias AdventureSettings =
