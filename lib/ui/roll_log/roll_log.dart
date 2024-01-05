@@ -178,8 +178,6 @@ class GenericRoll extends RollEntry {
 }
 
 class RollLogService extends GetxService with SavableMixin {
-  static const maxRollCount = 100;
-
   final rollLog = <RollEntry>[].obs;
 
   late Stream<List<RollLogUpdate>> rollUpdates;
@@ -267,7 +265,7 @@ class RollLogService extends GetxService with SavableMixin {
 
   void _addRollLogEntry(RollEntry entry) {
     RollEntry? removedEntry;
-    if (rollLog.length >= maxRollCount) {
+    if (rollLog.length >= 100) {
       // make the update in one go to avoid unnecessary refreshes
       // and race conditions on the number of items when displaying the list
       rollLog.update((log) {

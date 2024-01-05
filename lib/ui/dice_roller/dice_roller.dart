@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
-import 'package:mythic_gme_adventures/helpers/rx_list_extensions.dart';
+import 'package:rxdart/rxdart.dart' as rx;
 
+import '../../helpers/rx_list_extensions.dart';
 import '../../helpers/utils.dart';
 import '../../persisters/persister.dart';
 
@@ -55,16 +56,28 @@ class DiceRoll {
 }
 
 class DiceRollerService extends GetxService with SavableMixin {
-  static const maxRolls = 4;
-
   final Rx<DiceRollerSettings> settings = const DiceRollerSettings(
     diceCount: 1,
     faces: 6,
     modifier: 0,
   ).obs;
+
   final RxList<DiceRoll> rollLog = <DiceRoll>[].obs;
 
-  DiceRollerService();
+  late Stream<List<DiceRollerLogUpdate>> rollUpdates;
+  final _rollUpdates = rx.PublishSubject<DiceRollerLogUpdate>();
+
+  DiceRollerService() {
+    _init();
+  }
+
+  void _init() {
+    const dummyRoll = DiceRoll(faces: 1, modifier: 0, dieRolls: []);
+
+    rollUpdates = _rollUpdates.buffer(_rollUpdates
+        .startWith(DiceRollerLogUpdate(newRoll: dummyRoll, removedRoll: null))
+        .debounceTime(const Duration(milliseconds: 200)));
+  }
 
   void incrementDiceCount() {
     setDiceCount(settings().diceCount + 1);
@@ -116,21 +129,33 @@ class DiceRollerService extends GetxService with SavableMixin {
     requestSave();
   }
 
-  DiceRoll? roll() {
-    final dieRolls =
-        List.generate(settings().diceCount, (_) => rollDie(settings().faces));
+  void roll() {
+    _roll(settings());
+  }
 
-    return _addRoll(DiceRoll(
-      faces: settings().faces,
-      modifier: settings().modifier,
+  void rollExisting(DiceRoll roll) {
+    _roll(DiceRollerSettings(
+      diceCount: roll.dieRolls.length,
+      faces: roll.faces,
+      modifier: roll.modifier,
+    ));
+  }
+
+  void _roll(DiceRollerSettings settings) {
+    final dieRolls =
+        List.generate(settings.diceCount, (_) => rollDie(settings.faces));
+
+    _addRoll(DiceRoll(
+      faces: settings.faces,
+      modifier: settings.modifier,
       dieRolls: dieRolls,
     ));
   }
 
-  DiceRoll? _addRoll(DiceRoll roll) {
+  void _addRoll(DiceRoll roll) {
     DiceRoll? removedRoll;
 
-    if (rollLog.length >= maxRolls) {
+    if (rollLog.length >= 4) {
       // make the update in one go to avoid unnecessary refreshes
       // and race conditions on the number of items when displaying the list
       rollLog.update((log) {
@@ -141,9 +166,12 @@ class DiceRollerService extends GetxService with SavableMixin {
       rollLog.add(roll);
     }
 
-    requestSave();
+    _rollUpdates.add(DiceRollerLogUpdate(
+      newRoll: roll,
+      removedRoll: removedRoll,
+    ));
 
-    return removedRoll;
+    requestSave();
   }
 
   Map<String, dynamic> toJson() => {
@@ -163,5 +191,17 @@ class DiceRollerService extends GetxService with SavableMixin {
 
       settings.value = DiceRollerSettings.fromJson(diceRoller['settings']);
     }
+
+    _init();
   }
+}
+
+class DiceRollerLogUpdate {
+  final DiceRoll newRoll;
+  final DiceRoll? removedRoll;
+
+  DiceRollerLogUpdate({
+    required this.newRoll,
+    required this.removedRoll,
+  });
 }

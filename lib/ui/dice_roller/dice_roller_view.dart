@@ -1,19 +1,49 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
 
 import '../roll_log/roll_log_view.dart';
 import '../styles.dart';
 import 'dice_roller.dart';
 
-class DiceRollerView extends GetView<DiceRollerService> {
+class DiceRollerView extends HookWidget {
   final _animatedLisKey = GlobalKey<AnimatedListState>();
 
   DiceRollerView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<DiceRollerService>();
     final rollLog = controller.rollLog;
+    final rollUpdates = controller.rollUpdates;
+
+    useEffect(() {
+      final subscription = rollUpdates.listen((updates) async {
+        // animate new rolls
+        _animatedLisKey.currentState?.insertAllItems(0, updates.length);
+
+        // animate removed rolls
+        final removedRolls = updates
+            .where((e) => e.removedRoll != null)
+            .map((e) => e.removedRoll)
+            .toList();
+        for (var i = 0; i < removedRolls.length; i++) {
+          _animatedLisKey.currentState?.removeItem(
+            rollLog.length - i,
+            (_, animation) => FadeTransition(
+              opacity: CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeIn,
+              ),
+              child: _DiceRollView(removedRolls[i]!),
+            ),
+          );
+        }
+      });
+
+      return subscription.cancel;
+    }, [rollUpdates]);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -24,10 +54,6 @@ class DiceRollerView extends GetView<DiceRollerService> {
             key: _animatedLisKey,
             initialItemCount: rollLog.length,
             itemBuilder: (_, index, animation) {
-              if (index >= rollLog.length) {
-                return Placeholder();
-              }
-
               final roll = rollLog[rollLog.length - index - 1];
 
               return SizeTransition(
@@ -43,7 +69,7 @@ class DiceRollerView extends GetView<DiceRollerService> {
 
         // roller
         Obx(
-          () => _RollerView(controller.settings(), _animatedLisKey),
+          () => _RollerView(controller.settings()),
         ),
       ],
     );
@@ -52,9 +78,8 @@ class DiceRollerView extends GetView<DiceRollerService> {
 
 class _RollerView extends GetView<DiceRollerService> {
   final DiceRollerSettings _settings;
-  final GlobalKey<AnimatedListState> _animatedLisKey;
 
-  const _RollerView(this._settings, this._animatedLisKey);
+  const _RollerView(this._settings);
 
   @override
   Widget build(BuildContext context) {
@@ -118,24 +143,7 @@ class _RollerView extends GetView<DiceRollerService> {
 
             // roll
             IconButton.filled(
-              onPressed: () {
-                final removedRoll = controller.roll();
-
-                _animatedLisKey.currentState?.insertItem(0);
-
-                if (removedRoll != null) {
-                  _animatedLisKey.currentState?.removeItem(
-                    controller.rollLog.length,
-                    (_, animation) => FadeTransition(
-                      opacity: CurvedAnimation(
-                        parent: animation,
-                        curve: Curves.easeIn,
-                      ),
-                      child: _DiceRollView(removedRoll),
-                    ),
-                  );
-                }
-              },
+              onPressed: controller.roll,
               icon: AppStyles.rollIcon,
               tooltip: 'Roll',
             ),
@@ -177,7 +185,7 @@ class _DiceRollView extends StatelessWidget {
   }
 }
 
-class _DiceRollResult extends StatelessWidget {
+class _DiceRollResult extends GetView<DiceRollerService> {
   final DiceRoll _diceRoll;
 
   const _DiceRollResult(this._diceRoll);
@@ -219,7 +227,7 @@ class _DiceRollResult extends StatelessWidget {
 
             // reroll
             IconButton.outlined(
-              onPressed: () => {},
+              onPressed: () => controller.rollExisting(_diceRoll),
               icon: AppStyles.rollIcon,
               tooltip: 'Reroll',
             ),
