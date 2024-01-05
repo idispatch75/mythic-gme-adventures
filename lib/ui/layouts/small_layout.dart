@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../chaos_factor/chaos_factor_view.dart';
 import '../characters/characters_list.dart';
 import '../characters/characters_view.dart';
+import '../dice_roller/dice_roller_view.dart';
 import '../fate_chart/fate_chart.dart';
 import '../fate_chart/fate_chart_view.dart';
 import '../meaning_tables/meaning_tables_ctl.dart';
@@ -35,22 +36,7 @@ class SmallLayout extends HookWidget {
             layout.navigationTabIndex.value = index;
           },
           selectedIndex: layout.navigationTabIndex(),
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.remove_red_eye_outlined),
-              selectedIcon: Icon(Icons.remove_red_eye_rounded),
-              label: 'Oracles',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.video_camera_back_outlined),
-              selectedIcon: Icon(Icons.video_camera_back_rounded),
-              label: 'Scenes',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.more_horiz_outlined),
-              label: 'More',
-            )
-          ],
+          destinations: bottomNavigationDestinations,
         ),
         body: [
           const _SmallLayoutOracles(),
@@ -73,7 +59,8 @@ class _SmallLayoutOracles extends HookWidget {
       tabIndex: controller.oraclesTabIndex,
       tabs: const [
         Tab(text: 'Tables'),
-        Tab(text: 'Roll log'),
+        Tab(text: 'Roll Log'),
+        Tab(text: 'Dice Roller'),
       ],
       children: [
         // tables
@@ -81,6 +68,9 @@ class _SmallLayoutOracles extends HookWidget {
 
         // log
         RollLogView(),
+
+        // dice roller
+        DiceRollerView(),
       ],
     );
   }
@@ -190,14 +180,14 @@ class SmallLayoutOther extends HookWidget {
     return LayoutTabBar(
       tabIndex: controller.otherTabIndex,
       tabs: const [
-        Tab(text: 'Characters'),
         Tab(text: 'Threads'),
+        Tab(text: 'Characters'),
         Tab(text: 'Players'),
         Tab(text: 'Notes'),
       ],
       children: [
-        CharactersView(showAddToListNotification: true),
         ThreadsView(showAddToListNotification: true),
+        CharactersView(showAddToListNotification: true),
         const PlayerCharactersView(),
         const NotesView(),
       ],

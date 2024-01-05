@@ -29,22 +29,7 @@ class MediumLayout extends HookWidget {
             layout.navigationTabIndex.value = index;
           },
           selectedIndex: layout.navigationTabIndex(),
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.remove_red_eye_outlined),
-              selectedIcon: Icon(Icons.remove_red_eye_rounded),
-              label: 'Oracles',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.video_camera_back_outlined),
-              selectedIcon: Icon(Icons.video_camera_back_rounded),
-              label: 'Scenes',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.more_horiz_outlined),
-              label: 'More',
-            )
-          ],
+          destinations: bottomNavigationDestinations,
         ),
         body: [
           const _MediumLayoutOracles(),

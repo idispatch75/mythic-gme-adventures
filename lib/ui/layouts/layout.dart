@@ -120,3 +120,23 @@ abstract class Layout {
   static const horizontalSpacer = SizedBox(height: 4);
   static get borderSide => BorderSide(color: AppStyles.headerColor, width: 2);
 }
+
+const bottomNavigationDestinations = [
+  NavigationDestination(
+    icon: Icon(Icons.remove_red_eye_outlined),
+    selectedIcon: Icon(Icons.remove_red_eye_rounded),
+    label: 'Oracles',
+    tooltip: '',
+  ),
+  NavigationDestination(
+    icon: Icon(Icons.video_camera_back_outlined),
+    selectedIcon: Icon(Icons.video_camera_back_rounded),
+    label: 'Scenes',
+    tooltip: '',
+  ),
+  NavigationDestination(
+    icon: Icon(Icons.more_horiz_outlined),
+    label: 'More',
+    tooltip: '',
+  )
+];
