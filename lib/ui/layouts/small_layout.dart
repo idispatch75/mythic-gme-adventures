@@ -31,7 +31,6 @@ class SmallLayout extends HookWidget {
         appBar: const AdventureAppBar(),
         bottomNavigationBar: NavigationBar(
           height: 64,
-          labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
           onDestinationSelected: (int index) {
             layout.navigationTabIndex.value = index;
           },
