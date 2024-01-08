@@ -8,11 +8,12 @@ Features:
 - Threads and Characters lists
 - Thread progress track and Discovery questions
 - Scenes with Adjustments
+- Basic dice roller
 - Save on Google Drive: you can share your adventures between your devices
 - Works offline
 - Export your adventure to a text file: you can format it properly in your text editor of choice.
 
-Available on Windows and Android (COMING SOON, hopefully during December 2023).
+Available on [Windows](https://github.com/idispatch75/mythic-gme-adventures/releases) and [Android](https://play.google.com/store/apps/details?id=idispatch.mythic_gme_adventures).
 
 See the [Home page](https://idispatch75.github.io/mythic-gme-adventures/) for more details.
 
