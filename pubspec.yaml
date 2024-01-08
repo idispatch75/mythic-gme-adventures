@@ -1,7 +1,7 @@
 name: mythic_gme_adventures
 description: Mythic GME Adventures
 publish_to: 'none'
-version: 1.0.0+4
+version: 1.1.0+5
 
 environment:
   sdk: '>=3.1.1 <4.0.0'
