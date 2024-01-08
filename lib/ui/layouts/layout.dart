@@ -14,7 +14,7 @@ TextDirection dialogButtonDirection =
 
 enum DeviceType { phone, tablet, desktop }
 
-double kPhoneBreakPoint = 550.0;
+const kPhoneBreakPoint = 550.0;
 
 class LayoutController extends GetxController {
   final navigationTabIndex = 0.obs;
@@ -67,7 +67,7 @@ class LayoutTabBar extends HookWidget {
 
     final tabController = useTabController(
       initialLength: tabs.length,
-      initialIndex: tabIndex(),
+      initialIndex: min(tabIndex(), children.length - 1),
     );
 
     return Column(

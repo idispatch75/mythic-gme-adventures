@@ -301,6 +301,8 @@ class _Result extends StatelessWidget {
   }
 }
 
+/// Sets up the roll indicator as a bottom sheet.
+/// Must be called inside a HookWidget.
 void setupRollIndicator(BuildContext context) {
   useEffect(() {
     final rollLog = Get.find<RollLogService>();

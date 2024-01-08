@@ -20,29 +20,27 @@ import '../threads/threads_view.dart';
 import '../widgets/header.dart';
 import 'layout.dart';
 
-class SmallLayout extends HookWidget {
+class SmallLayout extends GetView<LayoutController> {
   const SmallLayout({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final layout = Get.find<LayoutController>();
-
     return Obx(
       () => Scaffold(
         appBar: const AdventureAppBar(),
         bottomNavigationBar: NavigationBar(
           height: 64,
           onDestinationSelected: (int index) {
-            layout.navigationTabIndex.value = index;
+            controller.navigationTabIndex.value = index;
           },
-          selectedIndex: layout.navigationTabIndex(),
+          selectedIndex: controller.navigationTabIndex(),
           destinations: bottomNavigationDestinations,
         ),
         body: [
           const _SmallLayoutOracles(),
           const SmallLayoutScenes(),
           const SmallLayoutOther(),
-        ][layout.navigationTabIndex()],
+        ][controller.navigationTabIndex()],
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 import '../chaos_factor/chaos_factor_view.dart';
 import '../characters/characters_list.dart';
+import '../dice_roller/dice_roller_view.dart';
 import '../fate_chart/fate_chart_view.dart';
 import '../meaning_tables/meaning_tables_view.dart';
 import '../roll_log/roll_log_view.dart';
@@ -14,21 +15,19 @@ import '../widgets/header.dart';
 import 'layout.dart';
 import 'small_layout.dart';
 
-class MediumLayout extends HookWidget {
+class MediumLayout extends GetView<LayoutController> {
   const MediumLayout({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final layout = Get.find<LayoutController>();
-
     return Obx(
       () => Scaffold(
         appBar: const AdventureAppBar(),
         bottomNavigationBar: NavigationBar(
           onDestinationSelected: (int index) {
-            layout.navigationTabIndex.value = index;
+            controller.navigationTabIndex.value = index;
           },
-          selectedIndex: layout.navigationTabIndex(),
+          selectedIndex: controller.navigationTabIndex(),
           destinations: bottomNavigationDestinations,
         ),
         body: [
@@ -41,14 +40,41 @@ class MediumLayout extends HookWidget {
             }
           }),
           const SmallLayoutOther(),
-        ][layout.navigationTabIndex()],
+        ][controller.navigationTabIndex()],
       ),
     );
   }
 }
 
-class _MediumLayoutOracles extends StatelessWidget {
+class _MediumLayoutOracles extends GetView<LayoutController> {
   const _MediumLayoutOracles();
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutTabBar(
+      tabIndex: controller.oraclesTabIndex,
+      tabs: const [
+        Tab(text: 'Tables'),
+        Tab(text: 'Dice Roller'),
+      ],
+      children: [
+        // tables
+        const _MediumLayoutTables(),
+
+        // dice roller
+        Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 350),
+            child: getZoneDecoration(DiceRollerView()),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MediumLayoutTables extends StatelessWidget {
+  const _MediumLayoutTables();
 
   @override
   Widget build(BuildContext context) {

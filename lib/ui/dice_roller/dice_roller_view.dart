@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
+import 'package:mythic_gme_adventures/helpers/dialogs.dart';
 
 import '../roll_log/roll_log_view.dart';
 import '../styles.dart';
@@ -18,8 +19,20 @@ class DiceRollerView extends HookWidget {
     final rollLog = controller.rollLog;
     final rollUpdates = controller.rollUpdates;
 
+    final scrollController = useScrollController();
+
     useEffect(() {
       final subscription = rollUpdates.listen((updates) async {
+        // scroll to top
+        if (scrollController.hasClients) {
+          final position = scrollController.position.minScrollExtent;
+          await scrollController.animateTo(
+            position,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeOut,
+          );
+        }
+
         // animate new rolls
         _animatedLisKey.currentState?.insertAllItems(0, updates.length);
 
@@ -64,6 +77,7 @@ class DiceRollerView extends HookWidget {
                 child: _DiceRollView(roll),
               );
             },
+            controller: scrollController,
           ),
         ),
 
@@ -83,10 +97,20 @@ class _RollerView extends GetView<DiceRollerService> {
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = Theme.of(context).textTheme.bodyLarge!;
+    final theme = Theme.of(context);
+    final textStyle = theme.textTheme.bodyLarge!;
+    final colorScheme = theme.colorScheme;
+
+    final modifierButtonStyle = _settings.modifier < 0
+        ? OutlinedButton.styleFrom(
+            foregroundColor: colorScheme.onErrorContainer,
+            backgroundColor: colorScheme.errorContainer,
+          )
+        : null;
+    final modifierPrefixText = _settings.modifier < 0 ? '-' : '+';
 
     return Padding(
-      padding: const EdgeInsets.all(6),
+      padding: const EdgeInsets.symmetric(horizontal: 6),
       child: DefaultTextStyle.merge(
         style: textStyle,
         child: Row(
@@ -98,44 +122,60 @@ class _RollerView extends GetView<DiceRollerService> {
                 // dice count
                 Column(
                   children: [
-                    IconButton(
-                      onPressed: controller.incrementDiceCount,
-                      icon: const Icon(Icons.expand_less),
-                    ),
+                    _incrementButton(controller.incrementDiceCount),
                     OutlinedButton(
-                      onPressed: () => {},
+                      onPressed: () async {
+                        final newValue = await showNumberPickerDialog(
+                          title: 'Number of dice',
+                        );
+                        if (newValue != null) {
+                          controller.setDiceCount(newValue);
+                        }
+                      },
                       child: Text(_settings.diceCount.toString()),
                     ),
-                    IconButton(
-                      onPressed: controller.decrementDiceCount,
-                      icon: const Icon(Icons.expand_more),
-                    ),
+                    _decrementButton(controller.decrementDiceCount),
                   ],
                 ),
 
                 // faces
-                _getInsideText('d'),
-                OutlinedButton(
-                  onPressed: () => {},
-                  child: Text(_settings.faces.toString()),
+                _getPrefixText('d'),
+                Column(
+                  children: [
+                    _incrementButton(controller.incrementFaces),
+                    OutlinedButton(
+                      onPressed: () async {
+                        final newValue = await showNumberPickerDialog(
+                          title: 'Number of faces',
+                        );
+                        if (newValue != null) {
+                          controller.setFaces(newValue);
+                        }
+                      },
+                      child: Text(_settings.faces.toString()),
+                    ),
+                    _decrementButton(controller.decrementFaces),
+                  ],
                 ),
 
                 // modifier
-                _getInsideText(_settings.modifier < 0 ? '-' : '+'),
+                _getPrefixText(modifierPrefixText),
                 Column(
                   children: [
-                    IconButton(
-                      onPressed: controller.incrementModifier,
-                      icon: const Icon(Icons.expand_less),
-                    ),
+                    _incrementButton(controller.incrementModifier),
                     OutlinedButton(
-                      onPressed: () => {},
+                      style: modifierButtonStyle,
+                      onPressed: () async {
+                        final newValue = await showNumberPickerDialog(
+                          title: 'Modifier',
+                        );
+                        if (newValue != null) {
+                          controller.setModifier(newValue);
+                        }
+                      },
                       child: Text(_settings.modifier.abs().toString()),
                     ),
-                    IconButton(
-                      onPressed: controller.decrementModifier,
-                      icon: const Icon(Icons.expand_more),
-                    ),
+                    _decrementButton(controller.decrementModifier),
                   ],
                 ),
               ],
@@ -153,10 +193,24 @@ class _RollerView extends GetView<DiceRollerService> {
     );
   }
 
-  Widget _getInsideText(String text) {
+  Widget _getPrefixText(String text) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Text(text),
+    );
+  }
+
+  Widget _incrementButton(VoidCallback onPressed) {
+    return IconButton(
+      onPressed: onPressed,
+      icon: const Icon(Icons.expand_less),
+    );
+  }
+
+  Widget _decrementButton(VoidCallback onPressed) {
+    return IconButton(
+      onPressed: onPressed,
+      icon: const Icon(Icons.expand_more),
     );
   }
 }
@@ -214,16 +268,16 @@ class _DiceRollResult extends GetView<DiceRollerService> {
             ),
 
             // detail
-            if (_diceRoll.dieRolls.length > 1)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Text(
-                  _diceRoll.dieRolls.sorted((a, b) => b - a).join(', '),
-                  style: theme.textTheme.bodySmall!.copyWith(
-                    color: colors.onBackground,
-                  ),
+            //if (_diceRoll.dieRolls.length > 1 || _diceRoll.modifier != 0)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                _diceRoll.dieRolls.sorted((a, b) => b - a).join(', '),
+                style: theme.textTheme.bodySmall!.copyWith(
+                  color: colors.onBackground,
                 ),
               ),
+            ),
 
             // reroll
             IconButton.outlined(

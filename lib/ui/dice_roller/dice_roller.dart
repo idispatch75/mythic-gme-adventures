@@ -56,6 +56,8 @@ class DiceRoll {
 }
 
 class DiceRollerService extends GetxService with SavableMixin {
+  static const _listedFaces = [2, 3, 4, 6, 8, 10, 12, 20, 100];
+
   final Rx<DiceRollerSettings> settings = const DiceRollerSettings(
     diceCount: 1,
     faces: 6,
@@ -96,6 +98,28 @@ class DiceRollerService extends GetxService with SavableMixin {
       ));
 
       requestSave();
+    }
+  }
+
+  void incrementFaces() {
+    for (var i = 0; i < _listedFaces.length; i++) {
+      final faces = _listedFaces[i];
+
+      if (faces > settings().faces) {
+        setFaces(faces);
+        return;
+      }
+    }
+  }
+
+  void decrementFaces() {
+    for (var i = _listedFaces.length - 1; i >= 0; i--) {
+      final faces = _listedFaces[i];
+
+      if (faces < settings().faces) {
+        setFaces(faces);
+        return;
+      }
     }
   }
 
@@ -155,7 +179,7 @@ class DiceRollerService extends GetxService with SavableMixin {
   void _addRoll(DiceRoll roll) {
     DiceRoll? removedRoll;
 
-    if (rollLog.length >= 4) {
+    if (rollLog.length >= 20) {
       // make the update in one go to avoid unnecessary refreshes
       // and race conditions on the number of items when displaying the list
       rollLog.update((log) {

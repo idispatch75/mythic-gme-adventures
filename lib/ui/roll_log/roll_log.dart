@@ -265,7 +265,7 @@ class RollLogService extends GetxService with SavableMixin {
 
   void _addRollLogEntry(RollEntry entry) {
     RollEntry? removedEntry;
-    if (rollLog.length >= 100) {
+    if (rollLog.length >= 50) {
       // make the update in one go to avoid unnecessary refreshes
       // and race conditions on the number of items when displaying the list
       rollLog.update((log) {
