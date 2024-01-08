@@ -14,7 +14,7 @@ TextDirection dialogButtonDirection =
 
 enum DeviceType { phone, tablet, desktop }
 
-double kPhoneBreakPoint = 550.0;
+const kPhoneBreakPoint = 550.0;
 
 class LayoutController extends GetxController {
   final navigationTabIndex = 0.obs;
@@ -67,7 +67,7 @@ class LayoutTabBar extends HookWidget {
 
     final tabController = useTabController(
       initialLength: tabs.length,
-      initialIndex: tabIndex(),
+      initialIndex: min(tabIndex(), children.length - 1),
     );
 
     return Column(
@@ -120,3 +120,23 @@ abstract class Layout {
   static const horizontalSpacer = SizedBox(height: 4);
   static get borderSide => BorderSide(color: AppStyles.headerColor, width: 2);
 }
+
+const bottomNavigationDestinations = [
+  NavigationDestination(
+    icon: Icon(Icons.remove_red_eye_outlined),
+    selectedIcon: Icon(Icons.remove_red_eye_rounded),
+    label: 'Oracles',
+    tooltip: '',
+  ),
+  NavigationDestination(
+    icon: Icon(Icons.video_camera_back_outlined),
+    selectedIcon: Icon(Icons.video_camera_back_rounded),
+    label: 'Scenes',
+    tooltip: '',
+  ),
+  NavigationDestination(
+    icon: Icon(Icons.more_horiz_outlined),
+    label: 'More',
+    tooltip: '',
+  )
+];

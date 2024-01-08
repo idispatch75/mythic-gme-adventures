@@ -20,17 +20,17 @@ Future<bool> showConfirmationDialog({
   }
 
   final okButton = FilledButton(
-    child: Text(okText ?? 'OK'),
     onPressed: () {
       Get.back(result: true);
     },
+    child: Text(okText ?? 'OK'),
   );
 
   final cancelButton = TextButton(
-    child: Text(cancelText ?? 'Cancel'),
     onPressed: () {
       Get.back(result: false);
     },
+    child: Text(cancelText ?? 'Cancel'),
   );
 
   var actions = [cancelButton, okButton];
@@ -71,6 +71,50 @@ Future<void> showAlertDialog({
           },
         ),
       ],
+    ),
+    barrierDismissible: false,
+  );
+}
+
+Future<int?> showNumberPickerDialog({
+  required String title,
+}) {
+  final numberController = TextEditingController();
+
+  void save() {
+    Get.back(result: int.tryParse(numberController.text));
+  }
+
+  final okButton = FilledButton(
+    onPressed: save,
+    child: const Text('OK'),
+  );
+
+  final cancelButton = TextButton(
+    onPressed: () {
+      Get.back(result: null);
+    },
+    child: const Text('Cancel'),
+  );
+
+  var actions = [cancelButton, okButton];
+  if (dialogButtonDirection == TextDirection.rtl) {
+    actions = actions.reversed.toList();
+  }
+
+  return Get.dialog<int?>(
+    AlertDialog.adaptive(
+      title: Text(title),
+      content: ConstrainedBox(
+        constraints: _dialogBoxConstraints,
+        child: TextField(
+          controller: numberController,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          onSubmitted: (_) => save(),
+        ),
+      ),
+      actions: actions,
     ),
     barrierDismissible: false,
   );

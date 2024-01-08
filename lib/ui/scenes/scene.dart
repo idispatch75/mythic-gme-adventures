@@ -19,7 +19,7 @@ class Scene {
 }
 
 class ScenesService extends GetxService with SavableMixin {
-  var scenes = <Rx<Scene>>[].obs;
+  final scenes = <Rx<Scene>>[].obs;
 
   ScenesService();
 

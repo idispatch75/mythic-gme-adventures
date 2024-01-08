@@ -268,9 +268,11 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
                     maxWidth: 400,
-                    maxHeight: 600,
                   ),
-                  child: content,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: content,
+                  ),
                 ),
               );
             }

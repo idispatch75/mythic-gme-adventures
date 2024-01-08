@@ -10,7 +10,7 @@ import '../random_events/random_event.dart';
 sealed class RollEntry {
   final int timestamp;
 
-  RollEntry({
+  const RollEntry({
     required this.timestamp,
   });
 
@@ -41,7 +41,7 @@ class FateChartRoll extends RollEntry {
   final FateChartRollOutcome outcome;
   final bool hasEvent;
 
-  FateChartRoll({
+  const FateChartRoll({
     required this.probability,
     required this.chaosFactor,
     required this.dieRoll,
@@ -81,7 +81,7 @@ class RandomEventRoll extends RollEntry {
   final RandomEventFocus focus;
   final int dieRoll;
 
-  RandomEventRoll({
+  const RandomEventRoll({
     required this.focus,
     required this.dieRoll,
     required super.timestamp,
@@ -106,7 +106,7 @@ class MeaningTableRoll extends RollEntry {
   final String tableId;
   final List<MeaningTableSubRoll> results;
 
-  MeaningTableRoll({
+  const MeaningTableRoll({
     required this.tableId,
     required this.results,
     required super.timestamp,
@@ -131,7 +131,7 @@ class MeaningTableSubRoll {
   final String entryId;
   final int dieRoll;
 
-  MeaningTableSubRoll({
+  const MeaningTableSubRoll({
     required this.entryId,
     required this.dieRoll,
   });
@@ -153,7 +153,7 @@ class GenericRoll extends RollEntry {
   final String value;
   final int dieRoll;
 
-  GenericRoll({
+  const GenericRoll({
     required this.title,
     required this.value,
     required this.dieRoll,
@@ -180,16 +180,23 @@ class GenericRoll extends RollEntry {
 class RollLogService extends GetxService with SavableMixin {
   final rollLog = <RollEntry>[].obs;
 
-  late Stream<List<RollEntry>> newRolls;
-  final _newRolls = rx.PublishSubject<RollEntry>();
+  late Stream<List<RollLogUpdate>> rollUpdates;
+  final _rollUpdates = rx.PublishSubject<RollLogUpdate>();
 
   RollLogService() {
     _init();
   }
 
   void _init() {
-    newRolls = _newRolls.buffer(_newRolls
-        .startWith(GenericRoll(title: '', value: '', dieRoll: 0, timestamp: 0))
+    const dummyRoll = GenericRoll(
+      title: '',
+      value: '',
+      dieRoll: 0,
+      timestamp: 0,
+    );
+
+    rollUpdates = _rollUpdates.buffer(_rollUpdates
+        .startWith(RollLogUpdate(newRoll: dummyRoll, removedRoll: null))
         .debounceTime(const Duration(milliseconds: 200)));
   }
 
@@ -256,6 +263,27 @@ class RollLogService extends GetxService with SavableMixin {
     ));
   }
 
+  void _addRollLogEntry(RollEntry entry) {
+    RollEntry? removedEntry;
+    if (rollLog.length >= 50) {
+      // make the update in one go to avoid unnecessary refreshes
+      // and race conditions on the number of items when displaying the list
+      rollLog.update((log) {
+        log.add(entry);
+        removedEntry = log.removeAt(0);
+      });
+    } else {
+      rollLog.add(entry);
+    }
+
+    _rollUpdates.add(RollLogUpdate(
+      newRoll: entry,
+      removedRoll: removedEntry,
+    ));
+
+    requestSave();
+  }
+
   Map<String, dynamic> toJson() => {
         'rollLog': rollLog,
       };
@@ -267,21 +295,14 @@ class RollLogService extends GetxService with SavableMixin {
 
     _init();
   }
+}
 
-  void _addRollLogEntry(RollEntry entry) {
-    if (rollLog.length > 100) {
-      // make the update in one go to avoid unnecessary refreshes
-      // and race conditions on the number of items when displaying the list
-      rollLog.update((log) {
-        log.add(entry);
-        log.removeAt(0);
-      });
-    } else {
-      rollLog.add(entry);
-    }
+class RollLogUpdate {
+  final RollEntry newRoll;
+  final RollEntry? removedRoll;
 
-    _newRolls.add(entry);
-
-    requestSave();
-  }
+  RollLogUpdate({
+    required this.newRoll,
+    required this.removedRoll,
+  });
 }

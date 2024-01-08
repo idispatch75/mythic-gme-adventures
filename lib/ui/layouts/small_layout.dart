@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../chaos_factor/chaos_factor_view.dart';
 import '../characters/characters_list.dart';
 import '../characters/characters_view.dart';
+import '../dice_roller/dice_roller_view.dart';
 import '../fate_chart/fate_chart.dart';
 import '../fate_chart/fate_chart_view.dart';
 import '../meaning_tables/meaning_tables_ctl.dart';
@@ -19,45 +20,27 @@ import '../threads/threads_view.dart';
 import '../widgets/header.dart';
 import 'layout.dart';
 
-class SmallLayout extends HookWidget {
+class SmallLayout extends GetView<LayoutController> {
   const SmallLayout({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final layout = Get.find<LayoutController>();
-
     return Obx(
       () => Scaffold(
         appBar: const AdventureAppBar(),
         bottomNavigationBar: NavigationBar(
           height: 64,
-          labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
           onDestinationSelected: (int index) {
-            layout.navigationTabIndex.value = index;
+            controller.navigationTabIndex.value = index;
           },
-          selectedIndex: layout.navigationTabIndex(),
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.remove_red_eye_outlined),
-              selectedIcon: Icon(Icons.remove_red_eye_rounded),
-              label: 'Oracles',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.video_camera_back_outlined),
-              selectedIcon: Icon(Icons.video_camera_back_rounded),
-              label: 'Scenes',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.more_horiz_outlined),
-              label: 'More',
-            )
-          ],
+          selectedIndex: controller.navigationTabIndex(),
+          destinations: bottomNavigationDestinations,
         ),
         body: [
           const _SmallLayoutOracles(),
           const SmallLayoutScenes(),
           const SmallLayoutOther(),
-        ][layout.navigationTabIndex()],
+        ][controller.navigationTabIndex()],
       ),
     );
   }
@@ -74,7 +57,8 @@ class _SmallLayoutOracles extends HookWidget {
       tabIndex: controller.oraclesTabIndex,
       tabs: const [
         Tab(text: 'Tables'),
-        Tab(text: 'Roll log'),
+        Tab(text: 'Roll Log'),
+        Tab(text: 'Dice Roller'),
       ],
       children: [
         // tables
@@ -82,6 +66,9 @@ class _SmallLayoutOracles extends HookWidget {
 
         // log
         RollLogView(),
+
+        // dice roller
+        DiceRollerView(),
       ],
     );
   }
@@ -191,14 +178,14 @@ class SmallLayoutOther extends HookWidget {
     return LayoutTabBar(
       tabIndex: controller.otherTabIndex,
       tabs: const [
-        Tab(text: 'Characters'),
         Tab(text: 'Threads'),
+        Tab(text: 'Characters'),
         Tab(text: 'Players'),
         Tab(text: 'Notes'),
       ],
       children: [
-        CharactersView(showAddToListNotification: true),
         ThreadsView(showAddToListNotification: true),
+        CharactersView(showAddToListNotification: true),
         const PlayerCharactersView(),
         const NotesView(),
       ],

@@ -6,6 +6,7 @@ import '../adventure/adventure_info_view.dart';
 import '../chaos_factor/chaos_factor_view.dart';
 import '../characters/characters_list.dart';
 import '../characters/characters_view.dart';
+import '../dice_roller/dice_roller_view.dart';
 import '../fate_chart/fate_chart_view.dart';
 import '../meaning_tables/meaning_tables_view.dart';
 import '../notes/notes_view.dart';
@@ -31,37 +32,11 @@ class LargeLayout extends HookWidget {
         padding: const EdgeInsets.all(4.0),
         child: Row(
           children: [
-            // first column
-            Column(
-              children: [
-                // fate chart
-                SizedBox(
-                  width: 260,
-                  child: getZoneDecoration(const FateChartView()),
-                ),
-
-                // meaning tables
-                Expanded(
-                  child: SizedBox(
-                    width: 260,
-                    child: getZoneDecoration(const MeaningTablesView()),
-                  ),
-                ),
-              ],
+            // oracles
+            SizedBox(
+              width: _LargeLayoutTables.width,
+              child: const _LargeLayoutOracles(),
             ),
-            Layout.verticalSpacer,
-
-            // roll log
-            getZoneDecoration(SizedBox(
-              width: 260,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: RollLogView(),
-                  ),
-                ],
-              ),
-            )),
             Layout.verticalSpacer,
 
             // third column
@@ -146,6 +121,68 @@ class LargeLayout extends HookWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _LargeLayoutOracles extends GetView<LayoutController> {
+  const _LargeLayoutOracles();
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutTabBar(
+      tabIndex: controller.oraclesTabIndex,
+      tabs: const [
+        Tab(text: 'Tables'),
+        Tab(text: 'Dice Roller'),
+      ],
+      children: [
+        // tables
+        const _LargeLayoutTables(),
+
+        // dice roller
+        getZoneDecoration(DiceRollerView()),
+      ],
+    );
+  }
+}
+
+class _LargeLayoutTables extends StatelessWidget {
+  static const _columnWidth = 260.0;
+  static final width = _columnWidth * 2 + Layout.verticalSpacer.width!;
+
+  const _LargeLayoutTables();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Column(
+          children: [
+            // fate chart
+            SizedBox(
+              width: _columnWidth,
+              child: getZoneDecoration(const FateChartView()),
+            ),
+
+            // meaning tables
+            Expanded(
+              child: SizedBox(
+                width: _columnWidth,
+                child: getZoneDecoration(const MeaningTablesView()),
+              ),
+            ),
+          ],
+        ),
+        Layout.verticalSpacer,
+
+        // roll log
+        Expanded(
+          child: getZoneDecoration(
+            RollLogView(),
+          ),
+        ),
+      ],
     );
   }
 }

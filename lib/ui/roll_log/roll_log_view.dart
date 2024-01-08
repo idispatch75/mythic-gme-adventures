@@ -22,12 +22,12 @@ class RollLogView extends HookWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<RollLogService>();
     final log = controller.rollLog;
-    final newRolls = controller.newRolls;
+    final rollUpdates = controller.rollUpdates;
 
     final scrollController = useScrollController();
 
     useEffect(() {
-      final subscription = newRolls.listen((entries) async {
+      final subscription = rollUpdates.listen((updates) async {
         // scroll to top
         if (scrollController.hasClients) {
           final position = scrollController.position.minScrollExtent;
@@ -39,11 +39,23 @@ class RollLogView extends HookWidget {
         }
 
         // animate new rolls
-        _animatedLisKey.currentState?.insertAllItems(0, entries.length);
+        _animatedLisKey.currentState?.insertAllItems(0, updates.length);
+
+        // animate removed rolls
+        final removedRolls = updates
+            .where((e) => e.removedRoll != null)
+            .map((e) => e.removedRoll)
+            .toList();
+        for (var i = 0; i < removedRolls.length; i++) {
+          _animatedLisKey.currentState?.removeItem(
+            log.length - i,
+            (_, __) => const SizedBox(),
+          );
+        }
       });
 
       return subscription.cancel;
-    }, [newRolls]);
+    }, [rollUpdates]);
 
     final rollDateTextStyle = Theme.of(context).textTheme.labelSmall;
 
@@ -124,7 +136,7 @@ class _FateChartView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _Header(_roll.probability.text, AppStyles.fateChartColors),
+        RollHeader(_roll.probability.text, AppStyles.fateChartColors),
         _Result(outcomeText, _roll.dieRoll, AppStyles.fateChartColors),
         if (_roll.hasEvent)
           const TextButton(
@@ -146,7 +158,7 @@ class _RandomEventView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _Header('Random Event', AppStyles.randomEventColors),
+        RollHeader('Random Event', AppStyles.randomEventColors),
         _Result(_roll.focus.name, _roll.dieRoll, AppStyles.randomEventColors),
 
         // event target
@@ -180,7 +192,7 @@ class _MeaningTableView extends GetView<MeaningTablesService> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _Header(
+        RollHeader(
           controller.getMeaningTableName(_roll.tableId),
           AppStyles.meaningTableColors,
         ),
@@ -211,18 +223,18 @@ class _GenericView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _Header(_roll.title, AppStyles.genericColors),
+        RollHeader(_roll.title, AppStyles.genericColors),
         _Result(_roll.value, _roll.dieRoll, AppStyles.genericColors),
       ],
     );
   }
 }
 
-class _Header extends StatelessWidget {
+class RollHeader extends StatelessWidget {
   final String _text;
   final RollColors _colors;
 
-  const _Header(this._text, this._colors);
+  const RollHeader(this._text, this._colors, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -289,18 +301,20 @@ class _Result extends StatelessWidget {
   }
 }
 
+/// Sets up the roll indicator as a bottom sheet.
+/// Must be called inside a HookWidget.
 void setupRollIndicator(BuildContext context) {
   useEffect(() {
     final rollLog = Get.find<RollLogService>();
 
-    final subscription = rollLog.newRolls.listen((newRolls) {
+    final subscription = rollLog.rollUpdates.listen((updates) {
       showModalBottomSheet(
         context: context,
         constraints: const BoxConstraints.tightFor(width: 300),
         builder: (_) {
           return Column(
             children: [
-              for (var entry in newRolls) getEntryView(entry),
+              for (var update in updates) getEntryView(update.newRoll),
             ],
           );
         },

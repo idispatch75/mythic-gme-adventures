@@ -14,6 +14,7 @@ import '../ui/adventure_index/adventure_index.dart';
 import '../ui/chaos_factor/chaos_factor.dart';
 import '../ui/characters/character.dart';
 import '../ui/characters/characters_list.dart';
+import '../ui/dice_roller/dice_roller.dart';
 import '../ui/notes/note.dart';
 import '../ui/player_characters/player_character.dart';
 import '../ui/roll_log/roll_log.dart';
@@ -49,6 +50,7 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
       Get.find<ScenesService>(),
       Get.find<NotesService>(),
       Get.find<RollLogService>(),
+      Get.find<DiceRollerService>(),
     );
   }
 
@@ -67,6 +69,7 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
       ScenesService(),
       NotesService(),
       RollLogService(),
+      DiceRollerService(),
     );
   }
 
@@ -79,6 +82,7 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
     ScenesService scenesService,
     NotesService notesService,
     RollLogService rollLogService,
+    DiceRollerService diceRollerService,
   ) async {
     assert(
       localPersister != null || remotePersister != null,
@@ -111,6 +115,7 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
             scenesService,
             notesService,
             rollLogService,
+            diceRollerService,
             saveTimestamp,
           );
 
@@ -213,6 +218,7 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
       Get.find<ScenesService>().saveRequests,
       Get.find<NotesService>().saveRequests,
       Get.find<RollLogService>().saveRequests,
+      Get.find<DiceRollerService>().saveRequests,
     ]).debounceTime(const Duration(seconds: 5)).listen((value) async {
       try {
         await saveCurrentAdventure();
@@ -395,6 +401,7 @@ class AdventurePersister {
     ScenesService scenesService,
     NotesService notesService,
     RollLogService rollLogService,
+    DiceRollerService diceRollerService,
     int saveTimestamp,
   ) async {
     final json = adventure.toJson();
@@ -407,6 +414,7 @@ class AdventurePersister {
     json.addAll(scenesService.toJson());
     json.addAll(notesService.toJson());
     json.addAll(rollLogService.toJson());
+    json.addAll(diceRollerService.toJson());
 
     await saveAdventureContent(
       adventure.id,
@@ -446,6 +454,7 @@ class AdventurePersister {
           Get.replaceForced(ScenesService.fromJson(json));
           Get.replaceForced(NotesService.fromJson(json));
           Get.replaceForced(RollLogService.fromJson(json));
+          Get.replaceForced(DiceRollerService.fromJson(json));
         },
       );
     }
