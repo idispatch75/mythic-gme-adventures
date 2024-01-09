@@ -75,7 +75,8 @@ class _CharacterComplementEditView extends StatelessWidget {
                 .join(', ');
       }).join('\n');
 
-      if (!_notesController.text.endsWith('\n')) {
+      if (!_notesController.text.endsWith('\n') &&
+          _notesController.text.isNotEmpty) {
         traits = '\n$traits';
       }
 
