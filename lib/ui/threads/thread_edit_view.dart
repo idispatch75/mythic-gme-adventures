@@ -19,7 +19,10 @@ class ThreadEditView extends ListableItemEditView<Thread> {
   }
 
   @override
-  Widget? getComplement() => _ThreadComplementEditView(item);
+  Widget? getComplement({
+    required TextEditingController notesController,
+  }) =>
+      _ThreadComplementEditView(item);
 }
 
 class ThreadComplementController extends GetxController {

@@ -109,7 +109,7 @@ class AdventureIndexController extends GetxController {
   }
 
   Future<void> deleteAdventure(IndexAdventureVM adventure) async {
-    if (await showConfirmationDialog(
+    if (await Dialogs.showConfirmation(
       title: 'Delete Adventure',
       message: 'Delete the Adventure "${adventure.source.name}"?',
     )) {
@@ -130,7 +130,7 @@ class AdventureIndexController extends GetxController {
 
   Future<void> uploadMeaningTables() async {
     // ask confirmation
-    if (!await showConfirmationDialog(
+    if (!await Dialogs.showConfirmation(
       title: 'Upload Meaning Tables',
       message: 'You will overwrite the custom Meaning Tables'
           ' in your online storage.\nContinue?',
@@ -170,7 +170,7 @@ class AdventureIndexController extends GetxController {
     final spanStyle = Theme.of(context).textTheme.bodyMedium;
 
     // ask confirmation
-    if (!await showConfirmationDialog(
+    if (!await Dialogs.showConfirmation(
       title: 'Download Meaning Tables',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,7 +215,7 @@ class AdventureIndexController extends GetxController {
   }
 
   Future<void> synchronizeAdventures() async {
-    if (await showConfirmationDialog(
+    if (await Dialogs.showConfirmation(
       title: 'Synchronize storages',
       message: 'Update the local and online storages'
           ' with the most recent adventure versions?',
@@ -240,7 +240,7 @@ class AdventureIndexController extends GetxController {
     String filePath,
     IndexAdventureVM adventure,
   ) async {
-    if (!await showConfirmationDialog(
+    if (!await Dialogs.showConfirmation(
       title: 'Restore Adventure',
       message: 'Replace the content of this Adventure'
           ' with the selected file?',
@@ -259,7 +259,7 @@ class AdventureIndexController extends GetxController {
       }
 
       if (adventureId != adventure.source.id) {
-        if (!await showConfirmationDialog(
+        if (!await Dialogs.showConfirmation(
           title: 'Adventure mismatch',
           message: 'The file you selected does not match the Adventure.\n'
               'Continue?',
@@ -268,7 +268,7 @@ class AdventureIndexController extends GetxController {
         }
       }
     } catch (e) {
-      showAlertDialog(
+      Dialogs.showAlert(
         title: 'Invalid Adventure',
         message: 'The selected file does not contain a valid Adventure.',
       );
@@ -421,7 +421,7 @@ class AdventureIndexController extends GetxController {
     if (action == 'load') {
       status.value = RxStatus.error(message);
     } else {
-      showAlertDialog(title: 'Failed to $action', message: message);
+      Dialogs.showAlert(title: 'Failed to $action', message: message);
 
       status.value = RxStatus.success();
     }

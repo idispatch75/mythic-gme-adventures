@@ -7,14 +7,17 @@ class GlobalSettingsService extends GetxService with SavableMixin {
   bool allowChooseInLists;
   String meaningTablesLanguage;
   final Set<String> favoriteMeaningTables;
+  List<String> characterTraitMeaningTables;
   int? saveTimestamp;
 
   GlobalSettingsService({
     this.allowChooseInLists = true,
     this.meaningTablesLanguage = 'en',
     Set<String>? favoriteMeaningTables,
+    List<String>? characterTraitMeaningTables,
     this.saveTimestamp,
-  }) : favoriteMeaningTables = favoriteMeaningTables ?? {};
+  })  : favoriteMeaningTables = favoriteMeaningTables ?? {},
+        characterTraitMeaningTables = characterTraitMeaningTables ?? [];
 
   bool addMeaningTableFavorite(String id) {
     if (favoriteMeaningTables.add(id)) {
@@ -35,10 +38,16 @@ class GlobalSettingsService extends GetxService with SavableMixin {
     return false;
   }
 
+  void setCharacterTraitMeaningTables(List<String> tableIds) {
+    characterTraitMeaningTables = tableIds;
+    requestSave();
+  }
+
   Map<String, dynamic> toJson() => {
         'allowChooseInLists': allowChooseInLists,
         'meaningTablesLanguage': meaningTablesLanguage,
         'favoriteMeaningTables': favoriteMeaningTables.toList(),
+        'characterTraitMeaningTables': characterTraitMeaningTables,
         if (saveTimestamp != null) 'saveTimestamp': saveTimestamp,
       };
 
@@ -48,6 +57,8 @@ class GlobalSettingsService extends GetxService with SavableMixin {
           meaningTablesLanguage: json['meaningTablesLanguage'] ?? 'en',
           favoriteMeaningTables:
               fromJsonValueList<String>(json['favoriteMeaningTables']).toSet(),
+          characterTraitMeaningTables:
+              fromJsonValueList<String>(json['characterTraitMeaningTables']),
           saveTimestamp: json['saveTimestamp'],
         );
 }

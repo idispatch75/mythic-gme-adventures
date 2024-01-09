@@ -103,7 +103,7 @@ class AdventureInfoView extends GetView<AdventureInfoController> {
       details = 'An unexpected error occurred: $error.';
     }
 
-    await showAlertDialog(
+    await Dialogs.showAlert(
       title: 'Save failed',
       message: 'Failed to save the Adventure.\n\n$details',
     );

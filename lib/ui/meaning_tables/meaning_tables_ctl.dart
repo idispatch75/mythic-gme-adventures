@@ -114,7 +114,7 @@ class MeaningTablesController extends GetxController {
     }
   }
 
-  void roll(String tableId) {
+  List<MeaningTableSubRoll> roll(String tableId, {bool addToLog = true}) {
     // a roll includes 2 rolls, usually on the same table
     // except for actions and descriptions which have 2 separate tables.
     final table = Get.find<MeaningTablesService>()
@@ -135,10 +135,14 @@ class MeaningTablesController extends GetxController {
       )
     ];
 
-    Get.find<RollLogService>().addMeaningTableRoll(
-      tableId: tableId,
-      results: results,
-    );
+    if (addToLog) {
+      Get.find<RollLogService>().addMeaningTableRoll(
+        tableId: tableId,
+        results: results,
+      );
+    }
+
+    return results;
   }
 
   Widget getHeader() => const Header('Meaning Tables');

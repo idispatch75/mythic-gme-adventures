@@ -87,14 +87,14 @@ class ScenesView extends GetView<ScenesService> {
 
     if (dieRoll > chaosFactor) {
       // expected
-      await showAlertDialog(
+      await Dialogs.showAlert(
         title: 'Expected Scene',
         message: 'The scene happens as expected.',
       );
     } else {
       if (dieRoll % 2 == 1) {
         // altered
-        await showAlertDialog(
+        await Dialogs.showAlert(
           title: 'Altered Scene',
           message: 'Your expectations are sightly altered.\n'
               'You may consult the Fate Chart or the Meaning Tables.\n'
@@ -102,7 +102,7 @@ class ScenesView extends GetView<ScenesService> {
         );
       } else {
         // interrupt
-        await showAlertDialog(
+        await Dialogs.showAlert(
           title: 'Interrupt Scene',
           message: 'Mythic derails your expectations.\n'
               'A Random Event will be rolled.',

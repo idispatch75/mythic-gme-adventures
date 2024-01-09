@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 class MeaningTable {
   final String id;
   int? order;
+  bool? isCharacterTrait;
   final int entryCount1;
   final int? entryCount2;
   String get name => Get.find<MeaningTablesService>().getMeaningTableName(id);
@@ -14,6 +15,7 @@ class MeaningTable {
     required this.id,
     required this.entryCount1,
     this.order,
+    this.isCharacterTrait,
     this.entryCount2,
   });
 
@@ -57,6 +59,7 @@ class MeaningTablesService extends GetxService {
     final String id = table['id'];
     final String name = table['name'];
     final int? order = table['order'];
+    final bool? isCharacterTrait = table['characterTrait'];
     final List<dynamic> entries1 = table['entries'];
     final List<dynamic>? entries2 = table['entries2'];
 
@@ -65,14 +68,21 @@ class MeaningTablesService extends GetxService {
     final newTable = MeaningTable(
       id: id,
       order: order,
+      isCharacterTrait: isCharacterTrait,
       entryCount1: entries1.length,
       entryCount2: entries2?.length,
     );
     final currentTable = meaningTables.lookup(newTable);
     if (currentTable == null) {
       meaningTables.add(newTable);
-    } else if (newTable.order != null) {
-      currentTable.order = newTable.order;
+    } else {
+      if (newTable.order != null) {
+        currentTable.order = newTable.order;
+      }
+
+      if (newTable.isCharacterTrait != null) {
+        currentTable.isCharacterTrait = newTable.isCharacterTrait;
+      }
     }
 
     // update the locale

@@ -132,6 +132,7 @@ The language folder must contain one JSON file per table, with this format:
 	"id": "actions",
 	"name": "Actions",
 	"order": 10,
+	"characterTrait": false,
 	"entries": [
 		"Abandon",
 		"Accompany",
@@ -151,6 +152,8 @@ it must be the same ID as the customized/translated table.
 - `name`: the text displayed in the application.
 	Mandatory if you create a new table, optional if you customize or translate.
 - `order`: the display order in the list. It overrides the alphabetical order.
+	It is optional and can be customized.
+- `characterTrait`: determines whether the table should be shown when rolling the traits in the Notes of a Character.
 	It is optional and can be customized.
 - `entries`: the entries in the table.
 Mandatory if you create a new table, optional if you customize or translate.
