@@ -11,6 +11,8 @@ import 'scene.dart';
 class SceneEditPageService extends GetxService {
   final Scene scene;
   final Scene temporaryData;
+  final TextEditingController summaryController;
+  final TextEditingController notesController;
   bool isNew;
 
   Scene get editedData => isNew ? temporaryData : scene;
@@ -19,7 +21,8 @@ class SceneEditPageService extends GetxService {
     this.scene, {
     required this.temporaryData,
     required this.isNew,
-  });
+  })  : summaryController = TextEditingController(text: temporaryData.summary),
+        notesController = TextEditingController(text: temporaryData.notes);
 
   void save(String summary, String? notes) {
     scene.summary = summary;
@@ -34,6 +37,9 @@ class SceneEditPageService extends GetxService {
   }
 
   void close() {
+    summaryController.dispose();
+    notesController.dispose();
+
     Get.delete<SceneEditPageService>(force: true);
     Get.find<LayoutController>().hasEditScenePage.value = false;
   }
@@ -48,10 +54,8 @@ class SceneEditPageView extends HookWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<SceneEditPageService>();
 
-    final summaryController =
-        useTextEditingController(text: controller.editedData.summary);
-    final notesController =
-        useTextEditingController(text: controller.editedData.notes);
+    final summaryController = controller.summaryController;
+    final notesController = controller.notesController;
 
     return Form(
       key: _formKey,
