@@ -112,6 +112,10 @@ Then you can re-enable the local storage.
 	If you don't want to have to choose and always want to roll a valid entry,
 	then uncheck this setting.
 
+## Roll Log
+
+You can copy to the clipboard the result of a Meaning Table roll by pressing the roll result at least 1 second.
+
 ## Custom Meaning Tables
 
 All the Meaning Tables from the book are available in English and embedded in the application.
