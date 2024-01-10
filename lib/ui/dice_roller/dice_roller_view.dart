@@ -125,7 +125,7 @@ class _RollerView extends GetView<DiceRollerService> {
                     _incrementButton(controller.incrementDiceCount),
                     OutlinedButton(
                       onPressed: () async {
-                        final newValue = await showNumberPickerDialog(
+                        final newValue = await Dialogs.showNumberPicker(
                           title: 'Number of dice',
                         );
                         if (newValue != null) {
@@ -145,7 +145,7 @@ class _RollerView extends GetView<DiceRollerService> {
                     _incrementButton(controller.incrementFaces),
                     OutlinedButton(
                       onPressed: () async {
-                        final newValue = await showNumberPickerDialog(
+                        final newValue = await Dialogs.showNumberPicker(
                           title: 'Number of faces',
                         );
                         if (newValue != null) {
@@ -166,7 +166,7 @@ class _RollerView extends GetView<DiceRollerService> {
                     OutlinedButton(
                       style: modifierButtonStyle,
                       onPressed: () async {
-                        final newValue = await showNumberPickerDialog(
+                        final newValue = await Dialogs.showNumberPicker(
                           title: 'Modifier',
                         );
                         if (newValue != null) {

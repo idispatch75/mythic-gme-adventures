@@ -152,7 +152,7 @@ class EditDialog<TResult> extends HookWidget {
   }
 
   Future<void> _delete() async {
-    if (await showConfirmationDialog(
+    if (await Dialogs.showConfirmation(
       title: 'Delete $itemTypeLabel',
       message: 'Delete the $itemTypeLabel?',
     )) {

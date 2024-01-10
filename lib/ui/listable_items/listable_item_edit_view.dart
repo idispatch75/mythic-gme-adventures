@@ -23,7 +23,10 @@ abstract class ListableItemEditView<TItem extends ListableItem>
     super.key,
   });
 
-  Widget? getComplement() => null;
+  Widget? getComplement({
+    required TextEditingController notesController,
+  }) =>
+      null;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +38,7 @@ abstract class ListableItemEditView<TItem extends ListableItem>
 
     final saveTrigger = false.obs;
 
-    final complement = getComplement();
+    final complement = getComplement(notesController: notesController);
 
     return EditDialog<bool>(
       body: Column(

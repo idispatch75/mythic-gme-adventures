@@ -1,6 +1,7 @@
 {
 	"id": "character_descriptors",
 	"name": "Character descriptors",
+	"characterTrait": true,
 	"entries": [
 		"Abnormal",
 		"Active",

@@ -87,7 +87,7 @@ class SceneEditPageView extends HookWidget {
                     final notes = notesController.text.nullIfEmpty();
                     if (summary != controller.editedData.summary ||
                         notes != controller.editedData.notes) {
-                      if (!await showConfirmationDialog(
+                      if (!await Dialogs.showConfirmation(
                         title: 'Close without saving',
                         message: 'You have unsaved changes.\nClose anyway?',
                       )) {

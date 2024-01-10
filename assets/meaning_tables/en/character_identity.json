@@ -1,6 +1,7 @@
 {
 	"id": "character_identity",
 	"name": "Character identity",
+	"characterTrait": true,
 	"entries": [
 		"Abandoned",
 		"Administrator",

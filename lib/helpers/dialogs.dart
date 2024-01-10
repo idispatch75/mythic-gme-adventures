@@ -3,121 +3,108 @@ import 'package:get/get.dart';
 
 import '../ui/layouts/layout.dart';
 
-Future<bool> showConfirmationDialog({
-  required String title,
-  String? message,
-  Widget? child,
-  String? okText,
-  String? cancelText,
-}) async {
-  assert(
-    message != null || child != null,
-    'message add child cannot both be null',
-  );
+abstract class Dialogs {
+  static const dialogBoxConstraints = BoxConstraints(maxWidth: 500);
 
-  if (message != null) {
-    child = Text(message);
+  static Future<bool> showConfirmation({
+    required String title,
+    String? message,
+    Widget? child,
+  }) async {
+    assert(
+      message != null || child != null,
+      'message add child cannot both be null',
+    );
+
+    if (message != null) {
+      child = Text(message);
+    }
+
+    return await showValuePicker<bool>(
+          title: title,
+          child: child!,
+          onSave: () => Get.back(result: true),
+        ) ??
+        false;
   }
 
-  final okButton = FilledButton(
-    onPressed: () {
-      Get.back(result: true);
-    },
-    child: Text(okText ?? 'OK'),
-  );
-
-  final cancelButton = TextButton(
-    onPressed: () {
-      Get.back(result: false);
-    },
-    child: Text(cancelText ?? 'Cancel'),
-  );
-
-  var actions = [cancelButton, okButton];
-  if (dialogButtonDirection == TextDirection.rtl) {
-    actions = actions.reversed.toList();
-  }
-
-  return await Get.dialog<bool>(
-        AlertDialog.adaptive(
-          title: Text(title),
-          content: ConstrainedBox(
-            constraints: _dialogBoxConstraints,
-            child: child,
+  static Future<void> showAlert({
+    required String title,
+    required String message,
+  }) {
+    return Get.dialog<void>(
+      AlertDialog.adaptive(
+        title: Text(title),
+        content: ConstrainedBox(
+          constraints: dialogBoxConstraints,
+          child: Text(message),
+        ),
+        actions: [
+          TextButton(
+            child: const Text('OK'),
+            onPressed: () {
+              Get.back();
+            },
           ),
-          actions: actions,
-        ),
-        barrierDismissible: false,
-      ) ??
-      false;
-}
-
-Future<void> showAlertDialog({
-  required String title,
-  required String message,
-}) {
-  return Get.dialog<void>(
-    AlertDialog.adaptive(
-      title: Text(title),
-      content: ConstrainedBox(
-        constraints: _dialogBoxConstraints,
-        child: Text(message),
+        ],
       ),
-      actions: [
-        TextButton(
-          child: const Text('OK'),
-          onPressed: () {
-            Get.back();
-          },
-        ),
-      ],
-    ),
-    barrierDismissible: false,
-  );
-}
-
-Future<int?> showNumberPickerDialog({
-  required String title,
-}) {
-  final numberController = TextEditingController();
-
-  void save() {
-    Get.back(result: int.tryParse(numberController.text));
+      barrierDismissible: false,
+    );
   }
 
-  final okButton = FilledButton(
-    onPressed: save,
-    child: const Text('OK'),
-  );
+  static Future<int?> showNumberPicker({
+    required String title,
+  }) {
+    final numberController = TextEditingController();
 
-  final cancelButton = TextButton(
-    onPressed: () {
-      Get.back(result: null);
-    },
-    child: const Text('Cancel'),
-  );
+    void save() {
+      Get.back(result: int.tryParse(numberController.text));
+    }
 
-  var actions = [cancelButton, okButton];
-  if (dialogButtonDirection == TextDirection.rtl) {
-    actions = actions.reversed.toList();
+    return showValuePicker(
+      title: title,
+      child: TextField(
+        controller: numberController,
+        autofocus: true,
+        keyboardType: TextInputType.number,
+        onSubmitted: (_) => save(),
+      ),
+      onSave: save,
+    );
   }
 
-  return Get.dialog<int?>(
-    AlertDialog.adaptive(
-      title: Text(title),
-      content: ConstrainedBox(
-        constraints: _dialogBoxConstraints,
-        child: TextField(
-          controller: numberController,
-          autofocus: true,
-          keyboardType: TextInputType.number,
-          onSubmitted: (_) => save(),
-        ),
-      ),
-      actions: actions,
-    ),
-    barrierDismissible: false,
-  );
-}
+  static Future<TValue?> showValuePicker<TValue>({
+    required String title,
+    required Widget child,
+    required Function() onSave,
+  }) {
+    final okButton = FilledButton(
+      onPressed: onSave,
+      child: const Text('OK'),
+    );
 
-const _dialogBoxConstraints = BoxConstraints(maxWidth: 500);
+    final cancelButton = TextButton(
+      onPressed: () {
+        Get.back(result: null);
+      },
+      child: const Text('Cancel'),
+    );
+
+    var actions = [cancelButton, okButton];
+    if (dialogButtonDirection == TextDirection.rtl) {
+      actions = actions.reversed.toList();
+    }
+
+    return Get.dialog<TValue?>(
+      AlertDialog.adaptive(
+        title: Text(title),
+        content: ConstrainedBox(
+          constraints: dialogBoxConstraints,
+          child: child,
+        ),
+        actions: actions,
+      ),
+      barrierDismissible: false,
+    );
+  }
+}

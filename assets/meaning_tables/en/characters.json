@@ -2,6 +2,7 @@
 	"id": "characters",
 	"name": "Characters",
 	"order": 30,
+	"characterTrait": true,
 	"entries": [
 		"Accompanied",
 		"Active",
