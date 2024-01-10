@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../../helpers/utils.dart';
 import '../fate_chart/fate_chart.dart';
 import '../meaning_tables/meaning_table.dart';
 import '../preferences/preferences.dart';
 import '../random_events/random_event.dart';
 import '../styles.dart';
+import '../widgets/long_press_detector.dart';
 import 'roll_log.dart';
 
 class RollLogView extends HookWidget {
@@ -189,27 +192,44 @@ class _MeaningTableView extends GetView<MeaningTablesService> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        RollHeader(
-          controller.getMeaningTableName(_roll.tableId),
-          AppStyles.meaningTableColors,
-        ),
-        for (var result in _roll.results)
-          Obx(
-            () {
-              Get.find<MeaningTablesService>()
-                  .language(); // just to update on change
-              return _Result(
-                controller.getMeaningTableEntry(result.entryId, result.dieRoll),
-                result.dieRoll,
-                AppStyles.meaningTableColors,
-              );
-            },
+    return LongPressDetector(
+      duration: const Duration(milliseconds: 1000),
+      onLongPress: () => _copyResult(context),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          RollHeader(
+            controller.getMeaningTableName(_roll.tableId),
+            AppStyles.meaningTableColors,
           ),
-      ],
+          for (var result in _roll.results)
+            Obx(
+              () {
+                Get.find<MeaningTablesService>()
+                    .language(); // just to update on change
+                return _Result(
+                  controller.getMeaningTableEntry(
+                      result.entryId, result.dieRoll),
+                  result.dieRoll,
+                  AppStyles.meaningTableColors,
+                );
+              },
+            ),
+        ],
+      ),
     );
+  }
+
+  Future<void> _copyResult(BuildContext context) async {
+    await Clipboard.setData(ClipboardData(
+      text: _roll.results
+          .map((e) => controller.getMeaningTableEntry(e.entryId, e.dieRoll))
+          .join(', '),
+    ));
+
+    if (context.mounted) {
+      showSnackBar(context, 'Result copied to the clipboard');
+    }
   }
 }
 
