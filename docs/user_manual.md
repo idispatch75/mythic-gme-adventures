@@ -114,7 +114,8 @@ Then you can re-enable the local storage.
 
 ## Roll Log
 
-You can copy to the clipboard the result of a Meaning Table roll by pressing the roll result at least 1 second.
+You can copy to the clipboard the result of a Meaning Table roll by pressing the roll result at least 1 second.  
+This is available in the Roll log and in the bottom sheet displayed when rolling on smartphones.
 
 ## Custom Meaning Tables
 
@@ -160,7 +161,7 @@ it must be the same ID as the customized/translated table.
 - `characterTrait`: the label of the trait when rolling the traits in the Notes of a Character, e.g. `"Motivation"`.
 	If not null, the table is displayed in the available traits to roll for a Character.
 	It can be an empty string.
-	It is optional and can be customized.
+	If it is null in a customization of a stock table, it removes the table from the traits list.
 - `entries`: the entries in the table.
 Mandatory if you create a new table, optional if you customize or translate.
 - `entries2`: an optional additional list of entries for the second Meaning Table roll.

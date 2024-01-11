@@ -334,7 +334,25 @@ void setupRollIndicator(BuildContext context) {
         builder: (_) {
           return Column(
             children: [
-              for (var update in updates) getEntryView(update.newRoll),
+              // results
+              Expanded(
+                child: ListView(
+                  children:
+                      updates.map((e) => getEntryView(e.newRoll)).toList(),
+                ),
+              ),
+
+              // dismiss
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Dismiss'),
+                  ),
+                ),
+              )
             ],
           );
         },
