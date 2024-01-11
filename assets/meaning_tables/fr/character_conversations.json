@@ -1,6 +1,7 @@
 {
 	"id": "character_conversations",
 	"name": "Personnage - Conversation",
+	"characterTrait": "Conversation",
 	"entries": [
 		"Abus",
 		"Conseil",

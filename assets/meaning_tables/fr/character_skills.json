@@ -1,6 +1,7 @@
 {
 	"id": "character_skills",
-	"name": "Personnage - Compétence",
+	"name": "Personnage - Compétences",
+	"characterTrait": "Compétences",
 	"entries": [
 		"Activité",
 		"Adversité",

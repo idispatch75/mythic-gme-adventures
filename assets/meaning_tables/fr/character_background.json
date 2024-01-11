@@ -1,6 +1,7 @@
 {
 	"id": "character_background",
 	"name": "Personnage - Background",
+	"characterTrait": "Background",
 	"entries": [
 		"Abandonné",
 		"Abus",

@@ -6,7 +6,8 @@ import 'package:get/get.dart';
 class MeaningTable {
   final String id;
   int? order;
-  bool? isCharacterTrait;
+  String? get characterTrait =>
+      Get.find<MeaningTablesService>().getMeaningTableCharacterTrait(id);
   final int entryCount1;
   final int? entryCount2;
   String get name => Get.find<MeaningTablesService>().getMeaningTableName(id);
@@ -15,7 +16,6 @@ class MeaningTable {
     required this.id,
     required this.entryCount1,
     this.order,
-    this.isCharacterTrait,
     this.entryCount2,
   });
 
@@ -58,8 +58,8 @@ class MeaningTablesService extends GetxService {
     final Map<String, dynamic> table = jsonDecode(json);
     final String id = table['id'];
     final String name = table['name'];
+    final String? characterTrait = table['characterTrait'];
     final int? order = table['order'];
-    final bool? isCharacterTrait = table['characterTrait'];
     final List<dynamic> entries1 = table['entries'];
     final List<dynamic>? entries2 = table['entries2'];
 
@@ -68,7 +68,6 @@ class MeaningTablesService extends GetxService {
     final newTable = MeaningTable(
       id: id,
       order: order,
-      isCharacterTrait: isCharacterTrait,
       entryCount1: entries1.length,
       entryCount2: entries2?.length,
     );
@@ -79,15 +78,14 @@ class MeaningTablesService extends GetxService {
       if (newTable.order != null) {
         currentTable.order = newTable.order;
       }
-
-      if (newTable.isCharacterTrait != null) {
-        currentTable.isCharacterTrait = newTable.isCharacterTrait;
-      }
     }
 
     // update the locale
     final localeEntries = <String, String>{};
     localeEntries['meaning_tables.$id.name'] = name;
+    if (characterTrait != null) {
+      localeEntries['meaning_tables.$id.characterTrait'] = characterTrait;
+    }
 
     void addEntryTranslations(List<dynamic> entries, int index) {
       for (var i = 0; i < entries.length; i++) {
@@ -105,6 +103,11 @@ class MeaningTablesService extends GetxService {
 
   String getMeaningTableName(String tableId) {
     return _getTranslation('meaning_tables.$tableId.name');
+  }
+
+  String? getMeaningTableCharacterTrait(String tableId) {
+    final key = 'meaning_tables.$tableId.characterTrait';
+    return _translations[language()]?[key];
   }
 
   String getMeaningTableEntry(String entryId, int dieRoll) {

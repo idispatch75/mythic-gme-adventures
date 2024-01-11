@@ -1,7 +1,7 @@
 name: mythic_gme_adventures
 description: Mythic GME Adventures
 publish_to: 'none'
-version: 1.2.0+6
+version: 1.2.1+7
 
 environment:
   sdk: '>=3.1.1 <4.0.0'
@@ -30,7 +30,6 @@ dependencies:
   rxdart: ^0.27.7
   shared_preferences: ^2.2.2
   url_launcher: ^6.2.1
-  uuid: ^4.2.2
   window_manager: ^0.3.6
 
 dev_dependencies:

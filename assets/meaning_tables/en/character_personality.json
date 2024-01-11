@@ -1,7 +1,7 @@
 {
 	"id": "character_personality",
 	"name": "Character personality",
-	"characterTrait": true,
+	"characterTrait": "Personality",
 	"entries": [
 		"Active",
 		"Adventurous",

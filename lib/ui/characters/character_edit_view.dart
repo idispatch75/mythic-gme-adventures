@@ -61,13 +61,13 @@ class _CharacterComplementEditView extends StatelessWidget {
       // append rolls
       final tablesService = Get.find<MeaningTablesService>();
       final tablesController = Get.find<MeaningTablesController>();
-      var traits = selectedTables.map((e) {
+      var traits = selectedTables.map((table) {
         var trait = '';
-        if (selectedTables.length > 1) {
-          trait = '${e.name}: ';
+        if (table.characterTrait!.isNotEmpty) {
+          trait = '${table.characterTrait}: ';
         }
 
-        final rolls = tablesController.roll(e.id, addToLog: false);
+        final rolls = tablesController.roll(table.id, addToLog: false);
         return trait +
             rolls
                 .map((e) =>
@@ -100,7 +100,7 @@ class _TablesPickerState extends State<_TablesPicker> {
   _TablesPickerState()
       : _characterTraitTables = Get.find<MeaningTablesService>()
             .meaningTables
-            .where((e) => e.isCharacterTrait ?? false)
+            .where((e) => e.characterTrait != null)
             .sorted((a, b) {
           final orderA = a.order ?? 1000;
           final orderB = b.order ?? 1000;
@@ -135,7 +135,9 @@ class _TablesPickerState extends State<_TablesPicker> {
             final table = _characterTraitTables[index];
 
             return CheckboxListTile(
-              title: Text(table.name),
+              title: Text(table.characterTrait!.isEmpty
+                  ? table.name
+                  : table.characterTrait!),
               value: widget._selectedTables.contains(table),
               onChanged: (value) {
                 setState(() {

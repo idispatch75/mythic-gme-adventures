@@ -1,6 +1,7 @@
 {
 	"id": "characters",
 	"name": "Personnage",
+	"characterTrait": "",
 	"entries": [
 		"Accompagné",
 		"Actif",

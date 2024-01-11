@@ -1,6 +1,7 @@
 {
 	"id": "character_descriptors",
-	"name": "Personnage - Descripteur",
+	"name": "Personnage - Description",
+	"characterTrait": "Description",
 	"entries": [
 		"Anormal",
 		"Actif",

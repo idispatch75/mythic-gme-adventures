@@ -1,6 +1,7 @@
 {
 	"id": "character_appearance",
 	"name": "Personnage - Apparence",
+	"characterTrait": "Apparence",
 	"entries": [
 		"Anormal",
 		"Armé",

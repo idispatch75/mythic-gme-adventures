@@ -1,7 +1,7 @@
 {
 	"id": "character_skills",
 	"name": "Character skills",
-	"characterTrait": true,
+	"characterTrait": "Skills",
 	"entries": [
 		"Activity",
 		"Adversity",

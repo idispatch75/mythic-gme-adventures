@@ -1,7 +1,7 @@
 {
 	"id": "character_traits_flaws",
 	"name": "Character traits & flaws",
-	"characterTrait": true,
+	"characterTrait": "Traits & flaws",
 	"entries": [
 		"Academic",
 		"Adversity",

@@ -1,6 +1,7 @@
 {
 	"id": "character_motivations",
-	"name": "Personnage - Motivation",
+	"name": "Personnage - Motivations",
+	"characterTrait": "Motivations",
 	"entries": [
 		"Aventure",
 		"Adversité",
