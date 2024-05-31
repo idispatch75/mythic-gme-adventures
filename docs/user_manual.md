@@ -4,6 +4,12 @@ title: 'User manual'
 permalink: /user_manual/
 ---
 
+## Discovery
+
+On smartphone, you can long-press a button to show a tooltip.
+
+On desktop, you can hover the mouse over a button to show a tooltip.
+
 ## Adventures list
 
 The first screen of the application allows you to create/delete/edit/restore an Adventure.
@@ -31,6 +37,43 @@ just create a new empty Adventure, *Restore* it from the file,
 and continue when warned about an Adventure mismatch,
 which occurs when the ID of the Adventure in the file does not match
 the ID of the Adventure you are restoring.
+
+## Adventure screen
+
+On smartphone, the App is split in 3 sections:
+- Oracles: where you can roll on the Fate chart, Meaning tables and dice. This should be your go-to tab while you play a scene.
+- Scenes: where you can manage your adventure using the Mythic tools: the Threads and Characters lists, the Chaos factor and the Scenes. This is where you should go to start a new scene.
+- More: where you manage the data of your adventure: the threads and characters you created to fill the Mythic lists, player characters and notes.
+
+## Threads and Characters lists
+
+There are two lists for Threads/Characters: 
+- the "active" list is the list as in Mythic book, where you can have several instances of the same thread/character, which is represented by a counter on the right that you can modify accordingly. This representation was chosen to save space.  
+This list can be found in the "Scenes > Threads/Characters" on smartphone, or on the top of the screen on desktop in full screen.
+- the "management" list lists the individual threads/characters, which will still be available even if they are no more present in the "active" list. This allows you to have a history of all your threads/characters, even if they are no more active in the Mythic sense.  
+You can click on the "+" icon to add them to the "active" list or increment their counter if they are already there.  
+This list is used for managing threads/characters in the App and is not part of the Mythic workflow.  
+It can be found in "More > Threads/Characters" on smartphone, or in the Threads/Characters tab on desktop in full screen.
+
+You can create a thread/character from both lists.  
+If you create it from the "active" list, it will be added to the "management" list and also added to the "active" list with a counter of 1.  
+If you create it from the "management" list, you have to manually add it to the "active" list with the "+" icon if you wish.
+
+If you decrement a thread/character to 0 in the "active" list, it will be removed from this list but not from the "management" list, where you can add it back to the "active" list if need be.
+
+## Roll Log
+
+You can copy to the clipboard the result of a Meaning Table roll by pressing the roll result at least 1 second.  
+This is available in the Roll log and in the bottom sheet displayed when rolling on smartphones.
+
+## Global Settings
+
+- *Allow to roll "Choose" in the Characters and Threads lists*  
+  In Mythic rules, when you roll on a List,
+	you may end up rolling an entry that does not have a thread or character,
+	in which case you have to Choose an item yourself.  
+	If you don't want to have to choose and always want to roll a valid entry,
+	then uncheck this setting.
 
 ## Storage
 
@@ -103,20 +146,6 @@ The solution here is to disable the local storage,
 and save the Adventure's online version to update its save date and make it the most current.
 Then you can re-enable the local storage.
 
-## Global Settings
-
-- *Allow to roll "Choose" in the Characters and Threads lists*  
-  In Mythic rules, when you roll on a List,
-	you may end up rolling an entry that does not have a thread or character,
-	in which case you have to Choose an item yourself.  
-	If you don't want to have to choose and always want to roll a valid entry,
-	then uncheck this setting.
-
-## Roll Log
-
-You can copy to the clipboard the result of a Meaning Table roll by pressing the roll result at least 1 second.  
-This is available in the Roll log and in the bottom sheet displayed when rolling on smartphones.
-
 ## Custom Meaning Tables
 
 All the Meaning Tables from the book are available in English and embedded in the application.
@@ -129,7 +158,7 @@ and not the ones in the local storage.
 
 The custom tables are stored in `<data_folder>/meaning_tables/<language>`
 where `<language>` is an [ISO-639-1 code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes),
-e.g. `en` for English.
+e.g. `en` for English and `<data_folder>` is the folder defined in the Preferences dialog.
 
 The language folder must contain one JSON file per table, with this format:
 ```json
