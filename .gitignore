@@ -48,3 +48,4 @@ app.*.map.json
 /tools/translator/meaning_tables
 /tools/meaning-tables-import/table.js
 node_modules
+/.vscode

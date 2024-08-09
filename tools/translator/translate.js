@@ -61,11 +61,7 @@ async function translateTable(translator, table, language) {
 		to: language
 	};
 
-	let [translations] = await translator.translate(
-		[table.name, ...table.entries],
-		translateOptions);
-
-	// TODO cache results
+	let translations = await translate(translator, [table.name, ...table.entries], translateOptions);
 
 	const translatedTable = {
 		id: table.id,
@@ -77,9 +73,49 @@ async function translateTable(translator, table, language) {
 	// max number of strings for translate() is 128,
 	// so get entries2 with another call
 	if (table.entries2) {
-		[translations] = await translator.translate(table.entries2, translateOptions);
+		translations = await translate(translator, table.entries2, translateOptions);
 		translatedTable.entries2 = translations;
 	}
 
 	return translatedTable;
+}
+
+const translationsCache = new Map();
+
+/// Translates the specified values using a cache of already translated values.
+async function translate(translator, values, options) {
+	const translations = [];
+	const toTranslate = [];
+
+	// initialize the translations with cached translations
+	for (const value of values) {
+		const translatedValue = translationsCache[value];
+		if (translatedValue) {
+			translations.push(translatedValue);
+		} else {
+			translations.push(undefined);
+			toTranslate.push(value);
+		}
+	}
+
+	// get the new translations
+	if (toTranslate.length > 0) {
+		let [newTranslations] = await translator.translate(toTranslate, options);
+
+		// update the translations with the new translations
+		let newTranslationsIndex = 0;
+		for (let i = 0; i < translations.length; i++) {
+			const translatedValue = translations[i];
+
+			if (translatedValue === undefined) {
+				translations[i] = newTranslations[newTranslationsIndex];
+
+				translationsCache[values[i]] = translations[i];
+
+				newTranslationsIndex++;
+			}
+		}
+	}
+
+	return translations;
 }
