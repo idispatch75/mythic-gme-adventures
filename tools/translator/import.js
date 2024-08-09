@@ -1,5 +1,4 @@
 // - launch from a directory containing ./meaning_tables/<language> and ./meaning-tables_<language>.csv
-//   !!! The order of the entries in the CSV MUST be the same as in the json.
 // - run node ./import.js <language>
 // - the existing tables in ./meaning_tables/<language> are updated
 
@@ -18,8 +17,6 @@ const csvDelimiter = process.argv.length > 3 ? process.argv[3] : ';';
 importTables(language);
 
 async function importTables(language) {
-
-
 	const rows = [];
 
 	fs.createReadStream(`./meaning-tables_${language}.csv`)
