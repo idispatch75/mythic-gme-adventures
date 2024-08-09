@@ -43,7 +43,7 @@ abstract class Dialogs {
           TextButton(
             child: const Text('OK'),
             onPressed: () {
-              Get.back();
+              Get.back<void>();
             },
           ),
         ],
@@ -76,7 +76,7 @@ abstract class Dialogs {
   static Future<TValue?> showValuePicker<TValue>({
     required String title,
     required Widget child,
-    required Function() onSave,
+    required void Function() onSave,
   }) {
     final okButton = FilledButton(
       onPressed: onSave,

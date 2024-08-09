@@ -115,10 +115,10 @@ class RollLogView extends HookWidget {
 
 Widget getEntryView(RollEntry entry) {
   return switch (entry) {
-    FateChartRoll entry => _FateChartView(entry),
-    RandomEventRoll entry => _RandomEventView(entry),
-    MeaningTableRoll entry => _MeaningTableView(entry),
-    GenericRoll entry => _GenericView(entry),
+    final FateChartRoll entry => _FateChartView(entry),
+    final RandomEventRoll entry => _RandomEventView(entry),
+    final MeaningTableRoll entry => _MeaningTableView(entry),
+    final GenericRoll entry => _GenericView(entry),
   };
 }
 
@@ -328,7 +328,7 @@ void setupRollIndicator(BuildContext context) {
     final rollLog = Get.find<RollLogService>();
 
     final subscription = rollLog.rollUpdates.listen((updates) {
-      showModalBottomSheet(
+      showModalBottomSheet<void>(
         context: context,
         constraints: const BoxConstraints.tightFor(width: 300),
         builder: (_) {

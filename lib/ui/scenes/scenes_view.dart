@@ -58,7 +58,7 @@ class ScenesView extends GetView<ScenesService> {
             () => defaultListView(
               itemCount: scenes.length,
               itemBuilder: (_, index) {
-                int reverseIndex = scenes.length - index - 1;
+                final reverseIndex = scenes.length - index - 1;
                 return _SceneView(reverseIndex, scenes[reverseIndex]);
               },
             ),
@@ -82,8 +82,8 @@ class ScenesView extends GetView<ScenesService> {
   }
 
   Future<void> _testScene() async {
-    int chaosFactor = Get.find<ChaosFactorService>().chaosFactor();
-    int dieRoll = roll10Die();
+    final chaosFactor = Get.find<ChaosFactorService>().chaosFactor();
+    final dieRoll = roll10Die();
 
     if (dieRoll > chaosFactor) {
       // expected
@@ -92,7 +92,7 @@ class ScenesView extends GetView<ScenesService> {
         message: 'The scene happens as expected.',
       );
     } else {
-      if (dieRoll % 2 == 1) {
+      if (dieRoll.isOdd) {
         // altered
         await Dialogs.showAlert(
           title: 'Altered Scene',

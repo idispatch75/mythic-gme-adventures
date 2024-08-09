@@ -19,7 +19,7 @@ class SnackBarErrorHandler extends ReportHandler {
         return false;
       }
 
-      var message = 'An error occurred: ${report.error}';
+      final message = 'An error occurred: ${report.error}';
 
       final colorTheme = Theme.of(context).colorScheme;
 

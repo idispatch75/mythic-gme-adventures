@@ -139,7 +139,7 @@ class AdventureIndexController extends GetxController {
     }
 
     // pick a source directory
-    String? localDirectory = await FilePicker.platform.getDirectoryPath(
+    final localDirectory = await FilePicker.platform.getDirectoryPath(
       dialogTitle: 'Meaning Tables folder',
       lockParentWindow: true,
     );
@@ -268,7 +268,7 @@ class AdventureIndexController extends GetxController {
         }
       }
     } catch (e) {
-      Dialogs.showAlert(
+      await Dialogs.showAlert(
         title: 'Invalid Adventure',
         message: 'The selected file does not contain a valid Adventure.',
       );

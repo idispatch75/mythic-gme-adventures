@@ -30,7 +30,7 @@ abstract class ListableItemsListController<TItem extends ListableItem>
     extends GetxController {
   final items = <ListItem>[].obs;
 
-  late StreamSubscription _subscription;
+  late StreamSubscription<List<Rx<TItem>>> _subscription;
 
   RxList<Rx<TItem>> get sourceItemsList;
 
@@ -121,7 +121,7 @@ abstract class ListableItemsListView<TItem extends ListableItem>
     if (result != null) {
       Get.find<RollLogService>().addGenericRoll(
         title: '${itemTypeLabel}s List',
-        value: result.choose ? "Choose" : result.item!.value.name,
+        value: result.choose ? 'Choose' : result.item!.value.name,
         dieRoll: result.dieRoll,
       );
     }

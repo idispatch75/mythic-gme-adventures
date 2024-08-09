@@ -295,7 +295,7 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
     );
 
     if (result ?? false) {
-      controller.addAdventure(adventure);
+      await controller.addAdventure(adventure);
     }
   }
 
@@ -386,6 +386,6 @@ class _IndexAdventureView extends GetView<AdventureIndexController> {
 
     final filePath = result.files[0].path!;
 
-    controller.restoreAdventure(filePath, _adventure);
+    return controller.restoreAdventure(filePath, _adventure);
   }
 }

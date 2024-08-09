@@ -207,7 +207,7 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
     }
 
     // save the current adventure when a save is requested by an adventure service
-    _saveRequestsSubscription?.cancel();
+    await _saveRequestsSubscription?.cancel();
 
     _saveRequestsSubscription = MergeStream([
       Get.find<AdventureService>().saveRequests,

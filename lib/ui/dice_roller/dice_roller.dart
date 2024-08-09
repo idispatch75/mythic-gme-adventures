@@ -206,7 +206,7 @@ class DiceRollerService extends GetxService with SavableMixin {
       };
 
   DiceRollerService.fromJson(Map<String, dynamic> json) {
-    final diceRoller = json['diceRoller'];
+    final Map<String, dynamic>? diceRoller = json['diceRoller'];
 
     if (diceRoller != null) {
       for (var item in fromJsonList(diceRoller['rollLog'], DiceRoll.fromJson)) {

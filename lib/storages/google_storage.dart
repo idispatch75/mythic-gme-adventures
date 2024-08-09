@@ -32,7 +32,7 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
         final fileId = await _getFileInFolder(api, folderId, name);
 
         if (fileId != null) {
-          return await _getFileContent(api, fileId);
+          return _getFileContent(api, fileId);
         }
       }
 
@@ -92,7 +92,7 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
       if (folderId != null) {
         final fileId = await _getFileInFolder(api, folderId, name);
         if (fileId != null) {
-          api.files.delete(fileId);
+          await api.files.delete(fileId);
         }
       }
     }, _getAppFilePath(directoryPath, name));
@@ -112,7 +112,7 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
     final directoryPath = directory.join('/');
 
     final startFolderId = await _performRequest((api) async {
-      return await _getFolderId(api, directoryPath, false);
+      return _getFolderId(api, directoryPath, false);
     }, _getAppFilePath(directoryPath, '/'));
 
     if (startFolderId != null) {
@@ -259,7 +259,7 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
       downloadOptions: drive.DownloadOptions.fullMedia,
     ) as drive.Media;
 
-    return await media.stream.transform(utf8.decoder).join();
+    return media.stream.transform(utf8.decoder).join();
   }
 
   Future<T> _performRequest<T>(

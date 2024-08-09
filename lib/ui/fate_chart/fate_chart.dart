@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mythic_gme_adventures/ui/random_events/random_event.dart';
+import '../random_events/random_event.dart';
 
 import '../../helpers/utils.dart';
 import '../adventure/adventure.dart';
@@ -17,7 +17,7 @@ enum FateChartType {
   none,
 }
 
-fateChartTypeToJson(FateChartType fateChartType) => fateChartType.name;
+String fateChartTypeToJson(FateChartType fateChartType) => fateChartType.name;
 
 FateChartType fateChartTypeFromJson(String name) => switch (name) {
       'standard' => FateChartType.standard,
@@ -176,7 +176,7 @@ class FateChartService extends GetxService {
 
     // determine the outcome probability
     // based on the current chaos factor and fate chart type
-    int chaosFactor = Get.find<ChaosFactorService>().chaosFactor.value;
+    final chaosFactor = Get.find<ChaosFactorService>().chaosFactor.value;
 
     final adventure = Get.find<AdventureService>();
     final chart = switch (adventure.fateChartType) {

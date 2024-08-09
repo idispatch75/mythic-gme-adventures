@@ -12,6 +12,7 @@ import '../../helpers/datetime_extensions.dart';
 import '../../helpers/string_extensions.dart';
 import '../../persisters/adventure_persister.dart';
 import '../../persisters/global_settings_persister.dart';
+import '../../persisters/persister.dart';
 import '../adventure_index/adventure_index_view.dart';
 import '../characters/character.dart';
 import '../global_settings/global_settings.dart';
@@ -31,7 +32,7 @@ class AdventureInfoController extends GetxController {
 
   final Rx<String?> saveDate = Rx(null);
 
-  StreamSubscription? _saveResultsSubscription;
+  StreamSubscription<SaveResult>? _saveResultsSubscription;
   Timer? _saveTickerTimer;
 
   @override
@@ -53,7 +54,7 @@ class AdventureInfoController extends GetxController {
       }
     });
 
-    // compute save date periodicly
+    // compute save date periodically
     saveDate.value = _getSaveDate();
     _saveTickerTimer = Timer.periodic(
       const Duration(seconds: 3),
@@ -74,7 +75,7 @@ class AdventureInfoController extends GetxController {
   Future<void> showIndex(BuildContext context) async {
     if (!context.mounted) return;
     await Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => AdventureIndexView()),
+      MaterialPageRoute<void>(builder: (context) => AdventureIndexView()),
     );
   }
 

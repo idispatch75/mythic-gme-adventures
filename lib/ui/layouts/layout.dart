@@ -118,7 +118,8 @@ class AdventureAppBar extends StatelessWidget implements PreferredSizeWidget {
 abstract class Layout {
   static const verticalSpacer = SizedBox(width: 4);
   static const horizontalSpacer = SizedBox(height: 4);
-  static get borderSide => BorderSide(color: AppStyles.headerColor, width: 2);
+  static BorderSide get borderSide =>
+      BorderSide(color: AppStyles.headerColor, width: 2);
 }
 
 const bottomNavigationDestinations = [

@@ -87,7 +87,7 @@ class PreferencesEditView extends HookWidget {
                   final initialDirectory =
                       localDataDirectoryController.text.nullIfEmpty() ??
                           defaultLocalDataDirectory.data;
-                  String? path = await FilePicker.platform.getDirectoryPath(
+                  final path = await FilePicker.platform.getDirectoryPath(
                     dialogTitle: 'Local data folder',
                     initialDirectory: initialDirectory,
                     lockParentWindow: true,
@@ -183,7 +183,7 @@ class PreferencesEditView extends HookWidget {
       actions = actions.reversed.toList();
     }
 
-    return await Get.dialog<bool>(
+    return Get.dialog<bool>(
       AlertDialog.adaptive(
         title: const Text('Copy or not copy?'),
         content: const Text('The data folder has changed.\n\n'

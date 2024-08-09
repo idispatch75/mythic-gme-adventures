@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
-import 'package:mythic_gme_adventures/ui/widgets/boolean_setting.dart';
 
 import '../../helpers/input_validators.dart';
 import '../../helpers/string_extensions.dart';
+import '../widgets/boolean_setting.dart';
 import '../widgets/edit_dialog.dart';
 import 'listable_item.dart';
 

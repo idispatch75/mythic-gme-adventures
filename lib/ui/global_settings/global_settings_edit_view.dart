@@ -22,7 +22,7 @@ class GlobalSettingsEditController extends GetxController {
     'pl': 'Polski',
   };
 
-  final meaningTableLanguages = {};
+  final meaningTableLanguages = <String, String>{};
 
   @override
   void onInit() async {
@@ -50,8 +50,6 @@ class GlobalSettingsEditView extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     final controller = Get.find<GlobalSettingsEditController>();
     final languageMenuEntries = controller.meaningTableLanguages.entries
         .map((e) => DropdownMenuEntry<String>(value: e.key, label: e.value))

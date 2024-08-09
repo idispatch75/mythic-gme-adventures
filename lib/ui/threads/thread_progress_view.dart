@@ -160,7 +160,7 @@ class ThreadProgressView extends GetView<ThreadController> {
                 final phaseProgress = thread.progress() - maxProgress;
 
                 return Padding(
-                  padding: EdgeInsets.only(left: index % 2 == 0 ? 0 : 8),
+                  padding: EdgeInsets.only(left: index.isEven ? 0 : 8),
                   child: _ProgressPhaseView(phase, phaseProgress),
                 );
               });
@@ -199,7 +199,7 @@ class _ProgressPhaseView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = Theme.of(context).colorScheme.onBackground;
+    final borderColor = Theme.of(context).colorScheme.onSurface;
     const progressWidth = 14.0;
 
     return Row(

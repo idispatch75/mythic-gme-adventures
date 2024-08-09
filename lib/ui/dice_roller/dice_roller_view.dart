@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
-import 'package:mythic_gme_adventures/helpers/dialogs.dart';
+import '../../helpers/dialogs.dart';
 
 import '../roll_log/roll_log_view.dart';
 import '../styles.dart';

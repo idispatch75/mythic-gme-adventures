@@ -41,14 +41,14 @@ Future<void> main() async {
   );
 
   // catcher
-  Catcher2Options releaseOptions = Catcher2Options(
+  final releaseOptions = Catcher2Options(
     SilentReportMode(),
     [
       SnackBarErrorHandler(),
     ],
   );
 
-  Catcher2Options debugOptions = Catcher2Options(
+  final debugOptions = Catcher2Options(
     releaseOptions.reportMode,
     releaseOptions.handlers
       ..add(ConsoleHandler(
@@ -73,7 +73,7 @@ Future<void> main() async {
     final windowGeometry = _WindowGeometry(sharedPreferences);
 
     final position = windowGeometry.getPosition();
-    WindowOptions windowOptions = WindowOptions(
+    final windowOptions = WindowOptions(
       size: windowGeometry.getSize(),
       //size: const Size(1300, 800),
       //size: const Size(900, 800),

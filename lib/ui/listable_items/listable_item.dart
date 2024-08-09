@@ -98,7 +98,7 @@ class ListableItemsService<TItem extends ListableItem> extends GetxService
     TItem Function(Map<String, dynamic>) itemFactory,
   ) {
     final itemsListIds =
-        List<int>.from(((json['${listName}List'] ?? []) as List));
+        List<int>.from(((json['${listName}List'] ?? <int>[]) as List));
     for (var item in fromJsonList(json[listName], itemFactory)) {
       final rxItem = add(item);
 

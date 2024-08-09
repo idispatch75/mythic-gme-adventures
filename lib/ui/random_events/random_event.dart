@@ -99,9 +99,9 @@ class CurrentContext extends RandomEventFocus {
 }
 
 void rollRandomEvent() {
-  int dieRoll = roll100Die();
+  final dieRoll = roll100Die();
 
-  RandomEventFocus focus;
+  RandomEventFocus? focus;
   if (dieRoll <= 5) {
     focus = RemoteEvent();
   } else if (dieRoll <= 10) {
@@ -110,67 +110,66 @@ void rollRandomEvent() {
     focus = NewNpc();
   } else if (dieRoll <= 40) {
     final result = rollListItem(Get.find<CharactersService>().itemsList);
-    focus = result != null
-        ? NpcEvent(
-            eventName: 'NPC Action',
-            target: result.choose ? "Choose" : result.item!.value.name)
-        : CurrentContext();
+    if (result != null) {
+      focus = NpcEvent(
+          eventName: 'NPC Action',
+          target: result.choose ? 'Choose' : result.item!.value.name);
+    }
   } else if (dieRoll <= 45) {
     final result = rollListItem(Get.find<CharactersService>().itemsList);
-    focus = result != null
-        ? NpcEvent(
-            eventName: 'NPC Negative',
-            target: result.choose ? "Choose" : result.item!.value.name)
-        : CurrentContext();
+    if (result != null) {
+      focus = NpcEvent(
+          eventName: 'NPC Negative',
+          target: result.choose ? 'Choose' : result.item!.value.name);
+    }
   } else if (dieRoll <= 50) {
     final result = rollListItem(Get.find<CharactersService>().itemsList);
-    focus = result != null
-        ? NpcEvent(
-            eventName: 'NPC Positive',
-            target: result.choose ? "Choose" : result.item!.value.name)
-        : CurrentContext();
+    if (result != null) {
+      focus = NpcEvent(
+          eventName: 'NPC Positive',
+          target: result.choose ? 'Choose' : result.item!.value.name);
+    }
   } else if (dieRoll <= 55) {
     final result = rollListItem(Get.find<ThreadsService>().itemsList);
-    focus = result != null
-        ? ThreadEvent(
-            eventName: 'Move toward a Thread',
-            target: result.choose ? "Choose" : result.item!.value.name)
-        : CurrentContext();
+    if (result != null) {
+      focus = ThreadEvent(
+          eventName: 'Move toward a Thread',
+          target: result.choose ? 'Choose' : result.item!.value.name);
+    }
   } else if (dieRoll <= 65) {
     final result = rollListItem(Get.find<ThreadsService>().itemsList);
-    focus = result != null
-        ? ThreadEvent(
-            eventName: 'Move away from a Thread',
-            target: result.choose ? "Choose" : result.item!.value.name)
-        : CurrentContext();
+    if (result != null) {
+      focus = ThreadEvent(
+          eventName: 'Move away from a Thread',
+          target: result.choose ? 'Choose' : result.item!.value.name);
+    }
   } else if (dieRoll <= 70) {
     final result = rollListItem(Get.find<ThreadsService>().itemsList);
-    focus = result != null
-        ? ThreadEvent(
-            eventName: 'Close a Thread',
-            target: result.choose ? "Choose" : result.item!.value.name)
-        : CurrentContext();
+    if (result != null) {
+      focus = ThreadEvent(
+          eventName: 'Close a Thread',
+          target: result.choose ? 'Choose' : result.item!.value.name);
+    }
   } else if (dieRoll <= 80) {
     final result =
         rollListItem(Get.find<PlayerCharactersService>().playerCharacters);
     focus = result != null
         ? PcEvent(
             eventName: 'PC Positive',
-            target: result.choose ? "Choose" : result.item!.value.name)
-        : CurrentContext();
+            target: result.choose ? 'Choose' : result.item!.value.name)
+        : PcEvent(eventName: 'PC Positive', target: '');
   } else if (dieRoll <= 85) {
     final result =
         rollListItem(Get.find<PlayerCharactersService>().playerCharacters);
     focus = result != null
         ? PcEvent(
             eventName: 'PC Negative',
-            target: result.choose ? "Choose" : result.item!.value.name)
-        : CurrentContext();
-  } else {
-    focus = CurrentContext();
+            target: result.choose ? 'Choose' : result.item!.value.name)
+        : PcEvent(eventName: 'PC Negative', target: '');
   }
 
-  Get.find<RollLogService>().addRandomEventRoll(focus: focus, dieRoll: dieRoll);
+  Get.find<RollLogService>()
+      .addRandomEventRoll(focus: focus ?? CurrentContext(), dieRoll: dieRoll);
 }
 
 class ListRollResult<T> {

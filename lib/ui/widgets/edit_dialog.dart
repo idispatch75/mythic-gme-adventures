@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
-import 'package:mythic_gme_adventures/helpers/dialogs.dart';
 
+import '../../helpers/dialogs.dart';
 import '../layouts/layout.dart';
 
 class EditDialog<TResult> extends HookWidget {
@@ -45,7 +45,7 @@ class EditDialog<TResult> extends HookWidget {
 
   /// Helper method to trigger a Save using the [saveTrigger]
   /// used when creating the dialog.
-  static triggerSave(RxBool? saveTrigger) {
+  static void triggerSave(RxBool? saveTrigger) {
     if (saveTrigger != null) {
       saveTrigger.toggle();
     }
@@ -120,7 +120,7 @@ class EditDialog<TResult> extends HookWidget {
                           children: [
                             // Cancel button
                             TextButton(
-                              onPressed: () => Get.back(),
+                              onPressed: () => Get.back<void>(),
                               child: const Text('Cancel'),
                             ),
 
@@ -158,7 +158,7 @@ class EditDialog<TResult> extends HookWidget {
     )) {
       await onDelete!();
 
-      Get.back();
+      Get.back<void>();
     }
   }
 }

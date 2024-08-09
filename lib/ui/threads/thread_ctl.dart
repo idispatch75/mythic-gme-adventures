@@ -71,7 +71,7 @@ class ThreadController extends GetxController {
   }
 
   void addProgress(int progress) {
-    int maxProgress = thread.phases.length * 5;
+    final maxProgress = thread.phases.length * 5;
     thread.progress.value = min(thread.progress() + progress, maxProgress);
 
     _service.requestSave();

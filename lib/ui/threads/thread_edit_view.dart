@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mythic_gme_adventures/ui/widgets/boolean_setting.dart';
+import '../widgets/boolean_setting.dart';
 
 import '../../helpers/get_extensions.dart';
 import '../listable_items/listable_item_edit_view.dart';

@@ -77,7 +77,7 @@ class SceneEditView extends HookWidget {
                     isNew: isNew,
                   ));
                   Get.find<LayoutController>().hasEditScenePage.value = true;
-                  Get.back();
+                  Get.back<void>();
                 },
               ),
             ),

@@ -42,7 +42,7 @@ class FateChartButton extends GetView<FateChartService> {
 
   @override
   Widget build(BuildContext context) {
-    BorderSide rightBorderSide = hasRightBorder ? _borderSide : BorderSide.none;
+    final rightBorderSide = hasRightBorder ? _borderSide : BorderSide.none;
 
     final button = Container(
       color: rollColors.background,
