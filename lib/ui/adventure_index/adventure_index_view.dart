@@ -33,6 +33,10 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
         body: SafeArea(
           child: LayoutBuilder(builder: (_, constraints) {
             final isPhone = constraints.maxWidth <= kPhoneBreakPoint;
+            bool isDarkMode = false;
+            if (isPhone) {
+              isDarkMode = Get.find<LocalPreferencesService>().enableDarkMode();
+            }
 
             final Widget content = Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,6 +140,20 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                   }),
                 ),
 
+                if (isPhone)
+                  if (isDarkMode)
+                    const Divider(
+                      height: 2,
+                      thickness: 2,
+                    )
+                  else
+                    Material(
+                      elevation: 3,
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 4),
+                      ),
+                    ),
+
                 // Use Google
                 Obx(
                   () => Padding(
@@ -191,54 +209,50 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                           ),
 
                           // online options
-                          Card(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // meaning tables
-                                  Row(
-                                    children: [
-                                      const Text('Custom Meaning Tables'),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0,
-                                        ),
-
-                                        // upload
-                                        child: _meaningTablesUpload(),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 8, 0, 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // meaning tables
+                                Row(
+                                  children: [
+                                    const Text('Custom Meaning Tables'),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0,
                                       ),
 
-                                      // download
-                                      _meaningTablesDownload(context),
-                                    ],
-                                  ),
-
-                                  // disable local storage
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text('Disable local storage'),
-                                      Switch.adaptive(
-                                        value:
-                                            !_preferences.enableLocalStorage(),
-                                        onChanged:
-                                            controller.disableLocalStorage,
-                                      ),
-                                    ],
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 16.0),
-                                    child: Text(
-                                      'This might be useful if you want to make the online version of an Adventure'
-                                      ' more recent than its local version.',
-                                      style: theme.textTheme.labelMedium,
+                                      // upload
+                                      child: _meaningTablesUpload(),
                                     ),
+
+                                    // download
+                                    _meaningTablesDownload(context),
+                                  ],
+                                ),
+
+                                // disable local storage
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text('Disable local storage'),
+                                    Switch.adaptive(
+                                      value: !_preferences.enableLocalStorage(),
+                                      onChanged: controller.disableLocalStorage,
+                                    ),
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 16.0),
+                                  child: Text(
+                                    'This might be useful if you want to make the online version of an Adventure'
+                                    ' more recent than its local version.',
+                                    style: theme.textTheme.labelMedium,
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -251,7 +265,7 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                 Align(
                   alignment: Alignment.bottomRight,
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                    padding: const EdgeInsets.all(8),
                     child: OutlinedButton(
                       onPressed: controller.showPreferences,
                       child: const Text('Preferences'),
