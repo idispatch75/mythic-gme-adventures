@@ -48,18 +48,27 @@ On smartphone, the App is split in 3 sections:
 ## Threads and Characters lists
 
 There are two lists for Threads/Characters: 
-- the "active" list is the list as in Mythic book, where you can have several instances of the same thread/character, which is represented by a counter on the right that you can modify accordingly. This representation was chosen to save space.  
+- the *active* list is the list as in the Mythic book, where you can have several instances of the same thread/character, which is represented by a counter on the right that you can modify accordingly. This representation was chosen to save space.  
 This list can be found in the "Scenes > Threads/Characters" on smartphone, or on the top of the screen on desktop in full screen.
-- the "management" list lists the individual threads/characters, which will still be available even if they are no more present in the "active" list. This allows you to have a history of all your threads/characters, even if they are no more active in the Mythic sense.  
-You can click on the "+" icon to add them to the "active" list or increment their counter if they are already there.  
+- the *management* list lists the individual threads/characters, which will still be available even if they are no more present in the *active* list. This allows you to have a history of all your threads/characters, even if they are no more active in the Mythic sense.  
+You can click on the "+ list" icon to add them to the *active* list or increment their counter if they are already there.  
 This list is used for managing threads/characters in the App and is not part of the Mythic workflow.  
 It can be found in "More > Threads/Characters" on smartphone, or in the Threads/Characters tab on desktop in full screen.
 
 You can create a thread/character from both lists.  
-If you create it from the "active" list, it will be added to the "management" list and also added to the "active" list with a counter of 1.  
-If you create it from the "management" list, you have to manually add it to the "active" list with the "+" icon if you wish.
+If you create it from the *active* list, it will be added to the *management* list and also added to the *active* list with a counter of 1.  
+If you create it from the *management* list, you have to manually add it to the *active* list with the "+ list" icon.
 
-If you decrement a thread/character to 0 in the "active" list, it will be removed from this list but not from the "management" list, where you can add it back to the "active" list if need be.
+If you decrement a thread/character to 0 in the *active* list, it will be removed from this list but not from the *management* list, where you can add it back to the *active* list if need be.
+
+## Random events
+
+The Random events with a focus of NPC or Thread are rolled on the *active* Threads/Characters lists.  
+If a list is empty and the focus of the event is related to this list, then the focus is switched to CurrentContext. 
+For instance if "NPC Negative" is rolled and the *active* Characters list is empty, the event focus will become CurrentContext.
+
+When a focus is related to a list, the impacted Thread/Character is rolled according to Mythic rules, which may yield a result of "Choose".  
+If you don't like to choose, you can disallow this result in the Global Settings.
 
 ## Roll Log
 
@@ -77,7 +86,7 @@ This is available in the Roll log and in the bottom sheet displayed when rolling
 
 ## Storage
 
-Your adventures and global settings are always saved locally,
+Your adventure and global settings are always saved locally,
 and optionally on an online storage.
 
 A save occurs 5 seconds after the last modification to an adventure or setting.
@@ -125,7 +134,7 @@ it will be able to see only the files/folders it created.
 This is obviously desirable for confidentiality reasons but it has some drawbacks:
 you cannot update/customize the application files yourself because the application
 won't be able to see them, even the files in `Mythic GME Adventures`.
-And there is no way for you to give permission to see a specific file or folder.
+And there is no way for you to give permission to the application to see a specific file or folder.
 This is why you must use the application to upload custom Meaning Tables to the online storage.
 
 When uploading custom Meaning Tables, you must select the folder that contains
