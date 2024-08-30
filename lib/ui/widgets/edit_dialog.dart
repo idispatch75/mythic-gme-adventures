@@ -6,6 +6,8 @@ import '../../helpers/dialogs.dart';
 import '../layouts/layout.dart';
 
 class EditDialog<TResult> extends HookWidget {
+  static const boxConstraints = BoxConstraints(maxHeight: 600, maxWidth: 500);
+
   final String itemTypeLabel;
   final bool canDelete;
 
@@ -78,9 +80,9 @@ class EditDialog<TResult> extends HookWidget {
 
     Widget dialogContent(bool isFullscreen) {
       return Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 500, maxWidth: 500),
+          constraints: boxConstraints,
           child: Form(
             key: _formKey,
             child: Padding(

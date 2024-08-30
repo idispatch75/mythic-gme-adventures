@@ -48,6 +48,7 @@ class SceneEditView extends HookWidget {
             autofocus: _scene.summary.isEmpty,
             onFieldSubmitted: (_) => EditDialog.triggerSave(saveTrigger),
           ),
+          const SizedBox(height: 16),
           Flexible(
             fit: FlexFit.loose,
             child: TextFormField(

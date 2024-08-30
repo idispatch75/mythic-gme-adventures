@@ -52,11 +52,15 @@ abstract class ListableItemEditView<TItem extends ListableItem>
             autofocus: item.name.isEmpty,
             onFieldSubmitted: (_) => EditDialog.triggerSave(saveTrigger),
           ),
+          const SizedBox(height: 16),
+
           TextFormField(
             controller: summaryController,
             decoration: const InputDecoration(labelText: 'Summary'),
             onFieldSubmitted: (_) => EditDialog.triggerSave(saveTrigger),
           ),
+          const SizedBox(height: 16),
+
           Flexible(
             fit: FlexFit.loose,
             child: TextFormField(
@@ -70,12 +74,12 @@ abstract class ListableItemEditView<TItem extends ListableItem>
           // complement
           if (complement != null)
             Padding(
-              padding: const EdgeInsets.only(top: 8.0),
+              padding: const EdgeInsets.only(top: 16.0),
               child: complement,
             ),
 
           // archive
-          if (_canDelete)
+          if (_canDelete) ...[
             BooleanSetting(
               setting: isArchived,
               text: 'Archived',
@@ -84,6 +88,7 @@ abstract class ListableItemEditView<TItem extends ListableItem>
                   ' and moves it at the end of the list of ${_itemTypeLabel}s.',
               hasTopPadding: true,
             ),
+          ],
         ],
       ),
       itemTypeLabel: _itemTypeLabel,

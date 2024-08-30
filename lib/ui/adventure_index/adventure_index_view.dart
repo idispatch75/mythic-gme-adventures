@@ -245,7 +245,7 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                                   ],
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 16.0),
+                                  padding: const EdgeInsets.only(left: 8.0),
                                   child: Text(
                                     'This might be useful if you want to make the online version of an Adventure'
                                     ' more recent than its local version.',

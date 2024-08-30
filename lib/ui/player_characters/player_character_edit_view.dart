@@ -45,6 +45,7 @@ class PlayerCharacterEditView extends HookWidget {
             autofocus: _player.name.isEmpty,
             onFieldSubmitted: (_) => EditDialog.triggerSave(saveTrigger),
           ),
+          const SizedBox(height: 16),
           Flexible(
             fit: FlexFit.loose,
             child: TextFormField(
