@@ -58,7 +58,10 @@ Future<void> main() async {
   );
 
   // get preferences
-  final sharedPreferences = await SharedPreferences.getInstance();
+  final sharedPreferences = await SharedPreferencesWithCache.create(
+      cacheOptions: const SharedPreferencesWithCacheOptions());
+
+  await _migratePreferences(sharedPreferences);
 
   // load the meaning tables
   // (before handling desktop size: waitUntilReadyToShow may not work properly)
@@ -172,7 +175,7 @@ class _WindowGeometry extends WindowListener {
   static const String _leftKey = 'windowLeft';
   static const String _maximizedKey = 'windowMaximized';
 
-  final SharedPreferences sharedPreferences;
+  final SharedPreferencesWithCache sharedPreferences;
 
   _WindowGeometry(this.sharedPreferences);
 
@@ -232,4 +235,39 @@ class _WindowCloseInterceptor extends WindowListener {
       }
     }
   }
+}
+
+Future<void> _migratePreferences(
+    SharedPreferencesWithCache sharedPreferences) async {
+  final oldSharedPreferences = await SharedPreferences.getInstance();
+
+  final isMigrated = sharedPreferences.getBool('isMigrated');
+  if (isMigrated ?? false) {
+    return;
+  }
+
+  final enableGoogleStorage =
+      oldSharedPreferences.getBool('enableGoogleStorage');
+  if (enableGoogleStorage != null) {
+    await sharedPreferences.setBool('enableGoogleStorage', enableGoogleStorage);
+  }
+
+  final enableLocalStorage = oldSharedPreferences.getBool('enableLocalStorage');
+  if (enableLocalStorage != null) {
+    await sharedPreferences.setBool('enableLocalStorage', enableLocalStorage);
+  }
+
+  final localDataDirectoryOverride =
+      oldSharedPreferences.getString('localDataDirectoryOverride');
+  if (localDataDirectoryOverride != null) {
+    await sharedPreferences.setString(
+        'localDataDirectoryOverride', localDataDirectoryOverride);
+  }
+
+  final enableDarkMode = oldSharedPreferences.getBool('enableDarkMode');
+  if (enableDarkMode != null) {
+    await sharedPreferences.setBool('enableDarkMode', enableDarkMode);
+  }
+
+  await sharedPreferences.setBool('isMigrated', true);
 }

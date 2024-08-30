@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalPreferencesService extends GetxService {
-  final SharedPreferences _preferences;
+  final SharedPreferencesWithCache _preferences;
 
   final RxBool enableGoogleStorage;
   final RxBool enableLocalStorage;
