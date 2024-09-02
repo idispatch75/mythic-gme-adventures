@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../widgets/boolean_setting.dart';
 
 import '../../helpers/get_extensions.dart';
 import '../listable_items/listable_item_edit_view.dart';
+import '../widgets/boolean_setting.dart';
 import 'thread.dart';
 import 'thread_ctl.dart';
 
@@ -67,20 +67,17 @@ class _ThreadComplementEditView extends StatelessWidget {
 
           // track size
           if (controller.isTracked())
-            Padding(
-              padding: const EdgeInsets.only(left: 0.0),
-              child: SegmentedButton<int>(
-                selected: {controller.nbPhases()},
-                onSelectionChanged: (nbPhases) =>
-                    controller.nbPhases.value = nbPhases.first,
-                segments: [
-                  for (int nbPhases = 2; nbPhases < 5; nbPhases++)
-                    ButtonSegment<int>(
-                      value: nbPhases,
-                      label: Text((nbPhases * 5).toString()),
-                    ),
-                ],
-              ),
+            SegmentedButton<int>(
+              selected: {controller.nbPhases()},
+              onSelectionChanged: (nbPhases) =>
+                  controller.nbPhases.value = nbPhases.first,
+              segments: [
+                for (int nbPhases = 2; nbPhases < 5; nbPhases++)
+                  ButtonSegment<int>(
+                    value: nbPhases,
+                    label: Text((nbPhases * 5).toString()),
+                  ),
+              ],
             ),
         ],
       ),

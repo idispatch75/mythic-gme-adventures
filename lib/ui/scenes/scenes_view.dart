@@ -4,10 +4,14 @@ import 'package:get/get.dart';
 import '../../helpers/dialogs.dart';
 import '../../helpers/utils.dart';
 import '../chaos_factor/chaos_factor.dart';
+import '../keyed_scenes/keyed_scene.dart';
+import '../keyed_scenes/keyed_scenes_view.dart';
 import '../random_events/random_event.dart';
 import '../roll_log/roll_log.dart';
 import '../styles.dart';
 import '../widgets/button_row.dart';
+import '../widgets/edit_dialog.dart';
+import '../widgets/header.dart';
 import '../widgets/round_badge.dart';
 import 'scene.dart';
 import 'scene_edit_view.dart';
@@ -21,10 +25,44 @@ class ScenesView extends GetView<ScenesService> {
   Widget build(BuildContext context) {
     final scenes = controller.scenes;
 
+    Widget? keyedScenesButton;
+    if (!dense) {
+      keyedScenesButton = Padding(
+        padding: const EdgeInsets.only(right: 8.0),
+        child: OutlinedButton.icon(
+          icon: Obx(() {
+            Widget icon = const Icon(Icons.bolt);
+
+            final keyedScenesController = Get.find<KeyedScenesService>();
+            if (keyedScenesController.scenes.isNotEmpty) {
+              icon = Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  icon,
+                  const Positioned(
+                    top: 0,
+                    left: 20,
+                    child: Badge(smallSize: 8),
+                  ),
+                ],
+              );
+            }
+
+            return icon;
+          }),
+          onPressed: _showKeyedScenes,
+          label: const Text('Keyed Scenes'),
+        ),
+      );
+    }
+
     return Column(
       children: [
         ButtonRow(
           children: [
+            // keyed scenes
+            if (keyedScenesButton != null) keyedScenesButton,
+
             // roll adjustment
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
@@ -145,6 +183,32 @@ class ScenesView extends GetView<ScenesService> {
     } else {
       addSceneAdjustmentRoll(dieRoll);
     }
+  }
+
+  void _showKeyedScenes() {
+    Get.dialog<bool>(
+      Dialog(
+        child: ConstrainedBox(
+          constraints: EditDialog.boxConstraints,
+          child: Column(
+            children: [
+              // scenes
+              const Header('Keyed Scenes'),
+              const Expanded(child: KeyedScenesView()),
+
+              // close
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: OutlinedButton(
+                  onPressed: () => Get.back<void>(),
+                  child: const Text('Close'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

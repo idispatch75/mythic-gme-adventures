@@ -45,6 +45,7 @@ class NoteEditView extends HookWidget {
             autofocus: _note.title.isEmpty,
             onFieldSubmitted: (_) => EditDialog.triggerSave(saveTrigger),
           ),
+          const SizedBox(height: 16),
           Flexible(
             fit: FlexFit.loose,
             child: TextFormField(

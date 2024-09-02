@@ -21,16 +21,10 @@ class BooleanSetting extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget widget = Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(text, softWrap: true),
-              if (subtext != null) SubLabel(subtext!),
-            ],
-          ),
+          child: Text(text, softWrap: true),
         ),
         Obx(
           () => Switch.adaptive(
@@ -40,6 +34,22 @@ class BooleanSetting extends StatelessWidget {
         ),
       ],
     );
+
+    if (subtext != null) {
+      widget = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          widget,
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: SubLabel(
+              subtext!,
+              topPadding: 0,
+            ),
+          ),
+        ],
+      );
+    }
 
     if (hasTopPadding) {
       widget = Padding(

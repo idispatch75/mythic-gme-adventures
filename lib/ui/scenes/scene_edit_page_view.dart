@@ -66,6 +66,7 @@ class SceneEditPageView extends HookWidget {
             validator: validateNotEmpty,
             decoration: const InputDecoration(labelText: 'Summary'),
           ),
+          const SizedBox(height: 16),
           Expanded(
             child: TextFormField(
               controller: notesController,

@@ -15,6 +15,7 @@ import '../ui/chaos_factor/chaos_factor.dart';
 import '../ui/characters/character.dart';
 import '../ui/characters/characters_list.dart';
 import '../ui/dice_roller/dice_roller.dart';
+import '../ui/keyed_scenes/keyed_scene.dart';
 import '../ui/notes/note.dart';
 import '../ui/player_characters/player_character.dart';
 import '../ui/roll_log/roll_log.dart';
@@ -48,6 +49,7 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
       Get.find<ThreadsService>(),
       Get.find<PlayerCharactersService>(),
       Get.find<ScenesService>(),
+      Get.find<KeyedScenesService>(),
       Get.find<NotesService>(),
       Get.find<RollLogService>(),
       Get.find<DiceRollerService>(),
@@ -67,6 +69,7 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
       ThreadsService(),
       PlayerCharactersService(),
       ScenesService(),
+      KeyedScenesService(),
       NotesService(),
       RollLogService(),
       DiceRollerService(),
@@ -80,6 +83,7 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
     ThreadsService threadsService,
     PlayerCharactersService playerCharactersService,
     ScenesService scenesService,
+    KeyedScenesService keyedScenesService,
     NotesService notesService,
     RollLogService rollLogService,
     DiceRollerService diceRollerService,
@@ -113,6 +117,7 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
             threadsService,
             playerCharactersService,
             scenesService,
+            keyedScenesService,
             notesService,
             rollLogService,
             diceRollerService,
@@ -216,6 +221,7 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
       Get.find<ThreadsService>().saveRequests,
       Get.find<PlayerCharactersService>().saveRequests,
       Get.find<ScenesService>().saveRequests,
+      Get.find<KeyedScenesService>().saveRequests,
       Get.find<NotesService>().saveRequests,
       Get.find<RollLogService>().saveRequests,
       Get.find<DiceRollerService>().saveRequests,
@@ -399,6 +405,7 @@ class AdventurePersister {
     ThreadsService threadsService,
     PlayerCharactersService playerCharactersService,
     ScenesService scenesService,
+    KeyedScenesService keyedScenesService,
     NotesService notesService,
     RollLogService rollLogService,
     DiceRollerService diceRollerService,
@@ -412,6 +419,7 @@ class AdventurePersister {
     json.addAll(threadsService.toJson());
     json.addAll(playerCharactersService.toJson());
     json.addAll(scenesService.toJson());
+    json.addAll(keyedScenesService.toJson());
     json.addAll(notesService.toJson());
     json.addAll(rollLogService.toJson());
     json.addAll(diceRollerService.toJson());
@@ -452,6 +460,7 @@ class AdventurePersister {
           Get.replaceForced(ThreadsListController());
           Get.replaceForced(PlayerCharactersService.fromJson(json));
           Get.replaceForced(ScenesService.fromJson(json));
+          Get.replaceForced(KeyedScenesService.fromJson(json));
           Get.replaceForced(NotesService.fromJson(json));
           Get.replaceForced(RollLogService.fromJson(json));
           Get.replaceForced(DiceRollerService.fromJson(json));

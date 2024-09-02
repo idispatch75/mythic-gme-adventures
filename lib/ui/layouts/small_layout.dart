@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
@@ -8,6 +10,8 @@ import '../characters/characters_view.dart';
 import '../dice_roller/dice_roller_view.dart';
 import '../fate_chart/fate_chart.dart';
 import '../fate_chart/fate_chart_view.dart';
+import '../keyed_scenes/keyed_scene.dart';
+import '../keyed_scenes/keyed_scenes_view.dart';
 import '../meaning_tables/meaning_tables_ctl.dart';
 import '../meaning_tables/meaning_tables_view.dart';
 import '../notes/notes_view.dart';
@@ -136,12 +140,34 @@ class SmallLayoutScenes extends HookWidget {
           child: SceneEditPageView(),
         );
       } else {
+        Widget keyedSceneTab = const Text(
+          'Keyed Scenes',
+          softWrap: false,
+          overflow: TextOverflow.fade,
+        );
+
+        final keyedScenesController = Get.find<KeyedScenesService>();
+        if (keyedScenesController.scenes.isNotEmpty) {
+          keyedSceneTab = Stack(
+            clipBehavior: Clip.none,
+            children: [
+              keyedSceneTab,
+              const Positioned(
+                top: -6,
+                left: -8,
+                child: Badge(smallSize: 8),
+              ),
+            ],
+          );
+        }
+
         return LayoutTabBar(
           tabIndex: layoutController.sceneTabIndex,
-          tabs: const [
-            Tab(text: 'Threads'),
-            Tab(text: 'Characters'),
-            Tab(text: 'Scenes'),
+          tabs: [
+            const Tab(text: 'Threads'),
+            const Tab(text: 'Characters'),
+            const Tab(text: 'Scenes'),
+            Tab(child: keyedSceneTab),
           ],
           children: [
             // threads
@@ -157,6 +183,15 @@ class SmallLayoutScenes extends HookWidget {
                 getZoneDecoration(const ChaosFactorView(dense: true)),
                 const Header('Scenes'),
                 const Expanded(child: ScenesView(dense: true)),
+              ],
+            ),
+
+            // keyed scenes
+            const Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Header('Keyed Scenes'),
+                Expanded(child: KeyedScenesView()),
               ],
             ),
           ],
