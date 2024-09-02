@@ -74,29 +74,23 @@ class KeyedSceneEditView extends HookWidget {
           const Text('Counts'),
           const SizedBox(height: 8),
           Wrap(
-            alignment: WrapAlignment.spaceBetween,
+            alignment: WrapAlignment.start,
+            spacing: 16,
             runSpacing: 8,
-            spacing: 8,
             children: counts.map((e) => _Count(count: e)).toList(),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 32),
 
           // roll buttons
-          const Align(
-            alignment: Alignment.bottomRight,
-            child: Padding(
-              padding: EdgeInsets.only(top: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  _RollButton(nbFaces: 6),
-                  SizedBox(width: 8),
-                  _RollButton(nbFaces: 10),
-                  SizedBox(width: 8),
-                  _RollButton(nbFaces: 20),
-                ],
-              ),
-            ),
+          const Wrap(
+            alignment: WrapAlignment.end,
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _RollButton(nbFaces: 6),
+              _RollButton(nbFaces: 10),
+              _RollButton(nbFaces: 20),
+            ],
           )
         ],
       ),
@@ -111,39 +105,61 @@ class _Count extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.remove),
-            onPressed: () {
-              if (count.value > 0) {
-                count.value--;
-              }
-            },
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey),
+            borderRadius: BorderRadius.circular(16),
           ),
-          Obx(() => SizedBox(
-                width: 28,
-                child: Text(
-                  count.value.toString(),
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              )),
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => count.value++,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // minus 1
+              IconButton(
+                icon: const Icon(Icons.remove),
+                onPressed: () {
+                  if (count.value > 0) {
+                    count.value--;
+                  }
+                },
+              ),
+
+              // value
+              Obx(() => SizedBox(
+                    width: 28,
+                    child: Text(
+                      count.value.toString(),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  )),
+
+              // plus 1
+              IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () => count.value++,
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+
+        // reset
+        IconButton(
+          onPressed: () => count.value = 0,
+          icon: Icon(
+            Icons.restart_alt,
+            size: 20,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+          ),
+          visualDensity: VisualDensity.compact,
+          tooltip: 'Reset the count',
+        ),
+      ],
     );
   }
 }

@@ -12,7 +12,7 @@ class KeyedScene {
     required this.trigger,
     required this.event,
     List<KeyedSceneCount>? counts,
-  }) : counts = counts ?? List.filled(3, KeyedSceneCount(count: 0));
+  }) : counts = counts ?? List.filled(2, KeyedSceneCount(count: 0));
 
   Map<String, dynamic> toJson() => {
         'trigger': trigger,

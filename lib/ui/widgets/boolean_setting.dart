@@ -42,7 +42,10 @@ class BooleanSetting extends StatelessWidget {
           widget,
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
-            child: SubLabel(subtext!),
+            child: SubLabel(
+              subtext!,
+              topPadding: 0,
+            ),
           ),
         ],
       );

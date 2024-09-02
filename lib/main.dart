@@ -84,7 +84,7 @@ Future<void> main() async {
       center: position == null,
       skipTaskbar: false,
       windowButtonVisibility: true,
-      minimumSize: const Size(350, 500),
+      minimumSize: const Size(330, 500),
       titleBarStyle: TitleBarStyle.normal,
       title: (await PackageInfo.fromPlatform()).appName,
     );

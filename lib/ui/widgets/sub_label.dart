@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 
 class SubLabel extends StatelessWidget {
   final String text;
+  final double topPadding;
 
-  const SubLabel(this.text, {super.key});
+  const SubLabel(this.text, {this.topPadding = 4, super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Padding(
-      padding: const EdgeInsets.only(top: 4),
+      padding: EdgeInsets.only(top: topPadding),
       child: Text(
         text,
         softWrap: true,
