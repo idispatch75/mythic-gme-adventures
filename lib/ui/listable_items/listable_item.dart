@@ -65,7 +65,9 @@ class ListableItemsService<TItem extends ListableItem> extends GetxService
   }
 
   void delete(TItem item) {
-    itemsList.replaceAll(itemsList.where((e) => e.value != item));
+    // IMPL use toList() to create a new list because itemsList is modified in replaceAll
+    // and since where() is lazy, it will apply to the modified list
+    itemsList.replaceAll(itemsList.where((e) => e.value != item).toList());
     items.removeWhere((e) => e.value == item);
 
     requestSave();
@@ -119,7 +121,9 @@ class ListableItemsService<TItem extends ListableItem> extends GetxService
     if (item.isArchived != isArchived) {
       // remove the archived item from the items List
       if (isArchived) {
-        itemsList.replaceAll(itemsList.where((e) => e.value != item));
+        // IMPL use toList() to create a new list because itemsList is modified in replaceAll
+        // and since where() is lazy, it will apply to the modified list
+        itemsList.replaceAll(itemsList.where((e) => e.value != item).toList());
       }
       item.isArchived = isArchived;
 

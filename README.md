@@ -8,6 +8,7 @@ Features:
 - Threads and Characters lists
 - Thread progress track and Discovery questions
 - Scenes with Adjustments
+- Keyed Scenes
 - Basic dice roller
 - Save on Google Drive: you can share your adventures between your devices
 - Works offline
