@@ -19,6 +19,7 @@ import '../global_settings/global_settings.dart';
 import '../global_settings/global_settings_edit_view.dart';
 import '../notes/note.dart';
 import '../player_characters/player_character.dart';
+import '../preferences/preferences.dart';
 import '../scenes/scene.dart';
 import '../threads/thread.dart';
 import 'adventure.dart';
@@ -105,6 +106,13 @@ class AdventureInfoController extends GetxController {
       }
       saving(false);
     }
+  }
+
+  void togglePhysicalDiceMode() {
+    final preferences = Get.find<LocalPreferencesService>();
+
+    preferences
+        .enablePhysicalDiceMode(!preferences.enablePhysicalDiceMode.value);
   }
 
   Future<void> save() async {

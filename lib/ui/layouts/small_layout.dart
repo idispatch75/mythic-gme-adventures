@@ -16,6 +16,7 @@ import '../meaning_tables/meaning_tables_ctl.dart';
 import '../meaning_tables/meaning_tables_view.dart';
 import '../notes/notes_view.dart';
 import '../player_characters/player_characters_view.dart';
+import '../roll_log/physical_roll_log_view.dart';
 import '../roll_log/roll_log_view.dart';
 import '../scenes/scene_edit_page_view.dart';
 import '../scenes/scenes_view.dart';
@@ -69,7 +70,7 @@ class _SmallLayoutOracles extends HookWidget {
         const _SmallLayoutTables(),
 
         // log
-        RollLogView(),
+        PhysicalRollLogView(),
 
         // dice roller
         DiceRollerView(),
@@ -90,7 +91,10 @@ class _SmallLayoutTables extends HookWidget {
         return const Column(
           children: [
             FateChartView(),
-            Expanded(child: MeaningTablesView()),
+            Expanded(
+                child: MeaningTablesView(
+              isSmallLayout: true,
+            )),
           ],
         );
       } else {
@@ -101,7 +105,8 @@ class _SmallLayoutTables extends HookWidget {
 
         return Obx(() {
           final fateChartRows = fateCharts.getRows();
-          final meaningTableButtons = meaningTables.getButtons();
+          final meaningTableButtons =
+              meaningTables.getButtons(isSmallLayout: true);
 
           return ListView.builder(
             itemCount:

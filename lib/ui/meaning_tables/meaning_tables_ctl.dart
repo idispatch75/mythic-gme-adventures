@@ -8,6 +8,7 @@ import '../../helpers/rx_list_extensions.dart';
 import '../../helpers/string_extensions.dart';
 import '../adventure/adventure.dart';
 import '../global_settings/global_settings.dart';
+import '../layouts/layout.dart';
 import '../roll_log/roll_log.dart';
 import '../widgets/header.dart';
 import 'meaning_table.dart';
@@ -145,16 +146,21 @@ class MeaningTablesController extends GetxController {
     return results;
   }
 
+  void showDetails(MeaningTable table) {
+    Get.find<LayoutController>().meaningTableDetails(table);
+  }
+
   Widget getHeader() => const Header('Meaning Tables');
 
   /// The buttons for each table.
   ///
   /// This function must be called inside an [Obx]
   /// to benefit from favorite re-ordering.
-  List<Widget> getButtons() => tables
+  List<Widget> getButtons({required bool isSmallLayout}) => tables
       .map((e) => MeaningTableButton(
             e,
-            favorites.contains(e.id),
+            isFavorite: favorites.contains(e.id),
+            isSmallLayout: isSmallLayout,
             key: ValueKey(e.id),
           ))
       .toList();

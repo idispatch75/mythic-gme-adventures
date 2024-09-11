@@ -11,7 +11,7 @@ import '../fate_chart/fate_chart_view.dart';
 import '../meaning_tables/meaning_tables_view.dart';
 import '../notes/notes_view.dart';
 import '../player_characters/player_characters_view.dart';
-import '../roll_log/roll_log_view.dart';
+import '../roll_log/physical_roll_log_view.dart';
 import '../scenes/scene_edit_page_view.dart';
 import '../scenes/scenes_view.dart';
 import '../threads/threads_list.dart';
@@ -34,15 +34,15 @@ class LargeLayout extends HookWidget {
           children: [
             // oracles
             SizedBox(
-              width: _LargeLayoutTables.width,
+              width: largeLayoutTablesWidth,
               child: const _LargeLayoutOracles(),
             ),
             Layout.verticalSpacer,
 
             // third column
-            Obx(() {
-              return Expanded(
-                child: layoutController.hasEditScenePage()
+            Expanded(
+              child: Obx(() {
+                return layoutController.hasEditScenePage()
                     ? SceneEditPageView()
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,9 +115,9 @@ class LargeLayout extends HookWidget {
                             ),
                           ),
                         ],
-                      ),
-              );
-            }),
+                      );
+              }),
+            ),
           ],
         ),
       ),
@@ -149,7 +149,6 @@ class _LargeLayoutOracles extends GetView<LayoutController> {
 
 class _LargeLayoutTables extends StatelessWidget {
   static const _columnWidth = 260.0;
-  static final width = _columnWidth * 2 + Layout.verticalSpacer.width!;
 
   const _LargeLayoutTables();
 
@@ -169,7 +168,9 @@ class _LargeLayoutTables extends StatelessWidget {
             Expanded(
               child: SizedBox(
                 width: _columnWidth,
-                child: getZoneDecoration(const MeaningTablesView()),
+                child: getZoneDecoration(const MeaningTablesView(
+                  isSmallLayout: false,
+                )),
               ),
             ),
           ],
@@ -178,11 +179,14 @@ class _LargeLayoutTables extends StatelessWidget {
 
         // roll log
         Expanded(
-          child: getZoneDecoration(
-            RollLogView(),
-          ),
+          child: getZoneDecoration(const PhysicalRollLogView()),
         ),
       ],
     );
   }
 }
+
+final largeLayoutTablesWidth = _LargeLayoutTables._columnWidth +
+    Layout.verticalSpacer.width! +
+    _LargeLayoutTables._columnWidth +
+    60;

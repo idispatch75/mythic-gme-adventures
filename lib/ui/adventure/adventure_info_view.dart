@@ -7,6 +7,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../../helpers/dialogs.dart';
 import '../../helpers/inline_link.dart';
 import '../../storages/data_storage.dart';
+import '../preferences/preferences.dart';
 import '../widgets/actions_menu.dart';
 import '../widgets/progress_indicators.dart';
 import 'adventure.dart';
@@ -117,6 +118,9 @@ class _AdventureActionsButton extends GetView<AdventureInfoController> {
 
   @override
   Widget build(BuildContext context) {
+    final isPhysicalDiceModeEnabled =
+        Get.find<LocalPreferencesService>().enablePhysicalDiceMode;
+
     Widget actionButtons(String? saveDate) {
       final theme = Theme.of(context);
 
@@ -151,6 +155,22 @@ class _AdventureActionsButton extends GetView<AdventureInfoController> {
           leadingIcon: const Icon(Icons.settings_outlined),
           child: const Text('Global Settings'),
         ),
+
+        // physical dice mode
+        Obx(() {
+          return MenuItemButton(
+            onPressed: controller.togglePhysicalDiceMode,
+            leadingIcon: Stack(
+              children: [
+                const Icon(Icons.casino_outlined),
+                if (isPhysicalDiceModeEnabled.value) const Icon(Icons.close),
+              ],
+            ),
+            child: Text(
+              '${isPhysicalDiceModeEnabled.value ? 'Disable' : 'Enable'} Physical Dice Mode',
+            ),
+          );
+        }),
 
         // Save
         MenuItemButton(

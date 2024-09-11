@@ -21,7 +21,7 @@ class AdventureView extends GetView<AdventureController> {
       child: controller.obx(
         (state) => SafeArea(
           child: LayoutBuilder(builder: (_, constraints) {
-            if (constraints.maxWidth > 1160) {
+            if (constraints.maxWidth > 636 + largeLayoutTablesWidth) {
               return const LargeLayout();
             } else if (constraints.maxWidth > kPhoneBreakPoint) {
               return const MediumLayout();
