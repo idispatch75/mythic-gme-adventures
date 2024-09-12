@@ -8,6 +8,7 @@ import '../preferences/preferences.dart';
 import '../random_events/random_event.dart';
 import '../roll_log/roll_log.dart';
 import '../styles.dart';
+import '../threads/thread.dart';
 import '../widgets/header.dart';
 import 'fate_chart_lookup_view.dart';
 import 'fate_chart_view.dart';
@@ -202,12 +203,14 @@ class FateChartService extends GetxService {
     );
   }
 
-  void _showFateChartLookup(BuildContext context, Probability probability) {
+  void showFateChartLookup(BuildContext context, Probability probability,
+      {Thread? thread}) {
     final outcomeProbability = _getOutcomeProbability(probability);
 
     final content = FateChartLookupView(
       probability: probability,
       outcomeProbability: outcomeProbability,
+      thread: thread,
     );
 
     showAppModalBottomSheet<void>(context, content);
@@ -237,6 +240,7 @@ class FateChartService extends GetxService {
 
   Widget getHeader() => const Header('Fate Chart');
 
+  /// Must be wrapped in a Obx to listen to the physical dice mode
   List<Widget> getRows(BuildContext context) {
     final isPhysicalDiceModeEnabled = getPhysicalDiceModeEnabled;
 
@@ -302,7 +306,7 @@ class FateChartService extends GetxService {
       text: vm.probability.text,
       onPressed: () {
         if (isPhysicalDiceModeEnabled) {
-          _showFateChartLookup(context, probability);
+          showFateChartLookup(context, probability);
         } else {
           roll(probability);
         }

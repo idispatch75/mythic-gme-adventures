@@ -7,12 +7,14 @@ class RollLookupEntryView extends StatelessWidget {
   final String label;
   final Color backgroundColor;
   final VoidCallback? onRoll;
+  final VoidCallback? onApply;
 
   const RollLookupEntryView({
     required this.value,
     required this.label,
     required this.backgroundColor,
     this.onRoll,
+    this.onApply,
     super.key,
   });
 
@@ -25,7 +27,7 @@ class RollLookupEntryView extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(left: 16.0),
           child: SizedBox(
-            width: 74,
+            width: 70,
             child: Text(
               value,
               style: const TextStyle(fontWeight: FontWeight.bold),
@@ -42,26 +44,33 @@ class RollLookupEntryView extends StatelessWidget {
           ),
         ),
 
-        // roll button
-        if (onRoll != null)
-          const Padding(
-            padding: EdgeInsets.only(right: 4.0),
-            child: AppStyles.rollIcon,
+        // roll/apply button
+        if (onRoll != null || onApply != null)
+          Padding(
+            padding: const EdgeInsets.only(right: 4.0),
+            child: onRoll != null
+                ? AppStyles.rollIcon
+                : const Icon(
+                    Icons.add,
+                    size: 18,
+                  ),
           ),
       ],
     );
 
-    if (onRoll != null) {
+    if (onRoll != null || onApply != null) {
+      final onTap = onRoll != null
+          ? () {
+              Navigator.of(context).pop();
+
+              onRoll!();
+            }
+          : onApply;
+
       row = MouseRegion(
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
-          onTap: onRoll != null
-              ? () {
-                  Navigator.of(context).pop();
-
-                  onRoll!();
-                }
-              : null,
+          onTap: onTap,
           child: row,
         ),
       );

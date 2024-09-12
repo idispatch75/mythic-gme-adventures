@@ -7,6 +7,7 @@ import 'package:rxdart/rxdart.dart' as rx;
 import '../../helpers/rx_list_extensions.dart';
 import '../../helpers/utils.dart';
 import '../fate_chart/fate_chart.dart';
+import '../preferences/preferences.dart';
 import '../roll_log/roll_log.dart';
 import 'thread.dart';
 
@@ -149,13 +150,17 @@ class ThreadController extends GetxController {
     );
 
     if (probability != null) {
-      final fateRoll =
-          Get.find<FateChartService>().roll(probability, skipEvents: true);
-      if (fateRoll.outcome == FateChartRollOutcome.yes) {
-        _rollDiscoveryCheck();
-      } else if (fateRoll.outcome == FateChartRollOutcome.extremeYes) {
-        _rollDiscoveryCheck();
-        _rollDiscoveryCheck();
+      if (getPhysicalDiceModeEnabled) {
+        _showDiscoveryLookup(Get.overlayContext!, probability);
+      } else {
+        final fateRoll =
+            Get.find<FateChartService>().roll(probability, skipEvents: true);
+        if (fateRoll.outcome == FateChartRollOutcome.yes) {
+          _rollDiscoveryCheck();
+        } else if (fateRoll.outcome == FateChartRollOutcome.extremeYes) {
+          _rollDiscoveryCheck();
+          _rollDiscoveryCheck();
+        }
       }
     }
   }
@@ -195,6 +200,11 @@ class ThreadController extends GetxController {
       value: message,
       dieRoll: dieRoll,
     );
+  }
+
+  void _showDiscoveryLookup(BuildContext context, Probability probability) {
+    Get.find<FateChartService>()
+        .showFateChartLookup(context, probability, thread: thread);
   }
 
   int _getActivePhaseIndex() {

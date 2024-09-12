@@ -58,55 +58,6 @@ class ListableItemsLookupView extends StatelessWidget {
   }
 }
 
-class _LookupWithChoose extends StatelessWidget {
-  final String _itemTypeLabel;
-  final List<String?> _itemNames;
-
-  const _LookupWithChoose(this._itemTypeLabel, this._itemNames);
-
-  @override
-  Widget build(BuildContext context) {
-    final mainRows =
-        _itemNames.splitAfterIndexed((index, element) => (index + 1) % 5 == 0);
-
-    var header = _itemTypeLabel;
-    if (mainRows.length > 1) {
-      header += ' - 1d${mainRows.length * 2}';
-    }
-
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // header
-          RollHeader(header, AppStyles.genericColors),
-
-          // entries
-          ...mainRows.expandIndexed((index, rowItems) {
-            return [
-              // row
-              _MainRow(
-                index: index,
-                itemNames: rowItems,
-                backgroundColorOffset: index.isEven ? 0 : 1,
-                showValue: mainRows.length > 1,
-              ),
-
-              // divider
-              if (index < mainRows.length - 1)
-                Divider(
-                  thickness: 2,
-                  height: 3,
-                  color: AppStyles.headerColor,
-                ),
-            ];
-          }),
-        ],
-      ),
-    );
-  }
-}
-
 class _MainRow extends StatelessWidget {
   final int index;
   final List<String?> itemNames;
@@ -122,9 +73,11 @@ class _MainRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     final baseColor = AppStyles.genericColors.background;
-    final alternateColor = Color.alphaBlend(
-        baseColor.withOpacity(0.5), Theme.of(context).colorScheme.surface);
+    final alternateColor =
+        Color.alphaBlend(baseColor.withOpacity(0.5), colors.surface);
 
     return Container(
       color: AppStyles.headerColor,
@@ -161,8 +114,9 @@ class _MainRow extends StatelessWidget {
 
                 if (name == null) {
                   entry = DefaultTextStyle.merge(
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontStyle: FontStyle.italic,
+                      color: colors.onSurface.withOpacity(0.5),
                     ),
                     child: entry,
                   );

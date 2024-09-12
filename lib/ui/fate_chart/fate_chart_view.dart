@@ -11,13 +11,15 @@ class FateChartView extends GetView<FateChartService> {
   Widget build(BuildContext context) {
     return Container(
       color: AppStyles.fateChartColors.background,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          controller.getHeader(),
-          ...controller.getRows(context),
-        ],
-      ),
+      child: Obx(() {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            controller.getHeader(),
+            ...controller.getRows(context),
+          ],
+        );
+      }),
     );
   }
 }

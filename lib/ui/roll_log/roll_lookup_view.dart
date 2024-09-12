@@ -9,11 +9,13 @@ class RollLookupEntry {
   final String value;
   final String label;
   final VoidCallback? onRoll;
+  final VoidCallback? onApply;
 
   const RollLookupEntry({
     required this.value,
     required this.label,
     this.onRoll,
+    this.onApply,
   });
 }
 
@@ -52,6 +54,7 @@ class RollLookupView extends StatelessWidget {
               label: entry.label,
               backgroundColor: backgroundColor,
               onRoll: entry.onRoll,
+              onApply: entry.onApply,
             );
           }),
 
