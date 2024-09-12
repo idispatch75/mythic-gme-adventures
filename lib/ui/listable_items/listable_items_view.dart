@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../helpers/utils.dart';
+import '../preferences/preferences.dart';
 import '../roll_log/roll_log.dart';
 import '../styles.dart';
 import '../widgets/button_row.dart';
@@ -29,30 +30,32 @@ abstract class ListableItemsView<TItem extends ListableItem>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        ButtonRow(
-          children: [
-            // Roll button
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: Obx(() {
-                final canRoll =
-                    _controller.items.any((e) => !e.value.isArchived);
-                return IconButton.outlined(
-                  onPressed: canRoll ? _roll : null,
-                  icon: AppStyles.rollIcon,
-                  tooltip: 'Roll a $itemTypeLabel in this list',
-                );
-              }),
-            ),
+        Obx(() {
+          final isPhysicalDiceModeEnabled = getPhysicalDiceModeEnabled;
+          final canRoll = _controller.items.any((e) => !e.value.isArchived);
 
-            // Create button
-            IconButton.filled(
-              onPressed: createItem,
-              icon: const Icon(Icons.add),
-              tooltip: 'Create a $itemTypeLabel',
-            ),
-          ],
-        ),
+          return ButtonRow(
+            children: [
+              // Roll button
+              if (!isPhysicalDiceModeEnabled)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: IconButton.outlined(
+                    onPressed: canRoll ? _roll : null,
+                    icon: AppStyles.rollIcon,
+                    tooltip: 'Roll a $itemTypeLabel in this list',
+                  ),
+                ),
+
+              // Create button
+              IconButton.filled(
+                onPressed: createItem,
+                icon: const Icon(Icons.add),
+                tooltip: 'Create a $itemTypeLabel',
+              ),
+            ],
+          );
+        }),
 
         // list
         Expanded(

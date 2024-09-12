@@ -119,9 +119,6 @@ class _AdventureActionsButton extends GetView<AdventureInfoController> {
 
   @override
   Widget build(BuildContext context) {
-    final isPhysicalDiceModeEnabled =
-        Get.find<LocalPreferencesService>().enablePhysicalDiceMode;
-
     Widget actionButtons(String? saveDate) {
       final theme = Theme.of(context);
 
@@ -159,16 +156,18 @@ class _AdventureActionsButton extends GetView<AdventureInfoController> {
 
         // physical dice mode
         Obx(() {
+          final isPhysicalDiceModeEnabled = getPhysicalDiceModeEnabled;
+
           return MenuItemButton(
             onPressed: controller.togglePhysicalDiceMode,
             leadingIcon: Stack(
               children: [
                 AppStyles.rollIcon,
-                if (isPhysicalDiceModeEnabled.value) const Icon(Icons.clear),
+                if (isPhysicalDiceModeEnabled) const Icon(Icons.clear),
               ],
             ),
             child: Text(
-              '${isPhysicalDiceModeEnabled.value ? 'Disable' : 'Enable'} Physical Dice Mode',
+              '${isPhysicalDiceModeEnabled ? 'Disable' : 'Enable'} Physical Dice Mode',
             ),
           );
         }),

@@ -64,10 +64,7 @@ class _SmallLayoutOracles extends HookWidget {
       tabs: [
         Tab(text: 'Tables'),
         Obx(() {
-          final isPhysicalDiceModeEnabled =
-              Get.find<LocalPreferencesService>().enablePhysicalDiceMode.value;
-
-          return Tab(text: isPhysicalDiceModeEnabled ? 'Lookup' : 'Roll Log');
+          return Tab(text: getPhysicalDiceModeEnabled ? 'Lookup' : 'Roll Log');
         }),
         Tab(text: 'Dice Roller'),
       ],

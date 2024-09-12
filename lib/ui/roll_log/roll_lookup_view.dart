@@ -8,10 +8,12 @@ import 'roll_lookup_entry_view.dart';
 class RollLookupEntry {
   final String value;
   final String label;
+  final VoidCallback? onRoll;
 
   const RollLookupEntry({
     required this.value,
     required this.label,
+    this.onRoll,
   });
 }
 
@@ -49,6 +51,7 @@ class RollLookupView extends StatelessWidget {
               value: entry.value,
               label: entry.label,
               backgroundColor: backgroundColor,
+              onRoll: entry.onRoll,
             );
           }),
 

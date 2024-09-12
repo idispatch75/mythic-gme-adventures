@@ -15,6 +15,8 @@ class ThreadsListController extends ListableItemsListController<Thread> {
 }
 
 class ThreadsListView extends ListableItemsListView<Thread> {
+  static const listItemTypeLabel = 'Thread';
+
   const ThreadsListView({super.key});
 
   @override
@@ -22,7 +24,7 @@ class ThreadsListView extends ListableItemsListView<Thread> {
       Get.find<ThreadsListController>();
 
   @override
-  String get itemTypeLabel => 'Thread';
+  String get itemTypeLabel => listItemTypeLabel;
 
   @override
   Future<void> createItem() async {

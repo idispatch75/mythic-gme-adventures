@@ -48,7 +48,7 @@ Future<T?> showAppModalBottomSheet<T>(BuildContext context, Widget content) {
   return showModalBottomSheet<T>(
     context: context,
     constraints: const BoxConstraints.tightFor(width: 300),
-    builder: (_) {
+    builder: (context) {
       return Column(
         children: [
           // content

@@ -11,8 +11,7 @@ class MeaningTableLookupView extends StatefulWidget {
   const MeaningTableLookupView(this.table, {super.key});
 
   @override
-  State<MeaningTableLookupView> createState() =>
-      _MeaningTableLookupViewState();
+  State<MeaningTableLookupView> createState() => _MeaningTableLookupViewState();
 }
 
 class _MeaningTableLookupViewState extends State<MeaningTableLookupView> {

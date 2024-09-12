@@ -54,3 +54,7 @@ class LocalPreferencesService extends GetxService {
     });
   }
 }
+
+/// Gets whether the physical dice mode is enabled.
+bool get getPhysicalDiceModeEnabled =>
+    Get.find<LocalPreferencesService>().enablePhysicalDiceMode.value;

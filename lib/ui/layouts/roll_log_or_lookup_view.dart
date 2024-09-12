@@ -12,15 +12,20 @@ class RollLogOrLookupView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final isPhysicalDiceModeEnabled =
-          Get.find<LocalPreferencesService>().enablePhysicalDiceMode.value;
       final meaningTableDetails =
           Get.find<LayoutController>().meaningTableDetails.value;
 
       final Widget widget;
-      if (isPhysicalDiceModeEnabled) {
+      if (getPhysicalDiceModeEnabled) {
         if (meaningTableDetails == null) {
-          widget = const Center(child: Text('Select a table to roll on'));
+          widget = const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Center(
+                child: Text(
+              'Click on a Meaning Table to display its content here',
+              textAlign: TextAlign.center,
+            )),
+          );
         } else {
           widget = MeaningTableLookupView(meaningTableDetails);
         }

@@ -70,14 +70,9 @@ class MeaningTableButton extends GetView<MeaningTablesController> {
             children: [
               // roll button
               Obx(() {
-                final isPhysicalDiceModeEnabled =
-                    Get.find<LocalPreferencesService>()
-                        .enablePhysicalDiceMode
-                        .value;
-
                 return TextButton(
                   onPressed: () {
-                    if (isPhysicalDiceModeEnabled) {
+                    if (getPhysicalDiceModeEnabled) {
                       controller.showDetails(_table);
 
                       if (isSmallLayout) {

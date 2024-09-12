@@ -1,11 +1,14 @@
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../helpers/utils.dart';
 import '../characters/character.dart';
 import '../global_settings/global_settings.dart';
+import '../listable_items/listable_item.dart';
+import '../listable_items/listable_items_lookup_view.dart';
 import '../player_characters/player_character.dart';
 import '../roll_log/roll_log.dart';
 import '../threads/thread.dart';
@@ -216,27 +219,64 @@ class ListRollResult<T> {
   final bool choose;
   final int dieRoll;
 
-  ListRollResult.choose(this.choose, this.dieRoll) : item = null;
-  ListRollResult.item(this.item, this.dieRoll) : choose = false;
+  const ListRollResult.choose(this.choose, this.dieRoll) : item = null;
+  const ListRollResult.item(this.item, this.dieRoll) : choose = false;
 }
 
-ListRollResult<T>? rollListItem<T>(List<T> list) {
-  if (list.isNotEmpty) {
-    final globalSettings = Get.find<GlobalSettingsService>();
+ListRollResult<T>? rollListItem<T>(List<T> sourceItems) {
+  if (sourceItems.isNotEmpty) {
+    final allowChooseInLists =
+        Get.find<GlobalSettingsService>().allowChooseInLists;
 
-    final nbSlots = globalSettings.allowChooseInLists
-        ? list.length % 10 == 0
-            ? list.length
-            : (list.length ~/ 10 + 1) * 10
-        : list.length;
+    final nbSlots = allowChooseInLists
+        ? sourceItems.length % 5 == 0
+            ? sourceItems.length
+            : (sourceItems.length ~/ 5 + 1) * 5
+        : sourceItems.length;
 
     final index = Random().nextInt(nbSlots);
-    if (index < list.length) {
-      return ListRollResult.item(list[index], index + 1);
+    if (index < sourceItems.length) {
+      return ListRollResult.item(sourceItems[index], index + 1);
     } else {
       return ListRollResult.choose(true, index + 1);
     }
   }
 
   return null;
+}
+
+void showListItemsLookup<T extends ListableItem>(
+    BuildContext context, String listLabel, List<T> sourceItems) {
+  final itemNames = sourceItems
+      .sorted((a, b) => a.name.compareTo(b.name))
+      .map<String?>((e) => e.name)
+      .toList();
+
+  if (itemNames.length % 5 != 0) {
+    final missingItems = (itemNames.length ~/ 5 + 1) * 5 - itemNames.length;
+    for (var i = 0; i < missingItems; i++) {
+      itemNames.add(null);
+    }
+  }
+
+  final content = ListableItemsLookupView(listLabel, itemNames);
+
+  showAppModalBottomSheet<void>(context, content);
+}
+
+void showPlayerCharactersLookup(BuildContext context) {
+  final playerCharacters = Get.find<PlayerCharactersService>().playerCharacters;
+
+  final itemNames = playerCharacters.map<String?>((e) => e.value.name).toList();
+
+  if (itemNames.length % 5 != 0) {
+    final missingItems = (itemNames.length ~/ 5 + 1) * 5 - itemNames.length;
+    for (var i = 0; i < missingItems; i++) {
+      itemNames.add(null);
+    }
+  }
+
+  final content = ListableItemsLookupView('Players', itemNames);
+
+  showAppModalBottomSheet<void>(context, content);
 }

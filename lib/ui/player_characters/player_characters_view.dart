@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../helpers/utils.dart';
+import '../preferences/preferences.dart';
 import '../roll_log/roll_log.dart';
 import '../styles.dart';
 import '../widgets/button_row.dart';
@@ -18,25 +19,32 @@ class PlayerCharactersView extends GetView<PlayerCharactersService> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        ButtonRow(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: Obx(
-                () => IconButton.outlined(
-                  onPressed: players.isNotEmpty ? _roll : null,
-                  icon: AppStyles.rollIcon,
-                  tooltip: 'Roll a Player Character in this list',
+        Obx(() {
+          final isPhysicalDiceModeEnabled = getPhysicalDiceModeEnabled;
+          final canRoll = players.isNotEmpty;
+
+          return ButtonRow(
+            children: [
+              // Roll button
+              if (!isPhysicalDiceModeEnabled)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: IconButton.outlined(
+                    onPressed: canRoll ? _roll : null,
+                    icon: AppStyles.rollIcon,
+                    tooltip: 'Roll a Player Character in this list',
+                  ),
                 ),
+
+              // Create button
+              IconButton.filled(
+                onPressed: _create,
+                icon: const Icon(Icons.add),
+                tooltip: 'Create a Player Character',
               ),
-            ),
-            IconButton.filled(
-              onPressed: _create,
-              icon: const Icon(Icons.add),
-              tooltip: 'Create a Player Character',
-            ),
-          ],
-        ),
+            ],
+          );
+        }),
         Expanded(
           child: Obx(
             () => defaultListView(

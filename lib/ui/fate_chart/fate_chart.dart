@@ -202,7 +202,7 @@ class FateChartService extends GetxService {
     );
   }
 
-  void showFateChartLookup(BuildContext context, Probability probability) {
+  void _showFateChartLookup(BuildContext context, Probability probability) {
     final outcomeProbability = _getOutcomeProbability(probability);
 
     final content = FateChartLookupView(
@@ -238,8 +238,7 @@ class FateChartService extends GetxService {
   Widget getHeader() => const Header('Fate Chart');
 
   List<Widget> getRows(BuildContext context) {
-    final isPhysicalDiceModeEnabled =
-        Get.find<LocalPreferencesService>().enablePhysicalDiceMode.value;
+    final isPhysicalDiceModeEnabled = getPhysicalDiceModeEnabled;
 
     return [
       Row(
@@ -303,7 +302,7 @@ class FateChartService extends GetxService {
       text: vm.probability.text,
       onPressed: () {
         if (isPhysicalDiceModeEnabled) {
-          showFateChartLookup(context, probability);
+          _showFateChartLookup(context, probability);
         } else {
           roll(probability);
         }

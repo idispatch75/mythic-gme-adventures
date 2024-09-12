@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 
 import '../../helpers/rx_list_extensions.dart';
 import '../../helpers/utils.dart';
+import '../preferences/preferences.dart';
 import '../random_events/random_event.dart';
 import '../roll_log/roll_log.dart';
 import '../styles.dart';
@@ -14,8 +15,12 @@ import '../widgets/header.dart';
 import '../widgets/round_badge.dart';
 import 'listable_item.dart';
 
+/// An item in a items list.
 class ListItem {
+  /// The ID of the item
   final int itemId;
+
+  /// The number of occurrences of the item in the list
   final int count;
 
   ListItem({required this.itemId, required this.count});
@@ -28,10 +33,14 @@ class ListItem {
 
 abstract class ListableItemsListController<TItem extends ListableItem>
     extends GetxController {
+  /// The list items aggregated from [sourceItemsList].
   final items = <ListItem>[].obs;
 
   late StreamSubscription<List<Rx<TItem>>> _subscription;
 
+  /// The individual listable items in the list.
+  ///
+  /// A same item can appear multiple times in the list.
   RxList<Rx<TItem>> get sourceItemsList;
 
   @override
@@ -62,6 +71,8 @@ abstract class ListableItemsListView<TItem extends ListableItem>
 
   String get itemTypeLabel;
 
+  String get listLabel => '${itemTypeLabel}s List';
+
   Future<void> createItem();
 
   Widget createItemView(ListItem item, String itemLabel);
@@ -74,7 +85,7 @@ abstract class ListableItemsListView<TItem extends ListableItem>
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         // header
-        Header('${itemTypeLabel}s List'),
+        Header(listLabel),
 
         // buttons
         ButtonRow(
@@ -84,7 +95,7 @@ abstract class ListableItemsListView<TItem extends ListableItem>
               padding: const EdgeInsets.only(right: 8.0),
               child: Obx(
                 () => IconButton.outlined(
-                  onPressed: items.isNotEmpty ? _roll : null,
+                  onPressed: items.isNotEmpty ? () => _roll(context) : null,
                   icon: AppStyles.rollIcon,
                   tooltip: 'Roll a $itemTypeLabel in this list',
                 ),
@@ -115,12 +126,18 @@ abstract class ListableItemsListView<TItem extends ListableItem>
     );
   }
 
-  void _roll() {
+  void _roll(BuildContext context) {
+    if (getPhysicalDiceModeEnabled) {
+      showListItemsLookup<TItem>(context, listLabel,
+          controller.sourceItemsList.map((e) => e.value).toList());
+      return;
+    }
+
     final result = rollListItem(controller.sourceItemsList);
 
     if (result != null) {
       Get.find<RollLogService>().addGenericRoll(
-        title: '${itemTypeLabel}s List',
+        title: listLabel,
         value: result.choose ? 'Choose' : result.item!.value.name,
         dieRoll: result.dieRoll,
       );

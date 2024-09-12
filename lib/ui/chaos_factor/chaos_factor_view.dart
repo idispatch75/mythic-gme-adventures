@@ -11,39 +11,37 @@ class ChaosFactorView extends GetView<ChaosFactorService> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 140,
-      child: Column(
-        children: [
-          const Header('Chaos Factor'),
-          SizedBox(
-            height: dense ? 45 : 60,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                IconButton(
-                  onPressed: controller.decrement,
-                  icon: const Icon(Icons.chevron_left),
-                ),
-                Expanded(
-                  child: Obx(
-                    () => Center(
-                      child: Text(
-                        controller.chaosFactor.toString(),
-                        style: const TextStyle(fontSize: 32),
-                      ),
+    return Column(
+      children: [
+        const Header('Chaos Factor'),
+        SizedBox(
+          height: dense ? 45 : 60,
+          width: 140,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              IconButton(
+                onPressed: controller.decrement,
+                icon: const Icon(Icons.chevron_left),
+              ),
+              Expanded(
+                child: Obx(
+                  () => Center(
+                    child: Text(
+                      controller.chaosFactor.toString(),
+                      style: const TextStyle(fontSize: 32),
                     ),
                   ),
                 ),
-                IconButton(
-                  onPressed: controller.increment,
-                  icon: const Icon(Icons.chevron_right),
-                ),
-              ],
-            ),
+              ),
+              IconButton(
+                onPressed: controller.increment,
+                icon: const Icon(Icons.chevron_right),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

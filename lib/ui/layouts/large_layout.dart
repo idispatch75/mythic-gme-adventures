@@ -42,80 +42,87 @@ class LargeLayout extends HookWidget {
             // third column
             Expanded(
               child: Obx(() {
-                return layoutController.hasEditScenePage()
-                    ? SceneEditPageView()
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Row(
-                            children: [
-                              // chaos factor
-                              getZoneDecoration(const ChaosFactorView()),
+                final Widget widget;
+                if (layoutController.hasEditScenePage()) {
+                  widget = SceneEditPageView();
+                } else {
+                  widget = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        children: [
+                          // chaos factor
+                          getZoneDecoration(const SizedBox(
+                            width: 140,
+                            child: ChaosFactorView(),
+                          )),
 
-                              // adventure info
-                              const Expanded(
-                                child: Padding(
-                                  padding: EdgeInsets.fromLTRB(16, 16, 0, 0),
-                                  child: AdventureInfoView(),
+                          // adventure info
+                          const Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(16, 16, 0, 0),
+                              child: AdventureInfoView(),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Layout.horizontalSpacer,
+
+                      // lists
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 5,
+                              child: getZoneDecoration(const ThreadsListView()),
+                            ),
+                            Layout.verticalSpacer,
+                            Expanded(
+                              flex: 4,
+                              child:
+                                  getZoneDecoration(const CharactersListView()),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Layout.horizontalSpacer,
+
+                      // tabs
+                      Expanded(
+                        child: getZoneDecoration(
+                          Column(
+                            children: [
+                              TabBar(
+                                controller: tabController,
+                                tabs: const [
+                                  Tab(text: 'Scenes'),
+                                  Tab(text: 'Characters'),
+                                  Tab(text: 'Threads'),
+                                  Tab(text: 'Players'),
+                                  Tab(text: 'Notes'),
+                                ],
+                              ),
+                              Expanded(
+                                child: TabBarView(
+                                  controller: tabController,
+                                  children: [
+                                    const ScenesView(),
+                                    CharactersView(),
+                                    ThreadsView(),
+                                    const PlayerCharactersView(),
+                                    const NotesView(),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
-                          Layout.horizontalSpacer,
+                        ),
+                      ),
+                    ],
+                  );
+                }
 
-                          // lists
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  flex: 5,
-                                  child: getZoneDecoration(
-                                      const ThreadsListView()),
-                                ),
-                                Layout.verticalSpacer,
-                                Expanded(
-                                  flex: 4,
-                                  child: getZoneDecoration(
-                                      const CharactersListView()),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Layout.horizontalSpacer,
-
-                          // tabs
-                          Expanded(
-                            child: getZoneDecoration(
-                              Column(
-                                children: [
-                                  TabBar(
-                                    controller: tabController,
-                                    tabs: const [
-                                      Tab(text: 'Scenes'),
-                                      Tab(text: 'Characters'),
-                                      Tab(text: 'Threads'),
-                                      Tab(text: 'Players'),
-                                      Tab(text: 'Notes'),
-                                    ],
-                                  ),
-                                  Expanded(
-                                    child: TabBarView(
-                                      controller: tabController,
-                                      children: [
-                                        const ScenesView(),
-                                        CharactersView(),
-                                        ThreadsView(),
-                                        const PlayerCharactersView(),
-                                        const NotesView(),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
+                return widget;
               }),
             ),
           ],
