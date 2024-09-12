@@ -11,12 +11,12 @@ import '../fate_chart/fate_chart_view.dart';
 import '../meaning_tables/meaning_tables_view.dart';
 import '../notes/notes_view.dart';
 import '../player_characters/player_characters_view.dart';
-import '../roll_log/physical_roll_log_view.dart';
 import '../scenes/scene_edit_page_view.dart';
 import '../scenes/scenes_view.dart';
 import '../threads/threads_list.dart';
 import '../threads/threads_view.dart';
 import 'layout.dart';
+import 'roll_log_or_lookup_view.dart';
 
 class LargeLayout extends HookWidget {
   const LargeLayout({super.key});
@@ -179,7 +179,7 @@ class _LargeLayoutTables extends StatelessWidget {
 
         // roll log
         Expanded(
-          child: getZoneDecoration(const PhysicalRollLogView()),
+          child: getZoneDecoration(const RollLogOrLookupView()),
         ),
       ],
     );

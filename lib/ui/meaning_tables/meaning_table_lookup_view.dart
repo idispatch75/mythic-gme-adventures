@@ -5,17 +5,17 @@ import '../styles.dart';
 import '../widgets/header.dart';
 import 'meaning_table.dart';
 
-class MeaningTableDetailsView extends StatefulWidget {
+class MeaningTableLookupView extends StatefulWidget {
   final MeaningTable table;
 
-  const MeaningTableDetailsView(this.table, {super.key});
+  const MeaningTableLookupView(this.table, {super.key});
 
   @override
-  State<MeaningTableDetailsView> createState() =>
-      _MeaningTableDetailsViewState();
+  State<MeaningTableLookupView> createState() =>
+      _MeaningTableLookupViewState();
 }
 
-class _MeaningTableDetailsViewState extends State<MeaningTableDetailsView> {
+class _MeaningTableLookupViewState extends State<MeaningTableLookupView> {
   late String _tableName;
   late List<_Entry> _entries;
   List<_Entry>? _entries2;
@@ -89,7 +89,7 @@ class _MeaningTableDetailsViewState extends State<MeaningTableDetailsView> {
   }
 
   @override
-  void didUpdateWidget(MeaningTableDetailsView oldWidget) {
+  void didUpdateWidget(MeaningTableLookupView oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.table != widget.table) {

@@ -15,7 +15,7 @@ class FateChartView extends GetView<FateChartService> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           controller.getHeader(),
-          ...controller.getRows(),
+          ...controller.getRows(context),
         ],
       ),
     );

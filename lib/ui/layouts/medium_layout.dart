@@ -7,13 +7,13 @@ import '../characters/characters_list.dart';
 import '../dice_roller/dice_roller_view.dart';
 import '../fate_chart/fate_chart_view.dart';
 import '../meaning_tables/meaning_tables_view.dart';
-import '../roll_log/physical_roll_log_view.dart';
 import '../roll_log/roll_log_view.dart';
 import '../scenes/scene_edit_page_view.dart';
 import '../scenes/scenes_view.dart';
 import '../threads/threads_list.dart';
 import '../widgets/header.dart';
 import 'layout.dart';
+import 'roll_log_or_lookup_view.dart';
 import 'small_layout.dart';
 
 class MediumLayout extends GetView<LayoutController> {
@@ -110,7 +110,7 @@ class _MediumLayoutTables extends StatelessWidget {
         // roll log
         Expanded(
           child:
-              getZoneDecoration(const PhysicalRollLogView(), withRight: false),
+              getZoneDecoration(const RollLogOrLookupView(), withRight: false),
         ),
       ],
     );

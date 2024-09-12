@@ -8,6 +8,7 @@ import '../../helpers/dialogs.dart';
 import '../../helpers/inline_link.dart';
 import '../../storages/data_storage.dart';
 import '../preferences/preferences.dart';
+import '../styles.dart';
 import '../widgets/actions_menu.dart';
 import '../widgets/progress_indicators.dart';
 import 'adventure.dart';
@@ -162,8 +163,8 @@ class _AdventureActionsButton extends GetView<AdventureInfoController> {
             onPressed: controller.togglePhysicalDiceMode,
             leadingIcon: Stack(
               children: [
-                const Icon(Icons.casino_outlined),
-                if (isPhysicalDiceModeEnabled.value) const Icon(Icons.close),
+                AppStyles.rollIcon,
+                if (isPhysicalDiceModeEnabled.value) const Icon(Icons.clear),
               ],
             ),
             child: Text(
