@@ -25,7 +25,7 @@ class SceneTestLookupView extends StatelessWidget {
     }
 
     entries.add(RollLookupEntry(
-      value: '${chaosFactor + 1} - 10',
+      value: chaosFactor == 9 ? '10' : '${chaosFactor + 1} - 10',
       label: 'Expected Scene',
     ));
 

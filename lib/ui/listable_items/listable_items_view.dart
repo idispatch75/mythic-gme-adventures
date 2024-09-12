@@ -32,7 +32,8 @@ abstract class ListableItemsView<TItem extends ListableItem>
       children: [
         Obx(() {
           final isPhysicalDiceModeEnabled = getPhysicalDiceModeEnabled;
-          final canRoll = _controller.items.any((e) => !e.value.isArchived);
+          final canRoll =
+              _controller.items.where((e) => !e.value.isArchived).length > 1;
 
           return ButtonRow(
             children: [

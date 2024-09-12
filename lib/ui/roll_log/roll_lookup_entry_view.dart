@@ -27,7 +27,7 @@ class RollLookupEntryView extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(left: 16.0),
           child: SizedBox(
-            width: 70,
+            width: 74,
             child: Text(
               value,
               style: const TextStyle(fontWeight: FontWeight.bold),
@@ -37,10 +37,13 @@ class RollLookupEntryView extends StatelessWidget {
 
         // label
         Expanded(
-          child: Text(
-            label,
-            softWrap: false,
-            overflow: TextOverflow.clip,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 4.0),
+            child: Text(
+              label,
+              softWrap: false,
+              overflow: TextOverflow.clip,
+            ),
           ),
         ),
 

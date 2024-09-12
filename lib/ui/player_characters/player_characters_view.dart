@@ -21,7 +21,7 @@ class PlayerCharactersView extends GetView<PlayerCharactersService> {
       children: [
         Obx(() {
           final isPhysicalDiceModeEnabled = getPhysicalDiceModeEnabled;
-          final canRoll = players.isNotEmpty;
+          final canRoll = players.length > 1;
 
           return ButtonRow(
             children: [

@@ -25,35 +25,39 @@ class ListableItemsLookupView extends StatelessWidget {
       header += ' - 1d${mainRows.length * 2}';
     }
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // header
-          RollHeader(header, AppStyles.genericColors),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // header
+        RollHeader(header, AppStyles.genericColors),
 
-          // entries
-          ...mainRows.expandIndexed((index, rowItems) {
-            return [
-              // row
-              _MainRow(
-                index: index,
-                itemNames: rowItems,
-                backgroundColorOffset: index.isEven ? 0 : 1,
-                showValue: mainRows.length > 1,
-              ),
+        // entries
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              children: mainRows.expandIndexed((index, rowItems) {
+                return [
+                  // row
+                  _MainRow(
+                    index: index,
+                    itemNames: rowItems,
+                    backgroundColorOffset: index.isEven ? 0 : 1,
+                    showValue: mainRows.length > 1,
+                  ),
 
-              // divider
-              if (index < mainRows.length - 1)
-                Divider(
-                  thickness: 2,
-                  height: 3,
-                  color: AppStyles.headerColor,
-                ),
-            ];
-          }),
-        ],
-      ),
+                  // divider
+                  if (index < mainRows.length - 1)
+                    Divider(
+                      thickness: 2,
+                      height: 3,
+                      color: AppStyles.headerColor,
+                    ),
+                ];
+              }).toList(),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

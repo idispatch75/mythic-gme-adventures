@@ -60,7 +60,7 @@ Future<T?> showAppModalBottomSheet<T>(BuildContext context, Widget content) {
           Align(
             alignment: Alignment.bottomRight,
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 4, right: 4),
+              padding: const EdgeInsets.all(4),
               child: TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: const Text('Dismiss'),

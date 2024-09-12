@@ -38,33 +38,40 @@ class RollLookupView extends StatelessWidget {
     final baseColor = rollColors.background;
     final alternateColor = baseColor.withOpacity(0.5);
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // header
-          RollHeader(header, rollColors),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // header
+        RollHeader(header, rollColors),
 
-          // entries
-          ...entries.mapIndexed((index, entry) {
-            final backgroundColor = index.isEven ? baseColor : alternateColor;
+        // entries
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                ...entries.mapIndexed((index, entry) {
+                  final backgroundColor =
+                      index.isEven ? baseColor : alternateColor;
 
-            return RollLookupEntryView(
-              value: entry.value,
-              label: entry.label,
-              backgroundColor: backgroundColor,
-              onRoll: entry.onRoll,
-              onApply: entry.onApply,
-            );
-          }),
+                  return RollLookupEntryView(
+                    value: entry.value,
+                    label: entry.label,
+                    backgroundColor: backgroundColor,
+                    onRoll: entry.onRoll,
+                    onApply: entry.onApply,
+                  );
+                }),
 
-          // additional content
-          if (additionalContent != null) ...[
-            const SizedBox(height: 16),
-            additionalContent!,
-          ],
-        ],
-      ),
+                // additional content
+                if (additionalContent != null) ...[
+                  const SizedBox(height: 16),
+                  additionalContent!,
+                ],
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
