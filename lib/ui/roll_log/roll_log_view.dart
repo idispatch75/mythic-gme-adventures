@@ -17,7 +17,7 @@ class RollLogView extends HookWidget {
   static final DateFormat _dateFormat = DateFormat.yMMMEd().add_jms();
   static final DateFormat _timeFormat = DateFormat.jms();
 
-  final _animatedLisKey = GlobalKey<AnimatedListState>();
+  final _animatedListKey = GlobalKey<AnimatedListState>();
 
   RollLogView({super.key});
 
@@ -42,7 +42,7 @@ class RollLogView extends HookWidget {
         }
 
         // animate new rolls
-        _animatedLisKey.currentState?.insertAllItems(0, updates.length);
+        _animatedListKey.currentState?.insertAllItems(0, updates.length);
 
         // animate removed rolls
         final removedRolls = updates
@@ -50,7 +50,7 @@ class RollLogView extends HookWidget {
             .map((e) => e.removedRoll)
             .toList();
         for (var i = 0; i < removedRolls.length; i++) {
-          _animatedLisKey.currentState?.removeItem(
+          _animatedListKey.currentState?.removeItem(
             log.length - i,
             (_, __) => const SizedBox(),
           );
@@ -65,7 +65,7 @@ class RollLogView extends HookWidget {
     final isDarkMode = Get.find<LocalPreferencesService>().enableDarkMode();
 
     return AnimatedList(
-      key: _animatedLisKey,
+      key: _animatedListKey,
       initialItemCount: log.length,
       itemBuilder: (_, index, animation) {
         final entry = log[log.length - index - 1];
@@ -328,34 +328,13 @@ void setupRollIndicator(BuildContext context) {
     final rollLog = Get.find<RollLogService>();
 
     final subscription = rollLog.rollUpdates.listen((updates) {
-      showModalBottomSheet<void>(
-        context: context,
-        constraints: const BoxConstraints.tightFor(width: 300),
-        builder: (_) {
-          return Column(
-            children: [
-              // results
-              Expanded(
-                child: ListView(
-                  children:
-                      updates.map((e) => getEntryView(e.newRoll)).toList(),
-                ),
-              ),
+      if (!context.mounted) return;
 
-              // dismiss
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Dismiss'),
-                  ),
-                ),
-              )
-            ],
-          );
-        },
+      showAppModalBottomSheet<void>(
+        context,
+        ListView(
+          children: updates.map((e) => getEntryView(e.newRoll)).toList(),
+        ),
       );
     });
 

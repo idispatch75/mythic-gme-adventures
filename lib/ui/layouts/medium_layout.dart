@@ -13,6 +13,7 @@ import '../scenes/scenes_view.dart';
 import '../threads/threads_list.dart';
 import '../widgets/header.dart';
 import 'layout.dart';
+import 'roll_log_or_lookup_view.dart';
 import 'small_layout.dart';
 
 class MediumLayout extends GetView<LayoutController> {
@@ -95,7 +96,9 @@ class _MediumLayoutTables extends StatelessWidget {
               child: SizedBox(
                 width: tablesWidth,
                 child: getZoneDecoration(
-                  const MeaningTablesView(),
+                  const MeaningTablesView(
+                    isSmallLayout: false,
+                  ),
                   withLeft: false,
                 ),
               ),
@@ -106,7 +109,8 @@ class _MediumLayoutTables extends StatelessWidget {
 
         // roll log
         Expanded(
-          child: getZoneDecoration(RollLogView(), withRight: false),
+          child:
+              getZoneDecoration(const RollLogOrLookupView(), withRight: false),
         ),
       ],
     );

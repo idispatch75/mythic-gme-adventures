@@ -16,6 +16,7 @@ import '../meaning_tables/meaning_tables_ctl.dart';
 import '../meaning_tables/meaning_tables_view.dart';
 import '../notes/notes_view.dart';
 import '../player_characters/player_characters_view.dart';
+import '../preferences/preferences.dart';
 import '../roll_log/roll_log_view.dart';
 import '../scenes/scene_edit_page_view.dart';
 import '../scenes/scenes_view.dart';
@@ -23,6 +24,7 @@ import '../threads/threads_list.dart';
 import '../threads/threads_view.dart';
 import '../widgets/header.dart';
 import 'layout.dart';
+import 'roll_log_or_lookup_view.dart';
 
 class SmallLayout extends GetView<LayoutController> {
   const SmallLayout({super.key});
@@ -59,9 +61,11 @@ class _SmallLayoutOracles extends HookWidget {
 
     return LayoutTabBar(
       tabIndex: controller.oraclesTabIndex,
-      tabs: const [
+      tabs: [
         Tab(text: 'Tables'),
-        Tab(text: 'Roll Log'),
+        Obx(() {
+          return Tab(text: getPhysicalDiceModeEnabled ? 'Lookup' : 'Roll Log');
+        }),
         Tab(text: 'Dice Roller'),
       ],
       children: [
@@ -69,7 +73,7 @@ class _SmallLayoutOracles extends HookWidget {
         const _SmallLayoutTables(),
 
         // log
-        RollLogView(),
+        RollLogOrLookupView(),
 
         // dice roller
         DiceRollerView(),
@@ -90,7 +94,10 @@ class _SmallLayoutTables extends HookWidget {
         return const Column(
           children: [
             FateChartView(),
-            Expanded(child: MeaningTablesView()),
+            Expanded(
+                child: MeaningTablesView(
+              isSmallLayout: true,
+            )),
           ],
         );
       } else {
@@ -100,8 +107,9 @@ class _SmallLayoutTables extends HookWidget {
         final meaningTables = Get.find<MeaningTablesController>();
 
         return Obx(() {
-          final fateChartRows = fateCharts.getRows();
-          final meaningTableButtons = meaningTables.getButtons();
+          final fateChartRows = fateCharts.getRows(context);
+          final meaningTableButtons =
+              meaningTables.getButtons(isSmallLayout: true);
 
           return ListView.builder(
             itemCount:

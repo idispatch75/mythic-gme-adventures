@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart' as rxdart;
 
 import '../../helpers/datetime_extensions.dart';
+import '../../helpers/dialogs.dart';
 import '../../helpers/string_extensions.dart';
 import '../../persisters/adventure_persister.dart';
 import '../../persisters/global_settings_persister.dart';
@@ -19,6 +20,7 @@ import '../global_settings/global_settings.dart';
 import '../global_settings/global_settings_edit_view.dart';
 import '../notes/note.dart';
 import '../player_characters/player_character.dart';
+import '../preferences/preferences.dart';
 import '../scenes/scene.dart';
 import '../threads/thread.dart';
 import 'adventure.dart';
@@ -105,6 +107,24 @@ class AdventureInfoController extends GetxController {
       }
       saving(false);
     }
+  }
+
+  void togglePhysicalDiceMode() {
+    final preferences = Get.find<LocalPreferencesService>();
+
+    if (!preferences.physicalDiceModeExplained.value) {
+      Dialogs.showAlert(
+        title: 'Physical Dice Mode',
+        message: 'When Physical Dice Mode is enabled,'
+            ' rolling in the App will not roll dice for you but open the lookup table for the roll.'
+            ' You can then roll physical dice and lookup the result there.',
+      );
+
+      preferences.physicalDiceModeExplained(true);
+    }
+
+    preferences
+        .enablePhysicalDiceMode(!preferences.enablePhysicalDiceMode.value);
   }
 
   Future<void> save() async {

@@ -42,9 +42,7 @@ abstract class Dialogs {
         actions: [
           TextButton(
             child: const Text('OK'),
-            onPressed: () {
-              Get.back<void>();
-            },
+            onPressed: () => Get.back<void>(),
           ),
         ],
       ),

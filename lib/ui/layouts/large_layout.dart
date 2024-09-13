@@ -11,12 +11,12 @@ import '../fate_chart/fate_chart_view.dart';
 import '../meaning_tables/meaning_tables_view.dart';
 import '../notes/notes_view.dart';
 import '../player_characters/player_characters_view.dart';
-import '../roll_log/roll_log_view.dart';
 import '../scenes/scene_edit_page_view.dart';
 import '../scenes/scenes_view.dart';
 import '../threads/threads_list.dart';
 import '../threads/threads_view.dart';
 import 'layout.dart';
+import 'roll_log_or_lookup_view.dart';
 
 class LargeLayout extends HookWidget {
   const LargeLayout({super.key});
@@ -34,90 +34,97 @@ class LargeLayout extends HookWidget {
           children: [
             // oracles
             SizedBox(
-              width: _LargeLayoutTables.width,
+              width: largeLayoutTablesWidth,
               child: const _LargeLayoutOracles(),
             ),
             Layout.verticalSpacer,
 
             // third column
-            Obx(() {
-              return Expanded(
-                child: layoutController.hasEditScenePage()
-                    ? SceneEditPageView()
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Row(
-                            children: [
-                              // chaos factor
-                              getZoneDecoration(const ChaosFactorView()),
+            Expanded(
+              child: Obx(() {
+                final Widget widget;
+                if (layoutController.hasEditScenePage()) {
+                  widget = SceneEditPageView();
+                } else {
+                  widget = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        children: [
+                          // chaos factor
+                          getZoneDecoration(const SizedBox(
+                            width: 140,
+                            child: ChaosFactorView(),
+                          )),
 
-                              // adventure info
-                              const Expanded(
-                                child: Padding(
-                                  padding: EdgeInsets.fromLTRB(16, 16, 0, 0),
-                                  child: AdventureInfoView(),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Layout.horizontalSpacer,
-
-                          // lists
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  flex: 5,
-                                  child: getZoneDecoration(
-                                      const ThreadsListView()),
-                                ),
-                                Layout.verticalSpacer,
-                                Expanded(
-                                  flex: 4,
-                                  child: getZoneDecoration(
-                                      const CharactersListView()),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Layout.horizontalSpacer,
-
-                          // tabs
-                          Expanded(
-                            child: getZoneDecoration(
-                              Column(
-                                children: [
-                                  TabBar(
-                                    controller: tabController,
-                                    tabs: const [
-                                      Tab(text: 'Scenes'),
-                                      Tab(text: 'Characters'),
-                                      Tab(text: 'Threads'),
-                                      Tab(text: 'Players'),
-                                      Tab(text: 'Notes'),
-                                    ],
-                                  ),
-                                  Expanded(
-                                    child: TabBarView(
-                                      controller: tabController,
-                                      children: [
-                                        const ScenesView(),
-                                        CharactersView(),
-                                        ThreadsView(),
-                                        const PlayerCharactersView(),
-                                        const NotesView(),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                          // adventure info
+                          const Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(16, 16, 0, 0),
+                              child: AdventureInfoView(),
                             ),
                           ),
                         ],
                       ),
-              );
-            }),
+                      Layout.horizontalSpacer,
+
+                      // lists
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 5,
+                              child: getZoneDecoration(const ThreadsListView()),
+                            ),
+                            Layout.verticalSpacer,
+                            Expanded(
+                              flex: 4,
+                              child:
+                                  getZoneDecoration(const CharactersListView()),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Layout.horizontalSpacer,
+
+                      // tabs
+                      Expanded(
+                        child: getZoneDecoration(
+                          Column(
+                            children: [
+                              TabBar(
+                                controller: tabController,
+                                tabs: const [
+                                  Tab(text: 'Scenes'),
+                                  Tab(text: 'Characters'),
+                                  Tab(text: 'Threads'),
+                                  Tab(text: 'Players'),
+                                  Tab(text: 'Notes'),
+                                ],
+                              ),
+                              Expanded(
+                                child: TabBarView(
+                                  controller: tabController,
+                                  children: [
+                                    const ScenesView(),
+                                    CharactersView(),
+                                    ThreadsView(),
+                                    const PlayerCharactersView(),
+                                    const NotesView(),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+
+                return widget;
+              }),
+            ),
           ],
         ),
       ),
@@ -149,7 +156,6 @@ class _LargeLayoutOracles extends GetView<LayoutController> {
 
 class _LargeLayoutTables extends StatelessWidget {
   static const _columnWidth = 260.0;
-  static final width = _columnWidth * 2 + Layout.verticalSpacer.width!;
 
   const _LargeLayoutTables();
 
@@ -169,7 +175,9 @@ class _LargeLayoutTables extends StatelessWidget {
             Expanded(
               child: SizedBox(
                 width: _columnWidth,
-                child: getZoneDecoration(const MeaningTablesView()),
+                child: getZoneDecoration(const MeaningTablesView(
+                  isSmallLayout: false,
+                )),
               ),
             ),
           ],
@@ -178,11 +186,14 @@ class _LargeLayoutTables extends StatelessWidget {
 
         // roll log
         Expanded(
-          child: getZoneDecoration(
-            RollLogView(),
-          ),
+          child: getZoneDecoration(const RollLogOrLookupView()),
         ),
       ],
     );
   }
 }
+
+final largeLayoutTablesWidth = _LargeLayoutTables._columnWidth +
+    Layout.verticalSpacer.width! +
+    _LargeLayoutTables._columnWidth +
+    60;

@@ -46,6 +46,7 @@ class AdventureEditView extends HookWidget {
             validator: validateNotEmpty,
             decoration: const InputDecoration(labelText: 'Name'),
             autofocus: _adventure.name().isEmpty,
+            textCapitalization: TextCapitalization.sentences,
             onFieldSubmitted: (_) => EditDialog.triggerSave(saveTrigger),
           ),
           Obx(

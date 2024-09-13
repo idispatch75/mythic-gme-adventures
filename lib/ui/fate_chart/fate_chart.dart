@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../random_events/random_event.dart';
 
 import '../../helpers/utils.dart';
 import '../adventure/adventure.dart';
 import '../chaos_factor/chaos_factor.dart';
+import '../preferences/preferences.dart';
+import '../random_events/random_event.dart';
 import '../roll_log/roll_log.dart';
 import '../styles.dart';
+import '../threads/thread.dart';
 import '../widgets/header.dart';
+import 'fate_chart_lookup_view.dart';
 import 'fate_chart_view.dart';
 
 enum FateChartType {
@@ -144,12 +147,12 @@ enum FateChartRollOutcome {
   extremeYes,
 }
 
-class _OutcomeProbability {
+class FateChartOutcomeProbability {
   final int extremeYes;
   final int threshold;
   final int extremeNo;
 
-  _OutcomeProbability(this.extremeYes, this.threshold, this.extremeNo);
+  FateChartOutcomeProbability(this.extremeYes, this.threshold, this.extremeNo);
 }
 
 /// The probabilities for a range of chaos factors.
@@ -160,7 +163,7 @@ class _ChaosFactorOutcomeProbabilities {
   /// The high end of the range (included)
   final int max;
 
-  final List<_OutcomeProbability> outcomeProbabilities;
+  final List<FateChartOutcomeProbability> outcomeProbabilities;
 
   _ChaosFactorOutcomeProbabilities(
     this.min,
@@ -171,28 +174,10 @@ class _ChaosFactorOutcomeProbabilities {
 
 class FateChartService extends GetxService {
   FateChartRoll roll(Probability probability, {bool skipEvents = false}) {
+    final outcomeProbability = _getOutcomeProbability(probability);
+
     // roll the die
     final dieRoll = roll100Die();
-
-    // determine the outcome probability
-    // based on the current chaos factor and fate chart type
-    final chaosFactor = Get.find<ChaosFactorService>().chaosFactor.value;
-
-    final adventure = Get.find<AdventureService>();
-    final chart = switch (adventure.fateChartType) {
-      FateChartType.standard => _standardFateChart,
-      FateChartType.mid => _midFateChart,
-      FateChartType.low => _lowFateChart,
-      FateChartType.none => _noneFateChart,
-    };
-
-    final probabilityIndex =
-        probabilityVMs.indexWhere((e) => e.probability == probability);
-
-    final outcomeProbability = (chart.firstWhereOrNull(
-                (e) => e.min <= chaosFactor && chaosFactor <= e.max) ??
-            _fallbackChaosFactorOutcomeProbabilities)
-        .outcomeProbabilities[probabilityIndex];
 
     // determine the outcome value based on the roll and outcome probability
     FateChartRollOutcome outcome;
@@ -207,6 +192,8 @@ class FateChartService extends GetxService {
     }
 
     // add the roll to the log
+    final chaosFactor = Get.find<ChaosFactorService>().chaosFactor.value;
+
     return Get.find<RollLogService>().addFateChartRoll(
       probability: probability,
       chaosFactor: chaosFactor,
@@ -216,53 +203,114 @@ class FateChartService extends GetxService {
     );
   }
 
+  void showFateChartLookup(BuildContext context, Probability probability,
+      {Thread? thread}) {
+    final outcomeProbability = _getOutcomeProbability(probability);
+
+    final content = FateChartLookupView(
+      probability: probability,
+      outcomeProbability: outcomeProbability,
+      thread: thread,
+    );
+
+    showAppModalBottomSheet<void>(context, content);
+  }
+
+  /// Determines the outcome probability of the specified [probability]
+  /// based on the current chaos factor and fate chart type.
+  FateChartOutcomeProbability _getOutcomeProbability(Probability probability) {
+    final chaosFactor = Get.find<ChaosFactorService>().chaosFactor.value;
+
+    final adventure = Get.find<AdventureService>();
+    final chart = switch (adventure.fateChartType) {
+      FateChartType.standard => _standardFateChart,
+      FateChartType.mid => _midFateChart,
+      FateChartType.low => _lowFateChart,
+      FateChartType.none => _noneFateChart,
+    };
+
+    final probabilityIndex =
+        probabilityVMs.indexWhere((e) => e.probability == probability);
+
+    return (chart.firstWhereOrNull(
+                (e) => e.min <= chaosFactor && chaosFactor <= e.max) ??
+            _fallbackChaosFactorOutcomeProbabilities)
+        .outcomeProbabilities[probabilityIndex];
+  }
+
   Widget getHeader() => const Header('Fate Chart');
 
-  List<Widget> getRows() => [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _getProbabilityButton(Probability.certain),
-            _getProbabilityButton(Probability.nearlyCertain),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _getProbabilityButton(Probability.veryLikely),
-            _getProbabilityButton(Probability.likely),
-          ],
-        ),
-        _getProbabilityButton(Probability.fiftyFifty),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _getProbabilityButton(Probability.unlikely),
-            _getProbabilityButton(Probability.veryUnlikely),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _getProbabilityButton(Probability.nearlyImpossible),
-            _getProbabilityButton(Probability.impossible),
-          ],
-        ),
-        FateChartButton(
-          text: 'RANDOM EVENT',
-          onPressed: rollRandomEvent,
-          rollColors: AppStyles.randomEventColors,
-          hasRightBorder: true,
-          hasFullWidth: true,
-        ),
-      ];
+  /// Must be wrapped in a Obx to listen to the physical dice mode
+  List<Widget> getRows(BuildContext context) {
+    final isPhysicalDiceModeEnabled = getPhysicalDiceModeEnabled;
 
-  Widget _getProbabilityButton(Probability probability) {
+    return [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _getProbabilityButton(context, Probability.certain,
+              isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled),
+          _getProbabilityButton(context, Probability.nearlyCertain,
+              isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled),
+        ],
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _getProbabilityButton(context, Probability.veryLikely,
+              isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled),
+          _getProbabilityButton(context, Probability.likely,
+              isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled),
+        ],
+      ),
+      _getProbabilityButton(context, Probability.fiftyFifty,
+          isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _getProbabilityButton(context, Probability.unlikely,
+              isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled),
+          _getProbabilityButton(context, Probability.veryUnlikely,
+              isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled),
+        ],
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _getProbabilityButton(context, Probability.nearlyImpossible,
+              isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled),
+          _getProbabilityButton(context, Probability.impossible,
+              isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled),
+        ],
+      ),
+      FateChartButton(
+        text: 'RANDOM EVENT',
+        onPressed: isPhysicalDiceModeEnabled
+            ? () => showRandomEventLookup(context)
+            : rollRandomEvent,
+        rollColors: AppStyles.randomEventColors,
+        hasRightBorder: true,
+        hasFullWidth: true,
+      ),
+    ];
+  }
+
+  Widget _getProbabilityButton(
+    BuildContext context,
+    Probability probability, {
+    required bool isPhysicalDiceModeEnabled,
+  }) {
     final vm = probabilityVMs.firstWhere((e) => e.probability == probability);
 
     return FateChartButton(
       text: vm.probability.text,
-      onPressed: () => roll(probability),
+      onPressed: () {
+        if (isPhysicalDiceModeEnabled) {
+          showFateChartLookup(context, probability);
+        } else {
+          roll(probability);
+        }
+      },
       rollColors: AppStyles.fateChartColors,
       hasRightBorder: vm.hasRightBorder,
       hasFullWidth: vm.hasFullWidth,
@@ -331,21 +379,21 @@ final _availableOutcomeProbabilities = {
       .map((threshold) => (threshold, _computeOutcomeProbability(threshold)))
       .toList())
     e.$1: e.$2,
-  1: _OutcomeProbability(0, 1, 81),
-  99: _OutcomeProbability(20, 99, 101)
+  1: FateChartOutcomeProbability(0, 1, 81),
+  99: FateChartOutcomeProbability(20, 99, 101)
 };
 
-final _fallbackOutcomeProbability =
-    _availableOutcomeProbabilities[50] ?? _OutcomeProbability(10, 50, 91);
+final _fallbackOutcomeProbability = _availableOutcomeProbabilities[50] ??
+    FateChartOutcomeProbability(10, 50, 91);
 
-_OutcomeProbability _computeOutcomeProbability(int threshold) {
+FateChartOutcomeProbability _computeOutcomeProbability(int threshold) {
   final extremeYes = threshold * 20 ~/ 100;
   final extremeNo = 100 - ((100 - threshold) * 20 ~/ 100) + 1;
 
-  return _OutcomeProbability(extremeYes, threshold, extremeNo);
+  return FateChartOutcomeProbability(extremeYes, threshold, extremeNo);
 }
 
-_OutcomeProbability _getOutcomeProbabilityForThreshold(int threshold) {
+FateChartOutcomeProbability _getOutcomeProbabilityForThreshold(int threshold) {
   return _availableOutcomeProbabilities[threshold] ??
       _fallbackOutcomeProbability;
 }

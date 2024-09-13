@@ -44,6 +44,35 @@ void showSnackBar(BuildContext context, String text) {
   );
 }
 
+Future<T?> showAppModalBottomSheet<T>(BuildContext context, Widget content) {
+  return showModalBottomSheet<T>(
+    context: context,
+    constraints: const BoxConstraints.tightFor(width: 300),
+    builder: (context) {
+      return Column(
+        children: [
+          // content
+          Expanded(
+            child: content,
+          ),
+
+          // dismiss
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: const EdgeInsets.all(4),
+              child: TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Dismiss'),
+              ),
+            ),
+          )
+        ],
+      );
+    },
+  );
+}
+
 /// Builds a [ListView] with a [Divider] as separator.
 ListView defaultListView({
   required int itemCount,
@@ -65,7 +94,7 @@ Widget protectClose({required Widget child}) {
 
   return PopScope(
     canPop: false,
-    onPopInvoked: (bool didPop) async {
+    onPopInvokedWithResult: (bool didPop, _) async {
       if (didPop) {
         return;
       }

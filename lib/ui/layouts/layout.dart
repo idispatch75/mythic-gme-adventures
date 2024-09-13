@@ -5,6 +5,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
 
 import '../adventure/adventure_info_view.dart';
+import '../meaning_tables/meaning_table.dart';
 import '../styles.dart';
 
 /// Right to left on Windows (OK then Cancel),
@@ -23,6 +24,8 @@ class LayoutController extends GetxController {
   final otherTabIndex = 0.obs;
 
   final hasEditScenePage = false.obs;
+
+  final Rx<MeaningTable?> meaningTableDetails = Rx(null);
 }
 
 Widget getZoneDecoration(
@@ -69,6 +72,14 @@ class LayoutTabBar extends HookWidget {
       initialLength: tabs.length,
       initialIndex: min(tabIndex(), children.length - 1),
     );
+
+    useEffect(() {
+      final subscription = tabIndex.listen((index) {
+        tabController.index = index;
+      });
+
+      return subscription.cancel;
+    }, const []);
 
     return Column(
       children: [

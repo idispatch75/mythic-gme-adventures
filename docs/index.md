@@ -15,7 +15,8 @@ Features:
 - Basic dice roller
 - Save on Google Drive: you can share your adventures between your devices
 - Works offline
-- Export your adventure to a text file: you can format it properly in your text editor of choice.
+- Export your adventure to a text file: you can format it properly in your text editor of choice
+- Physical dice mode: switch to this mode to roll the dice yourself and lookup the result in the App
 
 Available on [Windows](https://github.com/idispatch75/mythic-gme-adventures/releases) and [Android](https://play.google.com/store/apps/details?id=idispatch.mythic_gme_adventures).
 

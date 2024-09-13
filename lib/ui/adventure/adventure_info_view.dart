@@ -7,6 +7,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../../helpers/dialogs.dart';
 import '../../helpers/inline_link.dart';
 import '../../storages/data_storage.dart';
+import '../preferences/preferences.dart';
+import '../styles.dart';
 import '../widgets/actions_menu.dart';
 import '../widgets/progress_indicators.dart';
 import 'adventure.dart';
@@ -151,6 +153,24 @@ class _AdventureActionsButton extends GetView<AdventureInfoController> {
           leadingIcon: const Icon(Icons.settings_outlined),
           child: const Text('Global Settings'),
         ),
+
+        // physical dice mode
+        Obx(() {
+          final isPhysicalDiceModeEnabled = getPhysicalDiceModeEnabled;
+
+          return MenuItemButton(
+            onPressed: controller.togglePhysicalDiceMode,
+            leadingIcon: Stack(
+              children: [
+                AppStyles.rollIcon,
+                if (isPhysicalDiceModeEnabled) const Icon(Icons.clear),
+              ],
+            ),
+            child: Text(
+              '${isPhysicalDiceModeEnabled ? 'Disable' : 'Enable'} Physical Dice Mode',
+            ),
+          );
+        }),
 
         // Save
         MenuItemButton(

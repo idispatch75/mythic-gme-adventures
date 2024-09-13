@@ -15,6 +15,8 @@ class CharactersListController extends ListableItemsListController<Character> {
 }
 
 class CharactersListView extends ListableItemsListView<Character> {
+  static const listItemTypeLabel = 'Character';
+
   const CharactersListView({super.key});
 
   @override
@@ -22,7 +24,7 @@ class CharactersListView extends ListableItemsListView<Character> {
       Get.find<CharactersListController>();
 
   @override
-  String get itemTypeLabel => 'Character';
+  String get itemTypeLabel => listItemTypeLabel;
 
   @override
   Future<void> createItem() async {

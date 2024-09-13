@@ -9,6 +9,8 @@ class LocalPreferencesService extends GetxService {
   final RxBool enableLocalStorage;
   final Rx<String?> localDataDirectoryOverride;
   final RxBool enableDarkMode;
+  final RxBool enablePhysicalDiceMode;
+  final RxBool physicalDiceModeExplained;
 
   LocalPreferencesService(this._preferences)
       : enableGoogleStorage =
@@ -20,7 +22,11 @@ class LocalPreferencesService extends GetxService {
         enableDarkMode = (_preferences.getBool('enableDarkMode') ??
                 WidgetsBinding.instance.platformDispatcher.platformBrightness ==
                     Brightness.dark)
-            .obs;
+            .obs,
+        enablePhysicalDiceMode =
+            (_preferences.getBool('enablePhysicalDiceMode') ?? false).obs,
+        physicalDiceModeExplained =
+            (_preferences.getBool('physicalDiceModeExplained') ?? false).obs;
 
   @override
   void onInit() {
@@ -45,5 +51,17 @@ class LocalPreferencesService extends GetxService {
     enableDarkMode.listen((value) {
       _preferences.setBool('enableDarkMode', value);
     });
+
+    enablePhysicalDiceMode.listen((value) {
+      _preferences.setBool('enablePhysicalDiceMode', value);
+    });
+
+    physicalDiceModeExplained.listen((value) {
+      _preferences.setBool('physicalDiceModeExplained', value);
+    });
   }
 }
+
+/// Gets whether the physical dice mode is enabled.
+bool get getPhysicalDiceModeEnabled =>
+    Get.find<LocalPreferencesService>().enablePhysicalDiceMode.value;

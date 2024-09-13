@@ -6,6 +6,7 @@ import '../../helpers/utils.dart';
 import '../chaos_factor/chaos_factor.dart';
 import '../keyed_scenes/keyed_scene.dart';
 import '../keyed_scenes/keyed_scenes_view.dart';
+import '../preferences/preferences.dart';
 import '../random_events/random_event.dart';
 import '../roll_log/roll_log.dart';
 import '../styles.dart';
@@ -14,7 +15,9 @@ import '../widgets/edit_dialog.dart';
 import '../widgets/header.dart';
 import '../widgets/round_badge.dart';
 import 'scene.dart';
+import 'scene_adjustment_lookup_view.dart';
 import 'scene_edit_view.dart';
+import 'scene_test_lookup_view.dart';
 
 class ScenesView extends GetView<ScenesService> {
   final bool dense;
@@ -56,54 +59,62 @@ class ScenesView extends GetView<ScenesService> {
       );
     }
 
-    return Column(
-      children: [
-        ButtonRow(
-          children: [
-            // keyed scenes
-            if (keyedScenesButton != null) keyedScenesButton,
+    return Obx(() {
+      final isPhysicalDiceModeEnabled = getPhysicalDiceModeEnabled;
 
-            // roll adjustment
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: OutlinedButton(
-                onPressed: _rollAdjustment,
-                child: Text(dense ? 'Roll Adjust.' : 'Roll Adjustment'),
+      return Column(
+        children: [
+          ButtonRow(
+            children: [
+              // keyed scenes
+              if (keyedScenesButton != null) keyedScenesButton,
+
+              // roll adjustment
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: OutlinedButton(
+                  onPressed: isPhysicalDiceModeEnabled
+                      ? () => _showAdjustmentLookup(context)
+                      : _rollAdjustment,
+                  child: Text(dense ? 'Roll Adjust.' : 'Roll Adjustment'),
+                ),
               ),
-            ),
 
-            // test scene
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: OutlinedButton(
-                onPressed: _testScene,
-                child: Text(dense ? 'Test Scene' : 'Test Expected Scene'),
+              // test scene
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: OutlinedButton(
+                  onPressed: isPhysicalDiceModeEnabled
+                      ? () => _showSceneTestLookup(context)
+                      : _testScene,
+                  child: Text(dense ? 'Test Scene' : 'Test Expected Scene'),
+                ),
               ),
-            ),
 
-            // add scene
-            IconButton.filled(
-              onPressed: _create,
-              icon: const Icon(Icons.add),
-              tooltip: 'Create a Scene',
-            ),
-          ],
-        ),
+              // add scene
+              IconButton.filled(
+                onPressed: _create,
+                icon: const Icon(Icons.add),
+                tooltip: 'Create a Scene',
+              ),
+            ],
+          ),
 
-        // list
-        Expanded(
-          child: Obx(
-            () => defaultListView(
-              itemCount: scenes.length,
-              itemBuilder: (_, index) {
-                final reverseIndex = scenes.length - index - 1;
-                return _SceneView(reverseIndex, scenes[reverseIndex]);
-              },
+          // list
+          Expanded(
+            child: Obx(
+              () => defaultListView(
+                itemCount: scenes.length,
+                itemBuilder: (_, index) {
+                  final reverseIndex = scenes.length - index - 1;
+                  return _SceneView(reverseIndex, scenes[reverseIndex]);
+                },
+              ),
             ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    });
   }
 
   void _create() async {
@@ -151,6 +162,12 @@ class ScenesView extends GetView<ScenesService> {
     }
   }
 
+  void _showSceneTestLookup(BuildContext context) {
+    const content = SceneTestLookupView();
+
+    showAppModalBottomSheet<void>(context, content);
+  }
+
   void _rollAdjustment() {
     void addSceneAdjustmentRoll(int dieRoll) {
       final adjustment = switch (dieRoll) {
@@ -183,6 +200,12 @@ class ScenesView extends GetView<ScenesService> {
     } else {
       addSceneAdjustmentRoll(dieRoll);
     }
+  }
+
+  void _showAdjustmentLookup(BuildContext context) {
+    const content = SceneAdjustmentLookupView();
+
+    showAppModalBottomSheet<void>(context, content);
   }
 
   void _showKeyedScenes() {

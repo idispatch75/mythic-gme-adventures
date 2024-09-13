@@ -50,6 +50,7 @@ abstract class ListableItemEditView<TItem extends ListableItem>
             validator: validateNotEmpty,
             decoration: const InputDecoration(labelText: 'Name'),
             autofocus: item.name.isEmpty,
+            textCapitalization: TextCapitalization.sentences,
             onFieldSubmitted: (_) => EditDialog.triggerSave(saveTrigger),
           ),
           const SizedBox(height: 16),
@@ -57,6 +58,7 @@ abstract class ListableItemEditView<TItem extends ListableItem>
           TextFormField(
             controller: summaryController,
             decoration: const InputDecoration(labelText: 'Summary'),
+            textCapitalization: TextCapitalization.sentences,
             onFieldSubmitted: (_) => EditDialog.triggerSave(saveTrigger),
           ),
           const SizedBox(height: 16),
@@ -68,6 +70,7 @@ abstract class ListableItemEditView<TItem extends ListableItem>
               maxLines: null,
               minLines: 3,
               decoration: const InputDecoration(labelText: 'Notes'),
+              textCapitalization: TextCapitalization.sentences,
             ),
           ),
 
