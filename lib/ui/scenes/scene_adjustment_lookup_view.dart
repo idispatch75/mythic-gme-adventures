@@ -9,7 +9,7 @@ class SceneAdjustmentLookupView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RollLookupView(
-      header: 'Test Expected Scene - 1d10',
+      header: 'Scene Adjustment - 1d10',
       rollColors: AppStyles.genericColors,
       entries: const [
         RollLookupEntry(value: '1', label: 'Remove a Character'),

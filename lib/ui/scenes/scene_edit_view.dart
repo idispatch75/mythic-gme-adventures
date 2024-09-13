@@ -46,6 +46,7 @@ class SceneEditView extends HookWidget {
             validator: validateNotEmpty,
             decoration: const InputDecoration(labelText: 'Summary'),
             autofocus: _scene.summary.isEmpty,
+            textCapitalization: TextCapitalization.sentences,
             onFieldSubmitted: (_) => EditDialog.triggerSave(saveTrigger),
           ),
           const SizedBox(height: 16),
@@ -56,6 +57,7 @@ class SceneEditView extends HookWidget {
               maxLines: null,
               minLines: 5,
               decoration: const InputDecoration(labelText: 'Notes'),
+              textCapitalization: TextCapitalization.sentences,
             ),
           ),
 

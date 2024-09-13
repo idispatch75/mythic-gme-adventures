@@ -44,7 +44,6 @@ class SceneTestLookupView extends StatelessWidget {
             },
             child: const Text('ROLL RANDOM EVENT'),
           ),
-          const SizedBox(height: 8),
 
           // roll adjustment
           TextButton(

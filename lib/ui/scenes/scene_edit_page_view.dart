@@ -65,6 +65,7 @@ class SceneEditPageView extends HookWidget {
             controller: summaryController,
             validator: validateNotEmpty,
             decoration: const InputDecoration(labelText: 'Summary'),
+            textCapitalization: TextCapitalization.sentences,
           ),
           const SizedBox(height: 16),
           Expanded(
@@ -73,6 +74,7 @@ class SceneEditPageView extends HookWidget {
               maxLines: null,
               minLines: 3,
               decoration: const InputDecoration(labelText: 'Notes'),
+              textCapitalization: TextCapitalization.sentences,
             ),
           ),
 

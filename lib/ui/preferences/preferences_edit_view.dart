@@ -77,6 +77,7 @@ class PreferencesEditView extends HookWidget {
                   controller: localDataDirectoryController,
                   decoration:
                       const InputDecoration(labelText: 'Local data folder'),
+                  textCapitalization: TextCapitalization.sentences,
                   readOnly: true,
                 ),
               ),

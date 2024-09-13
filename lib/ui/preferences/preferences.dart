@@ -10,6 +10,7 @@ class LocalPreferencesService extends GetxService {
   final Rx<String?> localDataDirectoryOverride;
   final RxBool enableDarkMode;
   final RxBool enablePhysicalDiceMode;
+  final RxBool physicalDiceModeExplained;
 
   LocalPreferencesService(this._preferences)
       : enableGoogleStorage =
@@ -23,7 +24,9 @@ class LocalPreferencesService extends GetxService {
                     Brightness.dark)
             .obs,
         enablePhysicalDiceMode =
-            (_preferences.getBool('enablePhysicalDiceMode') ?? false).obs;
+            (_preferences.getBool('enablePhysicalDiceMode') ?? false).obs,
+        physicalDiceModeExplained =
+            (_preferences.getBool('physicalDiceModeExplained') ?? false).obs;
 
   @override
   void onInit() {
@@ -51,6 +54,10 @@ class LocalPreferencesService extends GetxService {
 
     enablePhysicalDiceMode.listen((value) {
       _preferences.setBool('enablePhysicalDiceMode', value);
+    });
+
+    physicalDiceModeExplained.listen((value) {
+      _preferences.setBool('physicalDiceModeExplained', value);
     });
   }
 }
