@@ -19,7 +19,7 @@ import 'orientation_locker.dart';
 import 'persisters/adventure_persister.dart';
 import 'persisters/global_settings_persister.dart';
 import 'persisters/meaning_tables_persister.dart';
-import 'storages/google_auth.dart';
+import 'storages/google_auth_service.dart';
 import 'ui/adventure_index/adventure_index_view.dart';
 import 'ui/meaning_tables/meaning_table.dart';
 import 'ui/preferences/preferences.dart';
@@ -59,7 +59,14 @@ Future<void> main() async {
 
   // get preferences
   final sharedPreferences = await SharedPreferencesWithCache.create(
-      cacheOptions: const SharedPreferencesWithCacheOptions());
+    cacheOptions: const SharedPreferencesWithCacheOptions(
+      allowList: {
+        ...LocalPreferencesService.keys,
+        ..._WindowGeometry.preferenceKeys,
+        'isMigrated',
+      },
+    ),
+  );
 
   await _migratePreferences(sharedPreferences);
 
@@ -70,7 +77,7 @@ Future<void> main() async {
   Get.put(meaningTableService);
 
   // handle window size for desktop apps
-  if (GetPlatform.isDesktop) {
+  if (!GetPlatform.isWeb && GetPlatform.isDesktop) {
     await windowManager.ensureInitialized();
 
     final windowGeometry = _WindowGeometry(sharedPreferences);
@@ -145,7 +152,7 @@ Future<void> main() async {
     ),
   );
 
-  if (!GetPlatform.isDesktop) {
+  if (!GetPlatform.isWeb && !GetPlatform.isDesktop) {
     rootWidget = OrientationLocker(
       child: rootWidget,
     );
@@ -169,6 +176,14 @@ void _addLicense(String package, String asset) {
 }
 
 class _WindowGeometry extends WindowListener {
+  static const preferenceKeys = {
+    _widthKey,
+    _heightKey,
+    _topKey,
+    _leftKey,
+    _maximizedKey,
+  };
+
   static const String _widthKey = 'windowWidth';
   static const String _heightKey = 'windowHeight';
   static const String _topKey = 'windowTop';

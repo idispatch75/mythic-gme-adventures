@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:collection/collection.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -10,11 +7,12 @@ import 'package:intl/intl.dart';
 import '../../helpers/datetime_extensions.dart';
 import '../../helpers/dialogs.dart';
 import '../../helpers/inline_link.dart';
+import '../../helpers/json_utils.dart';
 import '../../persisters/adventure_persister.dart';
 import '../../persisters/global_settings_persister.dart';
 import '../../persisters/meaning_tables_persister.dart';
 import '../../storages/data_storage.dart';
-import '../../storages/google_auth.dart';
+import '../../storages/google_auth_service.dart';
 import '../adventure/adventure.dart';
 import '../adventure/adventure_view.dart';
 import '../global_settings/global_settings.dart';
@@ -236,8 +234,9 @@ class AdventureIndexController extends GetxController {
     }
   }
 
+  // TODO web check
   Future<void> restoreAdventure(
-    String filePath,
+    JsonObj json,
     IndexAdventureVM adventure,
   ) async {
     if (!await Dialogs.showConfirmation(
@@ -250,9 +249,6 @@ class AdventureIndexController extends GetxController {
 
     // ask confirmation if the adventure IDs do not match
     try {
-      final content = await File(filePath).readAsString();
-
-      final json = jsonDecode(content) as Map<String, dynamic>;
       final adventureId = json['id'] as int?;
       if (adventureId == null) {
         throw Exception('Invalid Adventure file');
@@ -279,7 +275,7 @@ class AdventureIndexController extends GetxController {
       status.value = RxStatus.loading();
 
       await Get.find<AdventurePersisterService>().restoreAdventure(
-        filePath,
+        json,
         adventure.source.id,
       );
     } catch (e) {
@@ -313,7 +309,7 @@ class AdventureIndexController extends GetxController {
     final hasBothStorages =
         preferences.enableGoogleStorage() && preferences.enableLocalStorage();
 
-    const maxInt = 9223372036854775807;
+    final maxInt = double.maxFinite.toInt(); // works for web and io
     adventures = Get.find<AdventureIndexService>()
         .adventures
         .where((e) => !e.isDeleted)

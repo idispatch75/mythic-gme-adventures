@@ -9,6 +9,7 @@ environment:
 dependencies:
   catcher_2: ^1.0.4
   collection: ^1.18.0
+  cross_file: ^0.3.4+2
   extension_google_sign_in_as_googleapis_auth: ^2.0.11
   file_picker: ^8.0.6
   flutter:
@@ -16,6 +17,7 @@ dependencies:
   flutter_file_dialog: ^3.0.2
   flutter_hooks: ^0.20.3
   flutter_secure_storage: ^9.0.0
+  flutter_web_auth_2: ^4.0.1
   get: ^4.6.6
   google_fonts: ^6.1.0
   google_sign_in: ^6.1.5
@@ -30,6 +32,7 @@ dependencies:
   rxdart: ^0.28.0
   shared_preferences: ^2.2.2
   url_launcher: ^6.2.1
+  web: ^1.1.0
   window_manager: ^0.4.2
 
 dev_dependencies:

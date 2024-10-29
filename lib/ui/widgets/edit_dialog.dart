@@ -19,7 +19,7 @@ class EditDialog<TResult> extends HookWidget {
   /// if the form is valid, [onSave] is called
   /// and the dialog is closed returning `true`.
   ///
-  /// **This is valid for desktop only**.
+  /// **This is valid for web and desktop only**.
   final RxBool? saveTrigger;
 
   /// The body is expanded into a [SingleChildScrollView],
@@ -66,7 +66,7 @@ class EditDialog<TResult> extends HookWidget {
     }
 
     useEffect(() {
-      if (saveTrigger != null && GetPlatform.isDesktop) {
+      if (saveTrigger != null && (GetPlatform.isWeb || GetPlatform.isDesktop)) {
         final subscription = saveTrigger!.listen((_) {
           save();
         });

@@ -1,16 +1,13 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart' as rxdart;
 
 import '../../helpers/datetime_extensions.dart';
 import '../../helpers/dialogs.dart';
 import '../../helpers/string_extensions.dart';
+import '../../helpers/utils.dart';
 import '../../persisters/adventure_persister.dart';
 import '../../persisters/global_settings_persister.dart';
 import '../../persisters/persister.dart';
@@ -137,6 +134,7 @@ class AdventureInfoController extends GetxController {
     saving(false);
   }
 
+  // TODO web check
   Future<void> export() async {
     // adventure name
     final adventure = Get.find<AdventureService>();
@@ -205,24 +203,8 @@ class AdventureInfoController extends GetxController {
     // save the file
     final fileName = '${adventure.name()}.txt';
 
-    if (GetPlatform.isDesktop) {
-      final exportFile = await FilePicker.platform.saveFile(
-        dialogTitle: 'Export Adventure',
-        fileName: fileName,
-      );
-
-      if (exportFile != null) {
-        final file = File(exportFile);
-        await file.writeAsString(text, flush: true);
-      }
-    } else {
-      await FlutterFileDialog.saveFile(
-        params: SaveFileDialogParams(
-          data: utf8.encoder.convert(text),
-          fileName: fileName,
-        ),
-      );
-    }
+    await saveTextFile(text,
+        fileName: fileName, dialogTitle: 'Export Adventure');
   }
 
   static String? _getSaveDate() {

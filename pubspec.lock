@@ -82,7 +82,7 @@ packages:
     source: hosted
     version: "1.18.0"
   cross_file:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: cross_file
       sha256: "7caf6a750a0c04effbb52a676dce9a4a592e10ad35c34d6d2d0e4811160d5670"
@@ -105,6 +105,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  desktop_webview_window:
+    dependency: transitive
+    description:
+      name: desktop_webview_window
+      sha256: "57cf20d81689d5cbb1adfd0017e96b669398a669d927906073b0e42fc64111c0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.3"
   device_info_plus:
     dependency: transitive
     description:
@@ -291,6 +299,22 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_web_auth_2:
+    dependency: "direct main"
+    description:
+      name: flutter_web_auth_2
+      sha256: "8f59c9fa71b5affb322cb7103b836cd0ced89c9c50c66f82b523b7d339018dc3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.1"
+  flutter_web_auth_2_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_web_auth_2_platform_interface
+      sha256: "222264d4979e9372c90e441736a62d800481e4a9c860cc2c235d1d605a118a2b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.1"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -870,13 +894,13 @@ packages:
     source: hosted
     version: "14.2.5"
   web:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: web
-      sha256: d43c1d6b787bf0afad444700ae7f4db8827f701bc61c255ac8d328c6f4d52062
+      sha256: cd3543bd5798f6ad290ea73d210f423502e71900302dde696f8bff84bf89a1cb
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0"
+    version: "1.1.0"
   win32:
     dependency: transitive
     description:
@@ -901,6 +925,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.2"
+  window_to_front:
+    dependency: transitive
+    description:
+      name: window_to_front
+      sha256: "7aef379752b7190c10479e12b5fd7c0b9d92adc96817d9e96c59937929512aee"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
   xdg_directories:
     dependency: transitive
     description:

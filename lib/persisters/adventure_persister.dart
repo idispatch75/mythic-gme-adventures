@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:get/get.dart';
@@ -8,6 +7,7 @@ import 'package:loggy/loggy.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../helpers/get_extensions.dart';
+import '../helpers/json_utils.dart';
 import '../storages/data_storage.dart';
 import '../ui/adventure/adventure.dart';
 import '../ui/adventure_index/adventure_index.dart';
@@ -321,15 +321,14 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
     }
   }
 
+  // TODO web check
   Future<void> restoreAdventure(
-    String filePath,
+    JsonObj json,
     int adventureId,
   ) async {
     final saveTimestamp = DateTime.timestamp().millisecondsSinceEpoch;
 
     // update the adventure file with the ID of the destination adventure
-    final content = await File(filePath).readAsString();
-    final json = jsonDecode(content) as Map<String, dynamic>;
     json['id'] = adventureId;
     json['saveTimestamp'] = saveTimestamp;
 
@@ -379,7 +378,7 @@ class AdventurePersister {
     final content = await _storage.load([_directory], _indexFileName);
 
     if (content != null) {
-      final json = jsonDecode(content) as Map<String, dynamic>;
+      final json = jsonDecode(content) as JsonObj;
 
       final index = AdventureIndexService.fromJson(json);
       if (_storage.isLocal) {
@@ -446,7 +445,7 @@ class AdventurePersister {
     final content = await _storage.load([_directory], _adventureFileName(id));
 
     if (content != null) {
-      final json = jsonDecode(content) as Map<String, dynamic>;
+      final json = jsonDecode(content) as JsonObj;
       final adventure = AdventureService.fromJson(json);
 
       return (

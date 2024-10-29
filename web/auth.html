@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<meta http-equiv="Cache-control" content="no-cache, no-store, must-revalidate">
+	<meta http-equiv="Pragma" content="no-cache">
+</head>
+
+<body>
+	<title>Authentication done</title>
+	<p>The authentication is over. You can close the window.</p>
+	<script>
+		function postAuthenticationMessage() {
+			const message = {
+				'flutter-web-auth-2': window.location.href
+			};
+
+			if (window.opener) {
+				window.opener.postMessage(message, window.location.origin);
+				window.close();
+			} else if (window.parent && window.parent !== window) {
+				window.parent.postMessage(message, window.location.origin);
+			} else {
+				localStorage.setItem('flutter-web-auth-2', window.location.href);
+				window.close();
+			}
+		}
+
+		postAuthenticationMessage();
+	</script>
+</body>
+
+</html>

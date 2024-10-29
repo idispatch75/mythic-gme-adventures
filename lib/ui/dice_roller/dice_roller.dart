@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
+import '../../helpers/json_utils.dart';
 import '../../helpers/rx_list_extensions.dart';
 import '../../helpers/utils.dart';
 import '../../persisters/persister.dart';
@@ -16,13 +17,13 @@ class DiceRollerSettings {
     required this.modifier,
   });
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         'diceCount': diceCount,
         'faces': faces,
         'modifier': modifier,
       };
 
-  DiceRollerSettings.fromJson(Map<String, dynamic> json)
+  DiceRollerSettings.fromJson(JsonObj json)
       : this(
           diceCount: json['diceCount'],
           faces: json['faces'],
@@ -41,13 +42,13 @@ class DiceRoll {
     required this.dieRolls,
   });
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         'faces': faces,
         'modifier': modifier,
         'dieRolls': dieRolls,
       };
 
-  DiceRoll.fromJson(Map<String, dynamic> json)
+  DiceRoll.fromJson(JsonObj json)
       : this(
           faces: json['faces'],
           modifier: json['modifier'],
@@ -198,15 +199,15 @@ class DiceRollerService extends GetxService with SavableMixin {
     requestSave();
   }
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         'diceRoller': {
           'settings': settings.toJson(),
           'rollLog': rollLog.toJson(),
         },
       };
 
-  DiceRollerService.fromJson(Map<String, dynamic> json) {
-    final Map<String, dynamic>? diceRoller = json['diceRoller'];
+  DiceRollerService.fromJson(JsonObj json) {
+    final JsonObj? diceRoller = json['diceRoller'];
 
     if (diceRoller != null) {
       for (var item in fromJsonList(diceRoller['rollLog'], DiceRoll.fromJson)) {

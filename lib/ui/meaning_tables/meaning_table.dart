@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../../helpers/json_utils.dart';
+
 class MeaningTable {
   final String id;
   int? order;
@@ -55,7 +57,7 @@ class MeaningTablesService extends GetxService {
   /// Adds a table to [meaningTables] and updates the translations.
   void addTableFromJson({required String locale, required String json}) {
     // parse the JSON
-    final Map<String, dynamic> table = jsonDecode(json);
+    final JsonObj table = jsonDecode(json);
     final String id = table['id'];
     final String name = table['name'];
     final String? characterTrait = table['characterTrait'];

@@ -1,4 +1,3 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -390,16 +389,9 @@ class _IndexAdventureView extends GetView<AdventureIndexController> {
   }
 
   Future<void> _restoreAdventure() async {
-    final result = await FilePicker.platform.pickFiles(
-      dialogTitle: 'Adventure file',
-      allowedExtensions: ['json'],
-    );
-    if (result == null || result.count != 1) {
-      return;
-    }
+    final json = await pickFileAsJson(dialogTitle: 'Adventure file');
+    if (json == null) return;
 
-    final filePath = result.files[0].path!;
-
-    return controller.restoreAdventure(filePath, _adventure);
+    return controller.restoreAdventure(json, _adventure);
   }
 }

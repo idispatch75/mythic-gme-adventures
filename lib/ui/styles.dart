@@ -48,7 +48,9 @@ abstract class AppStyles {
   static const rollIcon = Icon(Icons.casino_outlined);
 
   static TextStyle? oraclesButtonTextStyle =
-      GetPlatform.isDesktop ? const TextStyle(fontSize: 12) : null;
+      GetPlatform.isWeb || GetPlatform.isDesktop
+          ? const TextStyle(fontSize: 12)
+          : null;
 
   static const oraclesButtonMaxHeight = 36.0;
 

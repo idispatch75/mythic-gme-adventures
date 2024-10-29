@@ -6,6 +6,7 @@ import 'package:loggy/loggy.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../helpers/get_extensions.dart';
+import '../helpers/json_utils.dart';
 import '../storages/data_storage.dart';
 import '../ui/global_settings/global_settings.dart';
 import 'persister.dart';
@@ -95,7 +96,7 @@ class GlobalSettingsPersister {
     final content = await _storage.load([_directory], _fileName);
 
     if (content != null) {
-      final json = jsonDecode(content) as Map<String, dynamic>;
+      final json = jsonDecode(content) as JsonObj;
 
       return GlobalSettingsService.fromJson(json);
     } else {

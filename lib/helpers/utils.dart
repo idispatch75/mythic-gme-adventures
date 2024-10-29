@@ -8,6 +8,10 @@ import '../ui/adventure_index/adventure_index.dart';
 import 'datetime_extensions.dart';
 import 'dialogs.dart';
 
+export 'utils.stub.dart'
+    if (dart.library.html) 'utils.web.dart'
+    if (dart.library.io) 'utils.io.dart';
+
 int roll100Die() => Random().nextInt(100) + 1;
 
 int roll10Die() => Random().nextInt(10) + 1;
@@ -18,21 +22,6 @@ int rollDie(int nbFaces) => Random().nextInt(nbFaces) + 1;
 int get newId =>
     DateTime.timestamp().millisecondsSinceEpoch -
     DateTime(2023, 10, 1).millisecondsSinceEpoch;
-
-/// Returns a list of [T] built with [factory]
-/// from a list of json **objects**.
-List<T> fromJsonList<T>(
-  List<dynamic>? jsonList,
-  T Function(Map<String, dynamic>) factory,
-) {
-  return (jsonList ?? []).map((e) => factory(e)).toList();
-}
-
-/// Returns a list of [T]
-/// from a list of json **values**.
-List<T> fromJsonValueList<T>(List<dynamic>? jsonList) {
-  return (jsonList ?? []).cast<T>().toList();
-}
 
 /// Shows a snackbar with the specified [text].
 void showSnackBar(BuildContext context, String text) {
@@ -88,7 +77,7 @@ ListView defaultListView({
 /// On mobile, wraps the [child] with a [PopScope]
 /// to [showCloseAppConfirmation] when closing the App.
 Widget protectClose({required Widget child}) {
-  if (GetPlatform.isDesktop) {
+  if (GetPlatform.isWeb || GetPlatform.isDesktop) {
     return child;
   }
 

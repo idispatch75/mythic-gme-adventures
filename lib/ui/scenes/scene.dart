@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../../helpers/utils.dart';
+import '../../helpers/json_utils.dart';
 import '../../persisters/persister.dart';
 
 class Scene {
@@ -9,12 +9,12 @@ class Scene {
 
   Scene({required this.summary, this.notes});
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         'summary': summary,
         if (notes != null) 'notes': notes,
       };
 
-  Scene.fromJson(Map<String, dynamic> json)
+  Scene.fromJson(JsonObj json)
       : this(summary: json['summary'], notes: json['notes']);
 }
 
@@ -35,11 +35,11 @@ class ScenesService extends GetxService with SavableMixin {
     requestSave();
   }
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         'scenes': scenes,
       };
 
-  ScenesService.fromJson(Map<String, dynamic> json) {
+  ScenesService.fromJson(JsonObj json) {
     for (var item in fromJsonList(json['scenes'], Scene.fromJson)) {
       add(item);
     }

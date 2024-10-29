@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../../helpers/utils.dart';
+import '../../helpers/json_utils.dart';
 
 class AdventureIndexService extends GetxService {
   final List<IndexAdventure> adventures;
@@ -11,14 +11,14 @@ class AdventureIndexService extends GetxService {
     adventures.add(adventure);
   }
 
-  Map<String, dynamic> toJson(bool isLocal) => {
+  JsonObj toJson(bool isLocal) => {
         'adventures': adventures
             .where((e) =>
                 isLocal ? e.localSaveTimestamp > 0 : e.remoteSaveTimestamp > 0)
             .toList(),
       };
 
-  AdventureIndexService.fromJson(Map<String, dynamic> json)
+  AdventureIndexService.fromJson(JsonObj json)
       : this(
           fromJsonList(json['adventures'], IndexAdventure.fromJson),
         );
@@ -49,14 +49,14 @@ class IndexAdventure {
     this.remoteSaveTimestamp = 0,
   });
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         'id': id,
         'name': name,
         if (isDeleted) 'deleted': true,
         if (saveTimestamp != null) 'saveTimestamp': saveTimestamp,
       };
 
-  IndexAdventure.fromJson(Map<String, dynamic> json)
+  IndexAdventure.fromJson(JsonObj json)
       : this(
           id: json['id'],
           name: json['name'],

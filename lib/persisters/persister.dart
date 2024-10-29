@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../storages/data_storage.dart';
-import '../storages/google_auth.dart';
+import '../storages/google_auth_service.dart';
 import '../storages/google_storage.dart';
 import '../storages/local_storage.dart';
 import '../ui/preferences/preferences.dart';

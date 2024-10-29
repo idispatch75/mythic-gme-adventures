@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 
+import '../../helpers/json_utils.dart';
 import '../../helpers/utils.dart';
 import '../../persisters/persister.dart';
 import '../fate_chart/fate_chart.dart';
@@ -42,7 +43,7 @@ class AdventureService extends GetxService with SavableMixin {
 
   String toTag() => id.toString();
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         'id': id,
         'name': name(),
         'fateChartType': fateChartTypeToJson(fateChartType),
@@ -50,7 +51,7 @@ class AdventureService extends GetxService with SavableMixin {
         if (saveTimestamp() != null) 'saveTimestamp': saveTimestamp(),
       };
 
-  AdventureService.fromJson(Map<String, dynamic> json)
+  AdventureService.fromJson(JsonObj json)
       : this(
           id: json['id'],
           name: json['name'],
