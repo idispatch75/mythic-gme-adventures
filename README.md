@@ -15,7 +15,9 @@ Features:
 - Export your adventure to a text file: you can format it properly in your text editor of choice
 - Physical dice mode: switch to this mode to roll the dice yourself and lookup the result in the App
 
-Available on [Windows](https://github.com/idispatch75/mythic-gme-adventures/releases) and [Android](https://play.google.com/store/apps/details?id=idispatch.mythic_gme_adventures).
+Available on [Windows](https://github.com/idispatch75/mythic-gme-adventures/releases), [Android](https://play.google.com/store/apps/details?id=idispatch.mythic_gme_adventures) and [Web](https://mythic-gme-adventures.idispatch.ovh).
+
+The web version can be "installed" as an App on iOS and any desktop.
 
 See the [Home page](https://idispatch75.github.io/mythic-gme-adventures/) for more details.
 

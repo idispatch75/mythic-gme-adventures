@@ -8,9 +8,7 @@ import '../ui/adventure_index/adventure_index.dart';
 import 'datetime_extensions.dart';
 import 'dialogs.dart';
 
-export 'utils.stub.dart'
-    if (dart.library.html) 'utils.web.dart'
-    if (dart.library.io) 'utils.io.dart';
+export 'utils.io.dart' if (dart.library.html) 'utils.web.dart';
 
 int roll100Die() => Random().nextInt(100) + 1;
 

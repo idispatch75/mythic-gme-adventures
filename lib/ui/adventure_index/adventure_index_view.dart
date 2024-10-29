@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../helpers/dialogs.dart';
 import '../../helpers/get_extensions.dart';
 import '../../helpers/inline_link.dart';
 import '../../helpers/utils.dart';
@@ -70,6 +71,34 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                           const Header('Adventures'),
                           ButtonRow(
                             children: [
+                              // import meaning tables
+                              // TODO web
+                              // if (GetPlatform.isWeb &&
+                              //     _preferences.enableLocalStorage())
+                              if (false)
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: TextButton.icon(
+                                    label: const Text(
+                                        'Import Custom Meaning Tables'),
+                                    icon: const Icon(
+                                        Icons.download_for_offline_outlined),
+                                    onPressed: !controller.status().isLoading
+                                        ? () async {
+                                            await controller
+                                                .importCustomMeaningTables();
+
+                                            await Dialogs.showAlert(
+                                              title: 'Import successful',
+                                              message:
+                                                  'The Custom Meaning Tables are imported into your local storage.',
+                                            );
+                                          }
+                                        : null,
+                                  ),
+                                ),
+
+                              // sync storages
                               if (_preferences.enableGoogleStorage() &&
                                   _preferences.enableLocalStorage())
                                 Padding(
@@ -88,6 +117,8 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                                               'Synchronize local and online storages',
                                         ),
                                 ),
+
+                              // create adventure
                               IconButton.filled(
                                 onPressed: !controller.status().isLoading
                                     ? _create
@@ -214,22 +245,24 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 // meaning tables
-                                Row(
-                                  children: [
-                                    const Text('Custom Meaning Tables'),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8.0,
-                                      ),
+                                if (!GetPlatform.isWeb)
+                                  Row(
+                                    children: [
+                                      const Text('Custom Meaning Tables'),
 
                                       // upload
-                                      child: _meaningTablesUpload(),
-                                    ),
 
-                                    // download
-                                    _meaningTablesDownload(context),
-                                  ],
-                                ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0,
+                                        ),
+                                        child: _meaningTablesUpload(),
+                                      ),
+
+                                      // download
+                                      _meaningTablesDownload(context),
+                                    ],
+                                  ),
 
                                 // disable local storage
                                 Row(

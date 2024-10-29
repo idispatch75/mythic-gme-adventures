@@ -1,17 +1,49 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:js_interop';
+import 'dart:typed_data';
 
 import 'package:web/web.dart';
 
 import 'json_utils.dart';
 
-Future<JsonObj?> pickFileAsJson({required String dialogTitle}) async {
-  final loadEnded = Completer<JsonObj?>();
+Future<JsonObj?> pickFileAsJson({required String dialogTitle}) {
+  return _pickFile(
+    dialogTitle: dialogTitle,
+    extension: 'json',
+    fileReader: (file, completer) {
+      file.text().toDart.then((text) {
+        completer.complete(jsonDecode(text.toDart));
+      });
+    },
+  );
+}
+
+Future<Uint8List?> pickFileAsBytes({
+  required String dialogTitle,
+  required String extension,
+}) {
+  return _pickFile(
+    dialogTitle: dialogTitle,
+    extension: extension,
+    fileReader: (file, completer) {
+      file.arrayBuffer().toDart.then((bytes) {
+        completer.complete(bytes.toDart.asUint8List());
+      });
+    },
+  );
+}
+
+Future<T?> _pickFile<T>({
+  required String dialogTitle,
+  required String extension,
+  required void Function(File, Completer<T?>) fileReader,
+}) async {
+  final loadEnded = Completer<T?>();
 
   final uploadInput = HTMLInputElement()..type = 'file';
   uploadInput.draggable = true;
-  uploadInput.accept = '.json';
+  uploadInput.accept = '.$extension';
   _addToDom(uploadInput);
   uploadInput.showPicker();
 
@@ -21,9 +53,7 @@ Future<JsonObj?> pickFileAsJson({required String dialogTitle}) async {
     if (file == null) {
       loadEnded.complete(null);
     } else {
-      file.text().toDart.then((text) {
-        loadEnded.complete(jsonDecode(text.toDart));
-      });
+      fileReader(file, loadEnded);
     }
   });
 

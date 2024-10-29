@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
@@ -21,6 +22,25 @@ Future<JsonObj?> pickFileAsJson({required String dialogTitle}) async {
   final text = await File(filePath).readAsString();
 
   return jsonDecode(text);
+}
+
+Future<Uint8List?> pickFileAsBytes({
+  required String dialogTitle,
+  required String extension,
+}) async {
+  final result = await FilePicker.platform.pickFiles(
+    dialogTitle: dialogTitle,
+    allowedExtensions: [extension],
+  );
+  if (result == null || result.count != 1) {
+    return null;
+  }
+
+  final filePath = result.files[0].path!;
+
+  final bytes = await File(filePath).readAsBytes();
+
+  return bytes;
 }
 
 Future<void> saveTextFile(

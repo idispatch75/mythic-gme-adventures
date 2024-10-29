@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:get/get.dart';
 
 import '../storages/data_storage.dart';
 import '../ui/meaning_tables/meaning_table.dart';
+import 'meaning_tables_persister.io.dart'
+    if (dart.library.html) 'meaning_tables_persister.web.dart' as platform;
 import 'persister.dart';
 
 class MeaningTablesPersisterService
@@ -55,6 +58,15 @@ class MeaningTablesPersisterService
 
     return remotePersister!.pushTo(localPersister!, progress: progress);
   }
+
+  Future<void> importToLocal(Uint8List zipContent) {
+    assert(
+      localPersister != null,
+      'Local persister cannot be null.',
+    );
+
+    return localPersister!.saveCustomTablesFromZip(zipContent);
+  }
 }
 
 class MeaningTablesPersister {
@@ -92,5 +104,9 @@ class MeaningTablesPersister {
         progress++;
       }
     }, absoluteDirectoryPath: absoluteDirectoryPath);
+  }
+
+  Future<void> saveCustomTablesFromZip(Uint8List zipContent) {
+    return platform.saveCustomTablesFromZip(zipContent, [_directory], _storage);
   }
 }

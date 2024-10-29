@@ -8,6 +8,7 @@ import '../../helpers/datetime_extensions.dart';
 import '../../helpers/dialogs.dart';
 import '../../helpers/inline_link.dart';
 import '../../helpers/json_utils.dart';
+import '../../helpers/utils.dart';
 import '../../persisters/adventure_persister.dart';
 import '../../persisters/global_settings_persister.dart';
 import '../../persisters/meaning_tables_persister.dart';
@@ -126,6 +127,7 @@ class AdventureIndexController extends GetxController {
     }
   }
 
+  // TODO web
   Future<void> uploadMeaningTables() async {
     // ask confirmation
     if (!await Dialogs.showConfirmation(
@@ -286,6 +288,43 @@ class AdventureIndexController extends GetxController {
 
     await _loadAdventures();
   }
+
+  Future<void> importCustomMeaningTables() async {
+    // ask confirmation
+    if (!await Dialogs.showConfirmation(
+      title: 'Import Custom Meaning Tables',
+      message: 'This will overwrite the custom Meaning Tables'
+          ' in your local storage. Consult the user manual for more info.\nContinue?',
+    )) {
+      return;
+    }
+
+    // pick a zip file
+    final zipContent = await pickFileAsBytes(
+      dialogTitle: 'Meaning Tables Zip file',
+      extension: 'zip',
+    );
+    if (zipContent == null) {
+      return;
+    }
+
+    // upload the tables
+    try {
+      meaningTableTransferProgress.value = 0;
+      isMeaningTableUploading.value = true;
+
+      final meaningTables = Get.find<MeaningTablesPersisterService>();
+      await meaningTables.importToLocal(zipContent);
+
+      meaningTables.needsLoading = true;
+    } catch (e) {
+      _handleError('upload', e);
+    }
+
+    isMeaningTableUploading.value = false;
+  }
+
+  // TODO web backup adventures
 
   static final DateFormat _dateFormat =
       DateFormat.yMMMEd().addPattern("'at'").add_jms();

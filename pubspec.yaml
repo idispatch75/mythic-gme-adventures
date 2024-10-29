@@ -7,7 +7,8 @@ environment:
   sdk: '>=3.1.1 <4.0.0'
 
 dependencies:
-  catcher_2: ^1.0.4
+  archive: ^3.6.1
+  catcher_2: ^2.0.1
   collection: ^1.18.0
   cross_file: ^0.3.4+2
   extension_google_sign_in_as_googleapis_auth: ^2.0.11
@@ -38,7 +39,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
 
   flutter_native_splash: ^2.3.6
 

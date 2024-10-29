@@ -7,7 +7,9 @@ abstract class DataStorage {
 
   // TODO lock remote write to prevent multiple clients writes
   // TODO backup local file before persisting
+
   Future<void> save(List<String> directory, String name, String content);
+
   Future<String?> load(List<String> directory, String name);
 
   /// Deletes a file.
@@ -26,9 +28,9 @@ abstract class DataStorage {
 
 class LocalStorageException implements Exception {
   final String filePath;
-  final Object error;
+  final Object? error;
 
-  LocalStorageException(this.filePath, this.error);
+  LocalStorageException(this.filePath, [this.error]);
 
   @override
   String toString() {

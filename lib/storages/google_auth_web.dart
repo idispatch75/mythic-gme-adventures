@@ -2,8 +2,11 @@ import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:web/web.dart';
 
 import 'google_auth.dart';
+import 'google_auth_oauth2.dart';
 
 class WebGoogleAuthManager extends OAuth2GoogleAuthManager {
+  WebGoogleAuthManager(super.storage);
+
   @override
   Future<Map<String, String>> startLogin() async {
     final location = Uri.parse(window.location.href);

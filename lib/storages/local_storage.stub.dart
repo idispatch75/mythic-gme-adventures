@@ -16,9 +16,11 @@ class LocalStorage extends DataStorage {
   }
 
   @override
-  Future<void> loadJsonFiles(List<String> directory,
-      Future<void> Function(List<String> filePath, String json) process,
-      {String? absoluteDirectoryPath}) {
+  Future<void> loadJsonFiles(
+    List<String> directory,
+    Future<void> Function(List<String> filePath, String json) process, {
+    String? absoluteDirectoryPath,
+  }) {
     throw UnsupportedError('Implementation not found on this platform.');
   }
 

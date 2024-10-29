@@ -56,13 +56,17 @@ class LocalStorage extends DataStorage {
     Future<void> Function(List<String> filePath, String json) process, {
     String? absoluteDirectoryPath,
   }) async {
+    assert(absoluteDirectoryPath == null);
     // TODO web
+
+    final directoryHandle = await _getDirectoryHandle(directory, create: false);
+    if (directoryHandle == null) {
+      return;
+    }
   }
 
-  Future<({FileSystemDirectoryHandle directory, FileSystemFileHandle file})?>
-      _getFileHandle(
-    List<String> directory,
-    String name, {
+  Future<FileSystemDirectoryHandle?> _getDirectoryHandle(
+    List<String> directory, {
     required bool create,
   }) async {
     try {
@@ -76,6 +80,31 @@ class LocalStorage extends DataStorage {
               .getDirectoryHandle(directoryPart, createDirectoryOptions)
               .toDart;
         }
+      }
+
+      return directoryHandle;
+    } on DOMException catch (e) {
+      if (!create && e.name == 'NotFoundError') {
+        return null;
+      } else {
+        throw LocalStorageException(_getFilePath(directory, ''), e);
+      }
+    } catch (e) {
+      throw LocalStorageException(_getFilePath(directory, ''), e);
+    }
+  }
+
+  Future<({FileSystemDirectoryHandle directory, FileSystemFileHandle file})?>
+      _getFileHandle(
+    List<String> directory,
+    String name, {
+    required bool create,
+  }) async {
+    try {
+      final directoryHandle =
+          await _getDirectoryHandle(directory, create: create);
+      if (directoryHandle == null) {
+        return null;
       }
 
       final fileHandle = await directoryHandle

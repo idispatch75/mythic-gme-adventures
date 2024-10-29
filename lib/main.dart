@@ -13,12 +13,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'helpers/log_printer.dart';
+import 'helpers/secure_storage.dart';
 import 'helpers/snack_bar_error_handler.dart';
 import 'helpers/utils.dart';
 import 'orientation_locker.dart';
 import 'persisters/adventure_persister.dart';
 import 'persisters/global_settings_persister.dart';
 import 'persisters/meaning_tables_persister.dart';
+import 'storages/google_auth_oauth2.dart';
 import 'storages/google_auth_service.dart';
 import 'ui/adventure_index/adventure_index_view.dart';
 import 'ui/meaning_tables/meaning_table.dart';
@@ -29,17 +31,6 @@ import 'ui/styles.dart';
 final kNavigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // logging
-  Loggy.initLoggy(
-    logOptions: const LogOptions(
-      kDebugMode ? LogLevel.all : LogLevel.info,
-      stackTraceLevel: LogLevel.error,
-    ),
-    logPrinter: kDebugMode ? const LogPrinter() : const DefaultPrinter(),
-  );
-
   // catcher
   final releaseOptions = Catcher2Options(
     SilentReportMode(),
@@ -57,11 +48,37 @@ Future<void> main() async {
       )),
   );
 
+  Catcher2(
+    runAppFunction: _runApp,
+    releaseConfig: releaseOptions,
+    debugConfig: debugOptions,
+    navigatorKey: kNavigatorKey,
+  );
+}
+
+void _runApp() async {
+  // IMPL on the web, Catcher2 runs the app in a guarded zone,
+  // which make a call to WidgetsFlutterBinding.ensureInitialized() fail if it is not done in the same zone,
+  // e.g. before creating Catcher2.
+  // This forces us to pass the run function containing ensureInitialized() to Catcher2 instead of just a widget.
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // logging
+  Loggy.initLoggy(
+    logOptions: const LogOptions(
+      kDebugMode ? LogLevel.all : LogLevel.info,
+      stackTraceLevel: LogLevel.error,
+    ),
+    logPrinter: kDebugMode ? const LogPrinter() : const DefaultPrinter(),
+  );
+
   // get preferences
   final sharedPreferences = await SharedPreferencesWithCache.create(
     cacheOptions: const SharedPreferencesWithCacheOptions(
       allowList: {
         ...LocalPreferencesService.keys,
+        ...OAuth2GoogleAuthManager.preferenceKeys,
         ..._WindowGeometry.preferenceKeys,
         'isMigrated',
       },
@@ -118,6 +135,7 @@ Future<void> main() async {
   final preferences = LocalPreferencesService(sharedPreferences);
   Get.put(preferences);
 
+  Get.put(SecureStorage(sharedPreferences));
   Get.put(GoogleAuthService());
   Get.put(GlobalSettingsPersisterService());
   Get.put(MeaningTablesPersisterService());
@@ -137,7 +155,7 @@ Future<void> main() async {
     preferences.enableDarkMode() ? Brightness.dark : Brightness.light,
   );
 
-  Widget rootWidget = Obx(
+  Widget appWidget = Obx(
     () => GetMaterialApp(
       title: 'Mythic GME Adventures',
       home: AdventureIndexView(),
@@ -153,17 +171,12 @@ Future<void> main() async {
   );
 
   if (!GetPlatform.isWeb && !GetPlatform.isDesktop) {
-    rootWidget = OrientationLocker(
-      child: rootWidget,
+    appWidget = OrientationLocker(
+      child: appWidget,
     );
   }
 
-  Catcher2(
-    rootWidget: rootWidget,
-    releaseConfig: releaseOptions,
-    debugConfig: debugOptions,
-    navigatorKey: kNavigatorKey,
-  );
+  runApp(appWidget);
 }
 
 void _addLicense(String package, String asset) {
