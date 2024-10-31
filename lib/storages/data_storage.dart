@@ -18,7 +18,8 @@ abstract class DataStorage {
   Future<void> delete(List<String> directory, String name);
 
   /// Loads JSON files content recursively relative to [directory]
-  /// and calls [process] for each file.
+  /// and calls [process] for each file with a filePath relative to [directory]
+  /// and including the file name.
   Future<void> loadJsonFiles(
     List<String> directory,
     Future<void> Function(List<String> filePath, String json) process, {

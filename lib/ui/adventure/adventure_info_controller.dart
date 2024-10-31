@@ -203,8 +203,11 @@ class AdventureInfoController extends GetxController {
     // save the file
     final fileName = '${adventure.name()}.txt';
 
-    await saveTextFile(text,
-        fileName: fileName, dialogTitle: 'Export Adventure');
+    await saveTextFile(
+      text,
+      fileName: fileName,
+      dialogTitle: 'Export Adventure',
+    );
   }
 
   static String? _getSaveDate() {

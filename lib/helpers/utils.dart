@@ -116,7 +116,7 @@ Future<bool> showCloseAppConfirmation() {
   }
 
   return Dialogs.showConfirmation(
-    title: 'Close the application',
+    title: 'Close the application?',
     message: message,
   );
 }

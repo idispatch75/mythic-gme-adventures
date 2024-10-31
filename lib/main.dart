@@ -299,3 +299,6 @@ Future<void> _migratePreferences(
 
   await sharedPreferences.setBool('isMigrated', true);
 }
+
+
+// TODO web doc

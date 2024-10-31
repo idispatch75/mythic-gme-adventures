@@ -72,15 +72,13 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                           ButtonRow(
                             children: [
                               // import meaning tables
-                              // TODO web
-                              // if (GetPlatform.isWeb &&
-                              //     _preferences.enableLocalStorage())
-                              if (false)
+                              // TODO web check
+                              if (GetPlatform.isWeb &&
+                                  _preferences.enableLocalStorage())
                                 Padding(
                                   padding: const EdgeInsets.only(right: 8.0),
                                   child: TextButton.icon(
-                                    label: const Text(
-                                        'Import Custom Meaning Tables'),
+                                    label: const Text('Import Meaning Tables'),
                                     icon: const Icon(
                                         Icons.download_for_offline_outlined),
                                     onPressed: !controller.status().isLoading
@@ -95,6 +93,19 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                                             );
                                           }
                                         : null,
+                                  ),
+                                ),
+
+                              // backup adventures
+                              if (_preferences.enableLocalStorage())
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: IconButton.outlined(
+                                    tooltip: 'Backup local Adventures',
+                                    onPressed: !controller.status().isLoading
+                                        ? controller.backupLocalAdventures
+                                        : null,
+                                    icon: Icon(Icons.save_alt_outlined),
                                   ),
                                 ),
 
@@ -245,24 +256,23 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 // meaning tables
-                                if (!GetPlatform.isWeb)
-                                  Row(
-                                    children: [
-                                      const Text('Custom Meaning Tables'),
+                                Row(
+                                  children: [
+                                    const Text('Custom Meaning Tables'),
 
-                                      // upload
+                                    // upload
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: _meaningTablesUpload(),
+                                    ),
 
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0,
-                                        ),
-                                        child: _meaningTablesUpload(),
-                                      ),
-
-                                      // download
-                                      _meaningTablesDownload(context),
-                                    ],
-                                  ),
+                                    // download
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: _meaningTablesDownload(context),
+                                    ),
+                                  ],
+                                ),
 
                                 // disable local storage
                                 Row(
@@ -356,6 +366,7 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
               ),
             )
           : IconButton.outlined(
+              tooltip: 'Upload custom Meaning Tables to the online storage',
               onPressed: controller.isMeaningTableDownloading()
                   ? null
                   : controller.uploadMeaningTables,
@@ -375,6 +386,7 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
               ),
             )
           : IconButton.outlined(
+              tooltip: 'Download custom Meaning Tables from the online storage',
               onPressed: controller.isMeaningTableUploading()
                   ? null
                   : () => controller.downloadMeaningTables(context),

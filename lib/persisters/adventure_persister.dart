@@ -353,7 +353,7 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
 }
 
 class AdventurePersister {
-  static const _directory = 'adventures';
+  static const directory = 'adventures';
   static const _indexFileName = 'index.json';
 
   final DataStorage _storage;
@@ -371,11 +371,11 @@ class AdventurePersister {
   Future<void> _saveIndex(AdventureIndexService index) {
     final json = index.toJson(_storage.isLocal);
 
-    return _storage.save([_directory], _indexFileName, jsonEncode(json));
+    return _storage.save([directory], _indexFileName, jsonEncode(json));
   }
 
   Future<AdventureIndexService> loadIndex() async {
-    final content = await _storage.load([_directory], _indexFileName);
+    final content = await _storage.load([directory], _indexFileName);
 
     if (content != null) {
       final json = jsonDecode(content) as JsonObj;
@@ -434,7 +434,7 @@ class AdventurePersister {
 
   Future<void> saveAdventureContent(int adventureId, String content) {
     return _storage.save(
-      [_directory],
+      [directory],
       _adventureFileName(adventureId),
       content,
     );
@@ -442,7 +442,7 @@ class AdventurePersister {
 
   Future<({int saveTimestamp, void Function() publisher})?> loadAdventure(
       int id) async {
-    final content = await _storage.load([_directory], _adventureFileName(id));
+    final content = await _storage.load([directory], _adventureFileName(id));
 
     if (content != null) {
       final json = jsonDecode(content) as JsonObj;
@@ -474,16 +474,16 @@ class AdventurePersister {
   ///
   /// No effect if the adventure does not exist.
   Future<void> deleteAdventure(int id) {
-    return _storage.delete([_directory], _adventureFileName(id));
+    return _storage.delete([directory], _adventureFileName(id));
   }
 
   /// Copies an adventure from this persister to another persister.
   Future<void> pushTo(int adventureId, AdventurePersister other) async {
     final fileName = _adventureFileName(adventureId);
 
-    final content = await _storage.load([_directory], fileName);
+    final content = await _storage.load([directory], fileName);
     if (content != null) {
-      await other._storage.save([_directory], fileName, content);
+      await other._storage.save([directory], fileName, content);
     }
   }
 

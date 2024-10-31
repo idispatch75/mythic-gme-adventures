@@ -12,7 +12,7 @@ Future<void> saveCustomTablesFromZip(
 ) async {
   final archive = ZipDecoder().decodeBytes(zipContent);
 
-  // TODO delete all
+  // TODO web delete all
   final jsonFiles = archive.where((e) => e.isFile && e.name.endsWith('.json'));
   for (final file in jsonFiles) {
     final parts = file.name.split('/');

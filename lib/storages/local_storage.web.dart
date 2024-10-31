@@ -1,4 +1,5 @@
 import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
 
 import 'package:web/web.dart';
 
@@ -57,12 +58,35 @@ class LocalStorage extends DataStorage {
     String? absoluteDirectoryPath,
   }) async {
     assert(absoluteDirectoryPath == null);
-    // TODO web
+    // TODO web check
 
-    final directoryHandle = await _getDirectoryHandle(directory, create: false);
-    if (directoryHandle == null) {
+    final rootHandle = await _getDirectoryHandle(directory, create: false);
+    if (rootHandle == null) {
       return;
     }
+
+    final relativeDirectory = <String>[];
+
+    Future<void> processRec(FileSystemDirectoryHandle directoryHandle) async {
+      await for (FileSystemHandle handle in directoryHandle.values()) {
+        if (handle.kind == 'file' && handle.name.endsWith('.json')) {
+          final file = await (handle as FileSystemFileHandle).getFile().toDart;
+          final content = (await file.text().toDart).toDart;
+
+          await process([...relativeDirectory, handle.name], content);
+        } else {
+          relativeDirectory.add(handle.name);
+
+          await processRec(handle as FileSystemDirectoryHandle);
+        }
+      }
+
+      if (relativeDirectory.isNotEmpty) {
+        relativeDirectory.removeLast();
+      }
+    }
+
+    return processRec(rootHandle);
   }
 
   Future<FileSystemDirectoryHandle?> _getDirectoryHandle(
@@ -128,5 +152,25 @@ class LocalStorage extends DataStorage {
 
   static Future<String> getDefaultRootDirectoryPath() {
     throw UnsupportedError('Implementation not found on this platform.');
+  }
+}
+
+extension FileSystemDirectoryHandleEx on FileSystemDirectoryHandle {
+  Stream<FileSystemHandle> values() {
+    final iterator = callMethod<JSObject>('values'.toJS);
+
+    return _asyncIterator<FileSystemHandle>(iterator);
+  }
+}
+
+Stream<T> _asyncIterator<T extends JSObject>(JSObject iterator) async* {
+  while (true) {
+    final next = await iterator.callMethod<JSPromise<T>>('next'.toJS).toDart;
+
+    if (next.getProperty<JSBoolean>('done'.toJS).toDart) {
+      break;
+    }
+
+    yield next.getProperty<T>('value'.toJS);
   }
 }

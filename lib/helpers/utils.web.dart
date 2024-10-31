@@ -69,6 +69,27 @@ Future<void> saveTextFile(
     <JSUint8Array>[utf8.encoder.convert(text).toJS].toJS,
     BlobPropertyBag(type: 'text/plain'),
   );
+
+  return _saveBlobFile(blob, fileName: fileName);
+}
+
+Future<void> saveBinaryFile(
+  Uint8List bytes, {
+  required String fileName,
+  required String dialogTitle,
+}) async {
+  final blob = Blob(
+    <JSUint8Array>[bytes.toJS].toJS,
+    BlobPropertyBag(type: 'application/octet-stream'),
+  );
+
+  return _saveBlobFile(blob, fileName: fileName);
+}
+
+Future<void> _saveBlobFile(
+  Blob blob, {
+  required String fileName,
+}) async {
   final url = URL.createObjectURL(blob);
 
   final element = HTMLAnchorElement()

@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:archive/archive.dart';
 import 'package:collection/collection.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +18,7 @@ import '../../persisters/global_settings_persister.dart';
 import '../../persisters/meaning_tables_persister.dart';
 import '../../storages/data_storage.dart';
 import '../../storages/google_auth_service.dart';
+import '../../storages/local_storage.dart';
 import '../adventure/adventure.dart';
 import '../adventure/adventure_view.dart';
 import '../global_settings/global_settings.dart';
@@ -109,8 +114,9 @@ class AdventureIndexController extends GetxController {
 
   Future<void> deleteAdventure(IndexAdventureVM adventure) async {
     if (await Dialogs.showConfirmation(
-      title: 'Delete Adventure',
-      message: 'Delete the Adventure "${adventure.source.name}"?',
+      title: 'Delete Adventure?',
+      message:
+          'The Adventure "${adventure.source.name}" will be permanently deleted.',
     )) {
       status.value = RxStatus.loading();
 
@@ -131,9 +137,9 @@ class AdventureIndexController extends GetxController {
   Future<void> uploadMeaningTables() async {
     // ask confirmation
     if (!await Dialogs.showConfirmation(
-      title: 'Upload Meaning Tables',
-      message: 'You will overwrite the custom Meaning Tables'
-          ' in your online storage.\nContinue?',
+      title: 'Upload Meaning Tables?',
+      message: 'This will overwrite the custom Meaning Tables'
+          ' in your online storage.',
     )) {
       return;
     }
@@ -171,13 +177,13 @@ class AdventureIndexController extends GetxController {
 
     // ask confirmation
     if (!await Dialogs.showConfirmation(
-      title: 'Download Meaning Tables',
+      title: 'Download Meaning Tables?',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('You will overwrite the custom Meaning Tables'
-              ' in your local storage.\nContinue?\n\n'
+          const Text('This will overwrite the custom Meaning Tables'
+              ' in your local storage.\n\n'
               'Note that only the files uploaded by the Application are visible by the Application.\n'
               'You must first upload the Meaning Tables to be able to download them.'
               ' If you put them on your online storage yourself, nothing will be downloaded.'),
@@ -216,9 +222,9 @@ class AdventureIndexController extends GetxController {
 
   Future<void> synchronizeAdventures() async {
     if (await Dialogs.showConfirmation(
-      title: 'Synchronize storages',
-      message: 'Update the local and online storages'
-          ' with the most recent adventure versions?',
+      title: 'Synchronize storages?',
+      message: 'This updates the local and online storages'
+          ' with the most recent adventure versions.',
     )) {
       try {
         isSynchronizing.value = true;
@@ -242,9 +248,9 @@ class AdventureIndexController extends GetxController {
     IndexAdventureVM adventure,
   ) async {
     if (!await Dialogs.showConfirmation(
-      title: 'Restore Adventure',
-      message: 'Replace the content of this Adventure'
-          ' with the selected file?',
+      title: 'Restore Adventure?',
+      message: 'This will replace the content of this Adventure'
+          ' with the selected file.',
     )) {
       return;
     }
@@ -259,7 +265,8 @@ class AdventureIndexController extends GetxController {
       if (adventureId != adventure.source.id) {
         if (!await Dialogs.showConfirmation(
           title: 'Adventure mismatch',
-          message: 'The file you selected does not match the Adventure.\n'
+          message: 'The file you selected does not match the Adventure.'
+              ' This may be normal if you restore into a newly created adventure.\n'
               'Continue?',
         )) {
           return;
@@ -292,9 +299,9 @@ class AdventureIndexController extends GetxController {
   Future<void> importCustomMeaningTables() async {
     // ask confirmation
     if (!await Dialogs.showConfirmation(
-      title: 'Import Custom Meaning Tables',
+      title: 'Import custom Meaning Tables?',
       message: 'This will overwrite the custom Meaning Tables'
-          ' in your local storage. Consult the user manual for more info.\nContinue?',
+          ' in your local storage. Consult the user manual for more info.',
     )) {
       return;
     }
@@ -324,7 +331,50 @@ class AdventureIndexController extends GetxController {
     isMeaningTableUploading.value = false;
   }
 
-  // TODO web backup adventures
+  Future<void> backupLocalAdventures() async {
+    // TODO web check
+
+    // ask confirmation
+    if (!await Dialogs.showConfirmation(
+      title: 'Backup local Adventures?',
+      message: 'This will create a zip file containing all the Adventures'
+          ' in your local storage.\n'
+          'You can pick Adventures to restore from there if needed.',
+    )) {
+      return;
+    }
+
+    // create the archive
+    final archive = Archive();
+
+    final storage = LocalStorage();
+    await storage.loadJsonFiles(
+      [AdventurePersister.directory],
+      (filePath, jsonContent) {
+        if (filePath.length == 1) {
+          // we store only the files at the root
+
+          // use .string() constructor when fixed
+          // https://github.com/brendan-duncan/archive/issues/354
+          final content = utf8.encode(jsonContent);
+          archive.addFile(ArchiveFile(filePath[0], content.length, content));
+        }
+
+        return Future.value();
+      },
+    );
+
+    final zipContent =
+        ZipEncoder().encode(archive, level: Deflate.BEST_COMPRESSION)!;
+
+    // save the archive
+    return saveBinaryFile(
+      Uint8List.fromList(zipContent),
+      fileName:
+          'Mythic_GME_Adventures-backup-${DateFormat('y-MM-dd').format(DateTime.now())}.zip',
+      dialogTitle: 'Adventures backup',
+    );
+  }
 
   static final DateFormat _dateFormat =
       DateFormat.yMMMEd().addPattern("'at'").add_jms();

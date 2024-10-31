@@ -67,3 +67,28 @@ Future<void> saveTextFile(
     );
   }
 }
+
+Future<void> saveBinaryFile(
+  Uint8List bytes, {
+  required String fileName,
+  required String dialogTitle,
+}) async {
+  if (GetPlatform.isDesktop) {
+    final exportFile = await FilePicker.platform.saveFile(
+      dialogTitle: dialogTitle,
+      fileName: fileName,
+    );
+
+    if (exportFile != null) {
+      final file = File(exportFile);
+      await file.writeAsBytes(bytes, flush: true);
+    }
+  } else {
+    await FlutterFileDialog.saveFile(
+      params: SaveFileDialogParams(
+        data: bytes,
+        fileName: fileName,
+      ),
+    );
+  }
+}
