@@ -321,7 +321,6 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
     }
   }
 
-  // TODO web check
   Future<void> restoreAdventure(
     JsonObj json,
     int adventureId,

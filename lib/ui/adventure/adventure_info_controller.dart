@@ -134,7 +134,6 @@ class AdventureInfoController extends GetxController {
     saving(false);
   }
 
-  // TODO web check
   Future<void> export() async {
     // adventure name
     final adventure = Get.find<AdventureService>();

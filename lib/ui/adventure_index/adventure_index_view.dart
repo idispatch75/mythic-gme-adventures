@@ -58,8 +58,11 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                       list = loadingIndicator;
                     } else if (controller.status().isEmpty) {
                       list = const Center(
-                        child: Text(
-                          'Click the "+" button above to create an Adventure',
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            'Click the "+" button above to create an Adventure',
+                          ),
                         ),
                       );
                     }
@@ -248,8 +251,8 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                         ),
                         if (_preferences.enableGoogleStorage()) ...[
                           // read user manual
-                          RichText(
-                            text: TextSpan(
+                          Text.rich(
+                            TextSpan(
                               children: [
                                 TextSpan(
                                   text: 'Please read the ',

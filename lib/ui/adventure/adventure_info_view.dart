@@ -192,9 +192,6 @@ class _AdventureActionsButton extends GetView<AdventureInfoController> {
             final info = await PackageInfo.fromPlatform();
 
             if (context.mounted) {
-              final textSpanStyle =
-                  TextStyle(color: theme.colorScheme.onSurfaceVariant);
-
               showAboutDialog(
                   applicationName: info.appName,
                   applicationVersion: info.version,
@@ -205,24 +202,20 @@ class _AdventureActionsButton extends GetView<AdventureInfoController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          RichText(
-                            text: TextSpan(
+                          Text.rich(
+                            TextSpan(
                               children: [
                                 TextSpan(
                                   text:
                                       'Manage adventures using the rules of Mythic Game Master Emulator, 2nd Edition.\n'
                                       'Find out more on the ',
-                                  style: textSpanStyle,
                                 ),
                                 getInlineLink(
                                   text: 'official site',
                                   url:
                                       'https://idispatch75.github.io/mythic-gme-adventures/',
                                 ),
-                                TextSpan(
-                                  text: '.',
-                                  style: textSpanStyle,
-                                ),
+                                TextSpan(text: '.'),
                               ],
                             ),
                           ),

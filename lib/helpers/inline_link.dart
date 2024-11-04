@@ -9,7 +9,6 @@ InlineSpan getInlineLink({
 }) {
   var style = const TextStyle(
     color: Colors.blue,
-    decoration: TextDecoration.underline,
   );
   if (textStyle != null) {
     style = textStyle.merge(style);

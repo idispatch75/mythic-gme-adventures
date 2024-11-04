@@ -29,8 +29,8 @@ abstract class Dialogs {
         children: [
           child!,
           SizedBox(height: 16),
-          RichText(
-            text: TextSpan(
+          Text.rich(
+            TextSpan(
               children: [
                 TextSpan(text: 'See the '),
                 getUserManualLink(),
@@ -59,7 +59,9 @@ abstract class Dialogs {
         title: Text(title),
         content: ConstrainedBox(
           constraints: dialogBoxConstraints,
-          child: Text(message),
+          child: SingleChildScrollView(
+            child: Text(message),
+          ),
         ),
         actions: [
           TextButton(
@@ -120,7 +122,7 @@ abstract class Dialogs {
         title: Text(title),
         content: ConstrainedBox(
           constraints: dialogBoxConstraints,
-          child: child,
+          child: SingleChildScrollView(child: child),
         ),
         actions: actions,
       ),

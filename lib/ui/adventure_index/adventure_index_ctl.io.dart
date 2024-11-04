@@ -6,7 +6,6 @@ import '../../persisters/meaning_tables_persister.dart';
 import 'adventure_index_ctl.dart';
 
 extension AdventureIndexControllerX on AdventureIndexController {
-  // TODO web check
   Future<void> uploadMeaningTables() async {
     // ask confirmation
     if (!await Dialogs.showConfirmation(

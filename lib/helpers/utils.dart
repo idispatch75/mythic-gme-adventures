@@ -1,7 +1,8 @@
-import 'dart:io';
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../ui/adventure_index/adventure_index.dart';
@@ -87,7 +88,7 @@ Widget protectClose({required Widget child}) {
       }
 
       if (await showCloseAppConfirmation()) {
-        exit(0);
+        unawaited(SystemNavigator.pop());
       }
     },
     child: child,

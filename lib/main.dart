@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:catcher_2/catcher_2.dart';
@@ -259,7 +260,7 @@ class _WindowCloseInterceptor extends WindowListener {
   void onWindowClose() async {
     if (await windowManager.isPreventClose()) {
       if (await showCloseAppConfirmation()) {
-        await windowManager.destroy();
+        exit(0);
       }
     }
   }

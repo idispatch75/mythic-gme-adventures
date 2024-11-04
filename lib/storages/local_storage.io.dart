@@ -73,8 +73,6 @@ class LocalStorage extends DataStorage {
     Future<void> Function(List<String> filePath, String json) process, {
     String? absoluteDirectoryPath,
   }) async {
-    // TODO web check
-
     final startDirectory = Directory(absoluteDirectoryPath ??
         await _getRootDirectoryPath() +
             Platform.pathSeparator +

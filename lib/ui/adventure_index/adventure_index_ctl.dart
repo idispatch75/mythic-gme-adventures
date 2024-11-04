@@ -153,7 +153,6 @@ class AdventureIndexController extends GetxController {
     }
   }
 
-  // TODO web check
   Future<void> restoreAdventure(
     JsonObj json,
     IndexAdventureVM adventure,
@@ -208,8 +207,6 @@ class AdventureIndexController extends GetxController {
   }
 
   Future<void> backupLocalAdventures() async {
-    // TODO web check
-
     // ask confirmation
     if (!await Dialogs.showConfirmation(
       title: 'Backup local Adventures?',

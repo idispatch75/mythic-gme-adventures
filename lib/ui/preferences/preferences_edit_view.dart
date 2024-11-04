@@ -35,7 +35,6 @@ class PreferencesEditView extends HookWidget {
       preferences.enableDarkMode.value = enableDarkMode();
     }
 
-    // TODO web check
     if (hasLocalFolder) {
       localDataDirectoryController = useTextEditingController(
         text: preferences.localDataDirectoryOverride(),
@@ -148,14 +147,14 @@ class PreferencesEditView extends HookWidget {
                 'Setting the local Google Drive here while using Google Drive as online storage'
                 ' must be avoided because the files uploaded by the Drive App will not be visible by this App.',
               ),
-            RichText(
-              text: TextSpan(
+            Text.rich(
+              TextSpan(
                 children: [
                   TextSpan(
                     text: 'More info in the ',
                     style: SubLabel.getTextStyle(theme),
                   ),
-                  getUserManualLink(),
+                  getUserManualLink(textStyle: SubLabel.getTextStyle(theme)),
                   TextSpan(
                     text: '.',
                     style: SubLabel.getTextStyle(theme),
