@@ -45,22 +45,22 @@ class GlobalSettingsPersisterService
     final local = await localPersister?.loadSettings();
     final remote = await remotePersister?.loadSettings();
 
+    final GlobalSettingsService service;
     if (local != null) {
       if (remote == null ||
           (local.saveTimestamp ?? 0) > (remote.saveTimestamp ?? 0)) {
-        Get.replaceForced(local);
+        service = Get.replaceForced(local);
       } else {
-        Get.replaceForced(remote);
+        service = Get.replaceForced(remote);
       }
     } else {
-      Get.replaceForced(remote);
+      service = Get.replaceForced(remote!);
     }
 
     // save the current adventure when a save is requested by an adventure service
     await _saveRequestsSubscription?.cancel();
 
-    _saveRequestsSubscription = Get.find<GlobalSettingsService>()
-        .saveRequests
+    _saveRequestsSubscription = service.saveRequests
         .debounceTime(const Duration(seconds: 5))
         .listen((value) async {
       try {

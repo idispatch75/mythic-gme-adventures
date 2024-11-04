@@ -37,6 +37,24 @@ class LocalStorage extends DataStorage {
   }
 
   @override
+  Future<void> deleteDirectory(List<String> directory) async {
+    final directoryPath = directory.join(Platform.pathSeparator);
+
+    try {
+      final rootDirectory = await _getRootDirectoryPath();
+      final dir = Directory(
+        '$rootDirectory${Platform.pathSeparator}$directoryPath',
+      );
+
+      if (await dir.exists()) {
+        await dir.delete(recursive: true);
+      }
+    } catch (e) {
+      throw LocalStorageException(directoryPath, e);
+    }
+  }
+
+  @override
   Future<void> delete(List<String> directory, String name) async {
     final file = await _getFile(directory, name);
 
@@ -55,6 +73,8 @@ class LocalStorage extends DataStorage {
     Future<void> Function(List<String> filePath, String json) process, {
     String? absoluteDirectoryPath,
   }) async {
+    // TODO web check
+
     final startDirectory = Directory(absoluteDirectoryPath ??
         await _getRootDirectoryPath() +
             Platform.pathSeparator +

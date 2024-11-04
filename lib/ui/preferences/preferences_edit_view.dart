@@ -155,11 +155,7 @@ class PreferencesEditView extends HookWidget {
                     text: 'More info in the ',
                     style: SubLabel.getTextStyle(theme),
                   ),
-                  getInlineLink(
-                    text: 'User Manual',
-                    url:
-                        'https://idispatch75.github.io/mythic-gme-adventures/user_manual/',
-                  ),
+                  getUserManualLink(),
                   TextSpan(
                     text: '.',
                     style: SubLabel.getTextStyle(theme),

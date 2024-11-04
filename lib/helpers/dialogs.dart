@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../ui/layouts/layout.dart';
+import 'inline_link.dart';
 
 abstract class Dialogs {
   static const dialogBoxConstraints = BoxConstraints(maxWidth: 500);
@@ -10,6 +11,7 @@ abstract class Dialogs {
     required String title,
     String? message,
     Widget? child,
+    bool withUserManual = false,
   }) async {
     assert(
       message != null || child != null,
@@ -18,6 +20,26 @@ abstract class Dialogs {
 
     if (message != null) {
       child = Text(message);
+    }
+
+    if (withUserManual) {
+      child = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          child!,
+          SizedBox(height: 16),
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(text: 'See the '),
+                getUserManualLink(),
+                TextSpan(text: ' for more info.'),
+              ],
+            ),
+          )
+        ],
+      );
     }
 
     return await showValuePicker<bool>(

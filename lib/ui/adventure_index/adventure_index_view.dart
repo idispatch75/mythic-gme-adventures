@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../helpers/dialogs.dart';
 import '../../helpers/get_extensions.dart';
 import '../../helpers/inline_link.dart';
 import '../../helpers/utils.dart';
@@ -16,6 +15,8 @@ import '../widgets/header.dart';
 import '../widgets/progress_indicators.dart';
 import '../widgets/sub_label.dart';
 import 'adventure_index_ctl.dart';
+import 'adventure_index_ctl.io.dart'
+    if (dart.library.html) 'adventure_index_ctl.web.dart';
 
 class AdventureIndexView extends GetView<AdventureIndexController> {
   final _preferences = Get.find<LocalPreferencesService>();
@@ -72,27 +73,45 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                           ButtonRow(
                             children: [
                               // import meaning tables
-                              // TODO web check
                               if (GetPlatform.isWeb &&
                                   _preferences.enableLocalStorage())
                                 Padding(
                                   padding: const EdgeInsets.only(right: 8.0),
-                                  child: TextButton.icon(
-                                    label: const Text('Import Meaning Tables'),
-                                    icon: const Icon(
-                                        Icons.download_for_offline_outlined),
-                                    onPressed: !controller.status().isLoading
-                                        ? () async {
-                                            await controller
-                                                .importCustomMeaningTables();
-
-                                            await Dialogs.showAlert(
-                                              title: 'Import successful',
-                                              message:
-                                                  'The Custom Meaning Tables are imported into your local storage.',
-                                            );
-                                          }
-                                        : null,
+                                  child: MenuAnchor(
+                                    builder: (
+                                      BuildContext context,
+                                      MenuController menuController,
+                                      Widget? child,
+                                    ) {
+                                      return TextButton(
+                                        onPressed:
+                                            !controller.status().isLoading
+                                                ? () {
+                                                    if (menuController.isOpen) {
+                                                      menuController.close();
+                                                    } else {
+                                                      menuController.open();
+                                                    }
+                                                  }
+                                                : null,
+                                        child:
+                                            const Text('Custom Meaning Tables'),
+                                      );
+                                    },
+                                    menuChildren: [
+                                      MenuItemButton(
+                                        leadingIcon: Icon(Icons.download),
+                                        onPressed: controller
+                                            .importLocalCustomMeaningTables,
+                                        child: Text('Import tables'),
+                                      ),
+                                      MenuItemButton(
+                                        leadingIcon: Icon(Icons.delete_forever),
+                                        onPressed: controller
+                                            .deleteLocalCustomMeaningTables,
+                                        child: Text('Delete tables'),
+                                      ),
+                                    ],
                                   ),
                                 ),
 
@@ -236,13 +255,10 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                                   text: 'Please read the ',
                                   style: SubLabel.getTextStyle(theme),
                                 ),
-                                getInlineLink(
-                                  text: 'User Manual',
-                                  url:
-                                      'https://idispatch75.github.io/mythic-gme-adventures/user_manual/',
-                                ),
+                                getUserManualLink(
+                                    textStyle: SubLabel.getTextStyle(theme)),
                                 TextSpan(
-                                  text: ' to understand how storage works.',
+                                  text: ' to understand how storages work.',
                                   style: SubLabel.getTextStyle(theme),
                                 ),
                               ],
@@ -366,11 +382,11 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
               ),
             )
           : IconButton.outlined(
-              tooltip: 'Upload custom Meaning Tables to the online storage',
+              tooltip: 'Upload Custom Meaning Tables to the online storage',
               onPressed: controller.isMeaningTableDownloading()
                   ? null
                   : controller.uploadMeaningTables,
-              icon: const Icon(Icons.upload),
+              icon: const Icon(Icons.backup_outlined),
             ),
     );
   }
@@ -386,11 +402,11 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
               ),
             )
           : IconButton.outlined(
-              tooltip: 'Download custom Meaning Tables from the online storage',
+              tooltip: 'Download Custom Meaning Tables from the online storage',
               onPressed: controller.isMeaningTableUploading()
                   ? null
-                  : () => controller.downloadMeaningTables(context),
-              icon: const Icon(Icons.download),
+                  : () => controller.downloadMeaningTables(),
+              icon: const Icon(Icons.cloud_download_outlined),
             ),
     );
   }

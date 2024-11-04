@@ -3,14 +3,12 @@ import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
 import 'package:collection/collection.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../helpers/datetime_extensions.dart';
 import '../../helpers/dialogs.dart';
-import '../../helpers/inline_link.dart';
 import '../../helpers/json_utils.dart';
 import '../../helpers/utils.dart';
 import '../../persisters/adventure_persister.dart';
@@ -104,7 +102,7 @@ class AdventureIndexController extends GetxController {
     try {
       await Get.find<AdventurePersisterService>().saveNewAdventure(adventure);
     } catch (e) {
-      _handleError('save', e);
+      handleError('save', e);
 
       return;
     }
@@ -124,100 +122,13 @@ class AdventureIndexController extends GetxController {
         await Get.find<AdventurePersisterService>()
             .deleteAdventure(adventure.source.id);
       } catch (e) {
-        _handleError('delete', e);
+        handleError('delete', e);
 
         return;
       }
 
       await _loadAdventures();
     }
-  }
-
-  // TODO web
-  Future<void> uploadMeaningTables() async {
-    // ask confirmation
-    if (!await Dialogs.showConfirmation(
-      title: 'Upload Meaning Tables?',
-      message: 'This will overwrite the custom Meaning Tables'
-          ' in your online storage.',
-    )) {
-      return;
-    }
-
-    // pick a source directory
-    final localDirectory = await FilePicker.platform.getDirectoryPath(
-      dialogTitle: 'Meaning Tables folder',
-      lockParentWindow: true,
-    );
-    if (localDirectory == null) {
-      return;
-    }
-
-    // upload the tables
-    try {
-      meaningTableTransferProgress.value = 0;
-      isMeaningTableUploading.value = true;
-
-      final meaningTables = Get.find<MeaningTablesPersisterService>();
-      await meaningTables.pushToRemote(
-        localDirectory,
-        meaningTableTransferProgress,
-      );
-
-      meaningTables.needsLoading = true;
-    } catch (e) {
-      _handleError('upload', e);
-    }
-
-    isMeaningTableUploading.value = false;
-  }
-
-  Future<void> downloadMeaningTables(BuildContext context) async {
-    final spanStyle = Theme.of(context).textTheme.bodyMedium;
-
-    // ask confirmation
-    if (!await Dialogs.showConfirmation(
-      title: 'Download Meaning Tables?',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text('This will overwrite the custom Meaning Tables'
-              ' in your local storage.\n\n'
-              'Note that only the files uploaded by the Application are visible by the Application.\n'
-              'You must first upload the Meaning Tables to be able to download them.'
-              ' If you put them on your online storage yourself, nothing will be downloaded.'),
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(text: 'More info in the ', style: spanStyle),
-                getInlineLink(
-                  text: 'User Manual',
-                  url:
-                      'https://idispatch75.github.io/mythic-gme-adventures/user_manual/',
-                ),
-                TextSpan(text: '.', style: spanStyle),
-              ],
-            ),
-          ),
-        ],
-      ),
-    )) {
-      return;
-    }
-
-    // download to local storage
-    try {
-      meaningTableTransferProgress.value = 0;
-      isMeaningTableDownloading.value = true;
-
-      final meaningTables = Get.find<MeaningTablesPersisterService>();
-      await meaningTables.pullFromRemote(meaningTableTransferProgress);
-    } catch (e) {
-      _handleError('download', e);
-    }
-
-    isMeaningTableDownloading.value = false;
   }
 
   Future<void> synchronizeAdventures() async {
@@ -231,7 +142,7 @@ class AdventureIndexController extends GetxController {
 
         await Get.find<AdventurePersisterService>().synchronizeAdventures();
       } catch (e) {
-        _handleError('synchronize', e);
+        handleError('synchronize', e);
 
         return;
       } finally {
@@ -288,47 +199,12 @@ class AdventureIndexController extends GetxController {
         adventure.source.id,
       );
     } catch (e) {
-      _handleError('save', e);
+      handleError('save', e);
     } finally {
       status.value = RxStatus.success();
     }
 
     await _loadAdventures();
-  }
-
-  Future<void> importCustomMeaningTables() async {
-    // ask confirmation
-    if (!await Dialogs.showConfirmation(
-      title: 'Import custom Meaning Tables?',
-      message: 'This will overwrite the custom Meaning Tables'
-          ' in your local storage. Consult the user manual for more info.',
-    )) {
-      return;
-    }
-
-    // pick a zip file
-    final zipContent = await pickFileAsBytes(
-      dialogTitle: 'Meaning Tables Zip file',
-      extension: 'zip',
-    );
-    if (zipContent == null) {
-      return;
-    }
-
-    // upload the tables
-    try {
-      meaningTableTransferProgress.value = 0;
-      isMeaningTableUploading.value = true;
-
-      final meaningTables = Get.find<MeaningTablesPersisterService>();
-      await meaningTables.importToLocal(zipContent);
-
-      meaningTables.needsLoading = true;
-    } catch (e) {
-      _handleError('upload', e);
-    }
-
-    isMeaningTableUploading.value = false;
   }
 
   Future<void> backupLocalAdventures() async {
@@ -339,7 +215,7 @@ class AdventureIndexController extends GetxController {
       title: 'Backup local Adventures?',
       message: 'This will create a zip file containing all the Adventures'
           ' in your local storage.\n'
-          'You can pick Adventures to restore from there if needed.',
+          'You can pick Adventures to restore from there when needed.',
     )) {
       return;
     }
@@ -371,9 +247,100 @@ class AdventureIndexController extends GetxController {
     return saveBinaryFile(
       Uint8List.fromList(zipContent),
       fileName:
-          'Mythic_GME_Adventures-backup-${DateFormat('y-MM-dd').format(DateTime.now())}.zip',
+          'Mythic_GME_Adventures-backup-${DateFormat('y-MM-dd_HH-mm').format(DateTime.now())}.zip',
       dialogTitle: 'Adventures backup',
     );
+  }
+
+  Future<void> importLocalCustomMeaningTables() async {
+    // ask confirmation
+    if (!await Dialogs.showConfirmation(
+      title: 'Import Custom Meaning Tables?',
+      message: 'This will delete the Custom Meaning Tables'
+          ' in your local storage and import the selected ones.\n\n'
+          'You may need to restart the application for the changes to take effect.',
+      withUserManual: true,
+    )) {
+      return;
+    }
+
+    // pick a zip file
+    final zipContent = await pickFileAsBytes(
+      dialogTitle: 'Meaning Tables Zip file',
+      extension: 'zip',
+    );
+    if (zipContent == null) {
+      return;
+    }
+
+    // import the tables
+    try {
+      final meaningTables = Get.find<MeaningTablesPersisterService>();
+      await meaningTables.importZipToLocal(zipContent);
+
+      await Dialogs.showAlert(
+        title: 'Import successful',
+        message:
+            'The Custom Meaning Tables were imported into your local storage.',
+      );
+    } catch (e) {
+      handleError('import', e);
+    }
+  }
+
+  Future<void> deleteLocalCustomMeaningTables() async {
+    // ask confirmation
+    if (!await Dialogs.showConfirmation(
+      title: 'Delete Custom Meaning Tables?',
+      message: 'This will permanently delete the Custom Meaning Tables'
+          ' in your local storage.\n\n'
+          'You may need to restart the application for the changes to take effect.',
+    )) {
+      return;
+    }
+
+    // delete
+    try {
+      final meaningTables = Get.find<MeaningTablesPersisterService>();
+      await meaningTables.deleteLocal();
+
+      await Dialogs.showAlert(
+        title: 'Deletion successful',
+        message:
+            'The Custom Meaning Tables in your local storage were deleted.',
+      );
+    } catch (e) {
+      handleError('_delete_meaning_tables', e);
+    }
+  }
+
+  Future<void> downloadMeaningTables() async {
+    // ask confirmation
+    if (!await Dialogs.showConfirmation(
+      title: 'Download Custom Meaning Tables?',
+      message: 'This will delete the Custom Meaning Tables'
+          ' in your local storage and download the meaning tables from the remote storage.\n'
+          'You may need to restart the application for the changes to take effect.\n\n'
+          'Note that only the files uploaded by the Application are visible by the Application.\n'
+          'You must first upload the Meaning Tables to be able to download them.'
+          ' If you put them in your online storage via Google Drive web site, nothing will be downloaded.',
+      withUserManual: true,
+    )) {
+      return;
+    }
+
+    // download to local storage
+    try {
+      meaningTableTransferProgress.value = 0;
+      isMeaningTableDownloading.value = true;
+
+      final meaningTables = Get.find<MeaningTablesPersisterService>();
+      await meaningTables.importFromRemote(meaningTableTransferProgress);
+    } catch (e) {
+      handleError('download', e);
+    }
+
+    isMeaningTableDownloading.value = false;
   }
 
   static final DateFormat _dateFormat =
@@ -389,7 +356,7 @@ class AdventureIndexController extends GetxController {
       Get.find<MeaningTablesService>().language.value =
           Get.find<GlobalSettingsService>().meaningTablesLanguage;
     } catch (e) {
-      _handleError('load', e);
+      handleError('load', e);
 
       return;
     }
@@ -444,7 +411,7 @@ class AdventureIndexController extends GetxController {
     status.value = adventures.isEmpty ? RxStatus.empty() : RxStatus.success();
   }
 
-  void _handleError(String action, Object error) {
+  void handleError(String action, Object error) {
     String message;
 
     if (error is LocalStorageException) {

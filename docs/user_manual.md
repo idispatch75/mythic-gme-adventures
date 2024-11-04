@@ -99,7 +99,7 @@ Here is the layout of the saved data in the application folder:
 	- `index.json`: the list of adventures.
 	You can lookup the ID of an Adventure from its name in this file.
 	- `<adventure ID>.json`: the content of each Adventure
-- `meaning_tables`: the folder containing the custom Meaning Tables if any
+- `meaning_tables`: the folder containing the Custom Meaning Tables if any
 
 On Windows, the *Preferences* are saved in `C:\Users\<user>\AppData\Roaming\IDispatch\Mythic GME Adventures\shared_preferences.json`,
 and the online storage refresh token is stored in the encrypted file `C:\Users\<user>\AppData\Roaming\IDispatch\Mythic GME Adventures\flutter_secure_storage.dat`
@@ -135,9 +135,9 @@ This is obviously desirable for confidentiality reasons but it has some drawback
 you cannot update/customize the application files yourself because the application
 won't be able to see them, even the files in `Mythic GME Adventures`.
 And there is no way for you to give permission to the application to see a specific file or folder.
-This is why you must use the application to upload custom Meaning Tables to the online storage.
+This is why you must use the application to upload Custom Meaning Tables to the online storage.
 
-When uploading custom Meaning Tables, you must select the folder that contains
+When uploading Custom Meaning Tables, you must select the folder that contains
 the language folders.
 
 When you use the online storage, beware of having several applications opened at the same time

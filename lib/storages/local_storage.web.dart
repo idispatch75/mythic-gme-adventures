@@ -39,6 +39,32 @@ class LocalStorage extends DataStorage {
   }
 
   @override
+  Future<void> deleteDirectory(List<String> directory) async {
+    assert(directory.isNotEmpty);
+
+    final parentHandle = await _getDirectoryHandle(
+        directory.sublist(0, directory.length - 1),
+        create: false);
+
+    if (parentHandle != null) {
+      try {
+        await parentHandle
+            .removeEntry(
+              directory.last,
+              FileSystemRemoveOptions(recursive: true),
+            )
+            .toDart;
+      } on DOMException catch (e) {
+        if (e.name != 'NotFoundError') {
+          throw LocalStorageException(_getFilePath(directory, ''), e);
+        }
+      } catch (e) {
+        throw LocalStorageException(_getFilePath(directory, ''), e);
+      }
+    }
+  }
+
+  @override
   Future<void> delete(List<String> directory, String name) async {
     final handle = await _getFileHandle(directory, name, create: false);
 
@@ -58,8 +84,6 @@ class LocalStorage extends DataStorage {
     String? absoluteDirectoryPath,
   }) async {
     assert(absoluteDirectoryPath == null);
-    // TODO web check
-
     final rootHandle = await _getDirectoryHandle(directory, create: false);
     if (rootHandle == null) {
       return;
