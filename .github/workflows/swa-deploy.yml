@@ -38,7 +38,7 @@ jobs:
       - name: Get packages
         run: flutter pub get
       - name: Build
-        run: flutter build web
+        run: flutter build web --base-href /${{ github.run_id }}/
 
       - name: Copy files
         run: |
