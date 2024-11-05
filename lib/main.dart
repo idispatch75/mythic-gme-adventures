@@ -23,7 +23,10 @@ import 'persisters/global_settings_persister.dart';
 import 'persisters/meaning_tables_persister.dart';
 import 'storages/google_auth_oauth2.dart';
 import 'storages/google_auth_service.dart';
+import 'storages/local_storage.dart';
 import 'ui/adventure_index/adventure_index_view.dart';
+import 'ui/change_log/change_log.dart';
+import 'ui/change_log/change_log_view.dart';
 import 'ui/meaning_tables/meaning_table.dart';
 import 'ui/preferences/preferences.dart';
 import 'ui/styles.dart';
@@ -32,6 +35,9 @@ import 'ui/styles.dart';
 final kNavigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
+// TODO web doc
+// TODO web tracking
+
   // catcher
   final releaseOptions = Catcher2Options(
     SilentReportMode(),
@@ -81,6 +87,7 @@ void _runApp() async {
         ...LocalPreferencesService.keys,
         ...OAuth2GoogleAuthManager.preferenceKeys,
         ..._WindowGeometry.preferenceKeys,
+        ...ChangeLogService.keys,
         'isMigrated',
       },
     ),
@@ -142,6 +149,11 @@ void _runApp() async {
   Get.put(MeaningTablesPersisterService());
   Get.put(AdventurePersisterService());
 
+  final appVersion = (await PackageInfo.fromPlatform()).version;
+  final adventureIndex = await AdventurePersister(LocalStorage()).loadIndex();
+  Get.put(ChangeLogService(sharedPreferences, appVersion,
+      isNewInstall: adventureIndex.adventures.isEmpty));
+
   // init locale
   final locale = PlatformDispatcher.instance.locale;
   Intl.defaultLocale = locale.toLanguageTag();
@@ -159,7 +171,7 @@ void _runApp() async {
   Widget appWidget = Obx(
     () => GetMaterialApp(
       title: 'Mythic GME Adventures',
-      home: AdventureIndexView(),
+      home: ChangeLogWrapper(child: AdventureIndexView()),
       navigatorKey: kNavigatorKey,
       theme: AppStyles.lightTheme,
       darkTheme: AppStyles.darkTheme,
@@ -300,6 +312,3 @@ Future<void> _migratePreferences(
 
   await sharedPreferences.setBool('isMigrated', true);
 }
-
-
-// TODO web doc

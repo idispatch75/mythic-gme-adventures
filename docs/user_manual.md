@@ -38,6 +38,8 @@ and continue when warned about an Adventure mismatch,
 which occurs when the ID of the Adventure in the file does not match
 the ID of the Adventure you are restoring.
 
+On the Web, there is *Backup* button that allows to backup all your Adventures.
+
 ## Adventure screen
 
 On smartphone, the App is split in 3 sections:
@@ -84,6 +86,30 @@ This is available in the Roll log and in the bottom sheet displayed when rolling
 	If you don't want to have to choose and always want to roll a valid entry,
 	then uncheck this setting.
 
+## Web App
+
+Each browser where you open the Web version is its own App with its own local storage.
+So the list of adventures and the settings will be blank the first time you open the site on a specific browser.  
+If you use a remote storage, you can synchronize the adventures to update your local storage.
+Otherwise, you can "import" existing adventures from your data folder or a backup as new Adventures as described in [Adventures list](#adventures-list).
+
+The local storage of the App is not accessible. This is a restriction of the browser platform.  
+You are encouraged to make backups of your adventures from the *Adventures list* view.
+
+The Application tracks information about the browser that loads it (OS and browser). This allows to have an idea of how many people use the Web version. This kind of metric is provided by Google out of the box on Android but must be implemented explicitly for the Web version.  
+No personal data is stored.
+
+### Installation
+
+The Web version can be "installed" as an application on desktop and mobile.  
+It will appear on your home screen on mobile or on your Desktop/taskbar on desktop.  
+The recommended browser is Chrome or Edge.
+
+This feature is provided by the browser **and** the OS and is implemented differently depending on the platform:
+
+* **Desktop**: when on the web site, click the "Install" icon **in** the navigation bar, on the right, and follow the instructions.
+* **iOS**: TODO
+
 ## Storage
 
 Your adventure and global settings are always saved locally,
@@ -107,7 +133,8 @@ and the online storage refresh token is stored in the encrypted file `C:\Users\<
 ### Local storage
 
 The data is saved by default in the platform-specific user folder.  
-You can change this folder in the *Preferences*.
+You can change this folder in the *Preferences*.  
+On the Web, the local storage is hidden by the browser and cannot be accessed or changed.  
 
 On desktop, if you are not using the online storage,
 consider setting this folder to your local Google Drive / OneDrive / Dropbox folder
@@ -138,7 +165,8 @@ And there is no way for you to give permission to the application to see a speci
 This is why you must use the application to upload Custom Meaning Tables to the online storage.
 
 When uploading Custom Meaning Tables, you must select the folder that contains
-the language folders.
+the language folders.  
+On the Web, you must select a zip file containing the language folders.
 
 When you use the online storage, beware of having several applications opened at the same time
 on your different devices, as these may overwrite each other's data.
@@ -167,7 +195,8 @@ and not the ones in the local storage.
 
 The custom tables are stored in `<data_folder>/meaning_tables/<language>`
 where `<language>` is an [ISO-639-1 code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes),
-e.g. `en` for English and `<data_folder>` is the folder defined in the Preferences dialog.
+e.g. `en` for English and `<data_folder>` is the folder defined in the Preferences dialog.  
+On the Web, the data folder is not accessible, so you must import a zip file containing the language folders at the root.
 
 The language folder must contain one JSON file per table, with this format:
 ```json
