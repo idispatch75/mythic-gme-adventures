@@ -47,7 +47,7 @@ jobs:
         run: |
           mkdir -p ${{ env.CONTENT_DIR }}
           mv ${{ env.BUILD_DIR }}/* ${{ env.CONTENT_DIR }}
-          mv ${{ env.CONTENT_DIR }}/index.html ${{ env.DIST_DIR }}
+          cp ${{ env.CONTENT_DIR }}/index.html ${{ env.DIST_DIR }}
           mv ${{ env.CONTENT_DIR }}/auth.html ${{ env.DIST_DIR }}
 
       - name: Deploy
