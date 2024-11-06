@@ -256,7 +256,7 @@ class AdventureIndexController extends GetxController {
       message: 'This will delete the Custom Meaning Tables'
           ' in your local storage and import the selected ones.\n\n'
           'You may need to restart the application for the changes to take effect.',
-      withUserManual: true,
+      userManualAnchor: 'custom-meaning-tables',
     )) {
       return;
     }
@@ -321,7 +321,7 @@ class AdventureIndexController extends GetxController {
           'Note that only the files uploaded by the Application are visible by the Application.\n'
           'You must first upload the Meaning Tables to be able to download them.'
           ' If you put them in your online storage via Google Drive web site, nothing will be downloaded.',
-      withUserManual: true,
+      userManualAnchor: 'online-storage',
     )) {
       return;
     }

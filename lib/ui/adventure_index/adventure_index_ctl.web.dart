@@ -13,7 +13,7 @@ extension AdventureIndexControllerX on AdventureIndexController {
       message: 'This will delete the Custom Meaning Tables'
           ' in your online storage and upload the meaning tables in the selected file.\n\n'
           'You may need to restart the application for the changes to take effect.',
-      withUserManual: true,
+      userManualAnchor: 'custom-meaning-tables',
     )) {
       return;
     }

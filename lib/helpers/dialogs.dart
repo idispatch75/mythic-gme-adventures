@@ -11,7 +11,7 @@ abstract class Dialogs {
     required String title,
     String? message,
     Widget? child,
-    bool withUserManual = false,
+    String? userManualAnchor,
   }) async {
     assert(
       message != null || child != null,
@@ -22,7 +22,7 @@ abstract class Dialogs {
       child = Text(message);
     }
 
-    if (withUserManual) {
+    if (userManualAnchor != null) {
       child = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -33,7 +33,8 @@ abstract class Dialogs {
             TextSpan(
               children: [
                 TextSpan(text: 'See the '),
-                getUserManualLink(),
+                getUserManualLink(
+                    anchor: userManualAnchor.isEmpty ? null : userManualAnchor),
                 TextSpan(text: ' for more info.'),
               ],
             ),
