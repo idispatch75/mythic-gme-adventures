@@ -370,7 +370,10 @@ class AdventurePersister {
   Future<void> _saveIndex(AdventureIndexService index) {
     final json = index.toJson(_storage.isLocal);
 
-    return _storage.save([directory], _indexFileName, jsonEncode(json));
+    final encoder = JsonEncoder.withIndent('  ');
+    final prettyIndex = encoder.convert(json);
+
+    return _storage.save([directory], _indexFileName, prettyIndex);
   }
 
   Future<AdventureIndexService> loadIndex() async {

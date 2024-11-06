@@ -18,11 +18,12 @@ Features:
 - Export your adventure to a text file: you can format it properly in your text editor of choice
 - Physical dice mode: switch to this mode to roll the dice yourself and lookup the result in the App
 
-Available on [Windows](https://github.com/idispatch75/mythic-gme-adventures/releases), [Android](https://play.google.com/store/apps/details?id=idispatch.mythic_gme_adventures) and <a href="https://mythic-gme-adventures.idispatch.ovh" target="_blank">Web</a> (with some restrictions on iOS).  
+Available on <a href="https://github.com/idispatch75/mythic-gme-adventures/releases" target="_blank">Windows</a>, <a href="https://play.google.com/store/apps/details?id=idispatch.mythic_gme_adventures" target="_blank">Android</a> and <a href="https://mythic-gme-adventures.idispatch.ovh" target="_blank">Web</a> (with some restrictions on iOS and MacOS).  
 The Web version is "installable" as an App on all platforms, including iOS. See the [User Manual](user_manual#web-app) for more info.
 
-[<img alt='Get it on Google Play' height="80" src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/>](https://play.google.com/store/apps/details?id=idispatch.mythic_gme_adventures)
-
+<a href="https://play.google.com/store/apps/details?id=idispatch.mythic_gme_adventures" target="_blank">
+<img alt='Get it on Google Play' height="80" src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/>
+</a>
 
 [![Desktop](img/desktop.png)](img/desktop.png)
 
