@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 
 import '../../helpers/get_extensions.dart';
-import '../../helpers/utils.dart';
+import '../../helpers/json_utils.dart';
 import '../listable_items/listable_item.dart';
 import 'thread_ctl.dart';
 
@@ -21,7 +21,7 @@ class Thread extends ListableItem {
         phases = (phases ?? []).map((e) => e.obs).toList().obs;
 
   @override
-  Map<String, dynamic> toJson() => super.toJson()
+  JsonObj toJson() => super.toJson()
     ..addAll({
       'isTracked': isTracked(),
       'progress': progress(),
@@ -41,11 +41,11 @@ class ThreadProgressPhase {
 
   ThreadProgressPhase({this.hasFlashpoint = false});
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         'hasFlashpoint': hasFlashpoint,
       };
 
-  ThreadProgressPhase.fromJson(Map<String, dynamic> json)
+  ThreadProgressPhase.fromJson(JsonObj json)
       : this(hasFlashpoint: json['hasFlashpoint']);
 }
 
@@ -61,8 +61,8 @@ class ThreadsService extends ListableItemsService<Thread> {
     return thread;
   }
 
-  Map<String, dynamic> toJson() => toJsonGeneric('threads');
+  JsonObj toJson() => toJsonGeneric('threads');
 
-  ThreadsService.fromJson(Map<String, dynamic> json)
+  ThreadsService.fromJson(JsonObj json)
       : super.fromJson(json, 'threads', Thread.fromJson);
 }

@@ -8,7 +8,7 @@ permalink: /user_manual/
 
 On smartphone, you can long-press a button to show a tooltip.
 
-On desktop, you can hover the mouse over a button to show a tooltip.
+On desktop and web, you can hover the mouse over a button to show a tooltip.
 
 ## Adventures list
 
@@ -29,7 +29,7 @@ or opening and saving the adventure you plan to play offline.
 
 If something went wrong while saving an Adventure,
 you can *Restore* it from a backup
-(typically from a previous version on your online storage).  
+or from a previous version on your online storage.  
 Just put the backup Adventure file somewhere on your local drive and select it when restoring
 (see [Storage](#storage) to learn how to find the Adventure file, i.e. in `index.json`).  
 If you want to import a completely new Adventure from a file,
@@ -37,6 +37,8 @@ just create a new empty Adventure, *Restore* it from the file,
 and continue when warned about an Adventure mismatch,
 which occurs when the ID of the Adventure in the file does not match
 the ID of the Adventure you are restoring.
+
+There is *Backup* button that allows to backup all your local Adventures.
 
 ## Adventure screen
 
@@ -84,9 +86,66 @@ This is available in the Roll log and in the bottom sheet displayed when rolling
 	If you don't want to have to choose and always want to roll a valid entry,
 	then uncheck this setting.
 
+## Web App
+
+The App is available at <a href="https://mythic-gme-adventures.idispatch.ovh" target="_blank">https://mythic-gme-adventures.idispatch.ovh</a>.
+
+For a traditional web site online experience, consider checking *Use Google Drive* and *Disable local storage*.  
+The Web App is not available offline, so the local storage is not useful.
+
+You can resize the window of your browser from full-screen to mobile size: the App adapts its layout accordingly.
+
+### Browser compatibility
+
+The recommended browsers are Chrome or Edge.
+
+Here are the tested browsers on each OS. Other browsers may be compatible.
+
+- **Windows**
+  - Chrome and Edge: fully functional.
+- **MacOS**
+  - Safari: local storage not supported. *Use Google Drive* and *Disable local storage*.
+  - Chrome: fully functional.
+- **iOS**
+  - Safari: Not supported.
+  - Chrome: local storage not supported. *Use Google Drive* and *Disable local storage*.
+- **Linux**: Not tested.
+- **Android**: Not tested. Use the Android App.
+
+### Installation
+
+The Web version can be "installed" as an application on desktop and mobile.  
+It will appear on your home screen on mobile and on your desktop/taskbar/dock on desktop.  
+
+This feature is provided by the browser **and** the OS and is implemented differently depending on the platform:
+
+* **Desktop with Chrome/Edge**: when on the web site, click the "Install" icon **in** the navigation bar, on the right, and follow the instructions.
+* **MacOS**: on Safari, click the Share icon on the top right of the browser and select *Add to Dock*. On Chrome, same as Desktop, and the App will be available in the Finder.
+* **iOS**: on Chrome only, same as Desktop, then select *Add to Home Screen*. Safari is not supported.
+
+### More info
+
+Local storage is currently not supported on iOS and by Safari on MacOS.
+You can use the application only if you *Use Google Drive* and *Disable local storage*.  
+Safari is not supported on iOS: the authentication popup for Google Drive does not open. Use Chrome instead.
+
+Each browser where you open the Web version is its own App with its own local storage.
+So the list of adventures and the settings will be blank the first time you open the site on a specific browser.  
+If you use a remote storage, you can synchronize the adventures to update your local storage.
+Otherwise, you can "import" existing adventures from the data folder of the Windows or Android App, or a backup: create a new Adventure and restore it as described in [Adventures list](#adventures-list).
+If you plan to use the App on several browsers, consider checking *Disable local storage*.
+
+To log into the remote storage, the App creates a new tab to log you in that is closed when the login is successful. You may need to authorize popups if your browser blocks them. Also, Chrome on mobile may not close the new tab automatically: you may have to close it manually and/or return to the original tab.
+
+The local storage of the App is not accessible. This is a restriction of the browser platform.  
+You are encouraged to make backups of your adventures from the *Adventures list* view.
+
+The Application tracks information about the browser that loads it (OS and browser). This allows to have an idea of how many people use the Web version. This kind of metric is provided by Google out of the box on Android but must be implemented explicitly for the Web version.  
+No personal data is stored.
+
 ## Storage
 
-Your adventure and global settings are always saved locally,
+Your adventure and global settings are saved locally,
 and optionally on an online storage.
 
 A save occurs 5 seconds after the last modification to an adventure or setting.
@@ -99,7 +158,7 @@ Here is the layout of the saved data in the application folder:
 	- `index.json`: the list of adventures.
 	You can lookup the ID of an Adventure from its name in this file.
 	- `<adventure ID>.json`: the content of each Adventure
-- `meaning_tables`: the folder containing the custom Meaning Tables if any
+- `meaning_tables`: the folder containing the Custom Meaning Tables if any
 
 On Windows, the *Preferences* are saved in `C:\Users\<user>\AppData\Roaming\IDispatch\Mythic GME Adventures\shared_preferences.json`,
 and the online storage refresh token is stored in the encrypted file `C:\Users\<user>\AppData\Roaming\IDispatch\Mythic GME Adventures\flutter_secure_storage.dat`
@@ -107,20 +166,21 @@ and the online storage refresh token is stored in the encrypted file `C:\Users\<
 ### Local storage
 
 The data is saved by default in the platform-specific user folder.  
-You can change this folder in the *Preferences*.
+You can change this folder in the *Preferences*.  
+On the Web, the local storage is hidden by the browser and cannot be accessed or changed.
 
 On desktop, if you are not using the online storage,
-consider setting this folder to your local Google Drive / OneDrive / Dropbox folder
+consider setting the user folder into your local Google Drive / OneDrive / Dropbox folder
 to get backup and versioning for free.  
 If you are using the online storage in the application,
 you **MUST NOT** set this folder to your local online folder
 for the reasons explained in the section below: your synchronization application will write
-the local files to the online storage and, since `Mythic GME Adventures` can see
-only the files it created, it won't be able to read these files,
+the local files to the online storage and, since *Mythic GME Adventures* can see
+only the files it created itself, it won't be able to read these files,
 and you may end-up having two copies of the same file,
 the one from the application and the one from your synchronization application.  
 Of course, if you use 2 different online storages, e.g. Google Drive and Dropbox,
-there is no issue with setting the Dropbox folder as local data folder.
+there is no issue with setting the local data folder inside the Dropbox folder.
 
 ### Online storage
 
@@ -135,10 +195,11 @@ This is obviously desirable for confidentiality reasons but it has some drawback
 you cannot update/customize the application files yourself because the application
 won't be able to see them, even the files in `Mythic GME Adventures`.
 And there is no way for you to give permission to the application to see a specific file or folder.
-This is why you must use the application to upload custom Meaning Tables to the online storage.
+This is why you must use the application to upload Custom Meaning Tables to the online storage.
 
-When uploading custom Meaning Tables, you must select the folder that contains
-the language folders.
+When uploading Custom Meaning Tables, you must select the folder that contains
+the language folders.  
+On the Web, you must select a zip file containing the language folders.
 
 When you use the online storage, beware of having several applications opened at the same time
 on your different devices, as these may overwrite each other's data.
@@ -153,7 +214,8 @@ In this case, if you go back online on your desktop,
 the most recent version will be the local one, which is not correct.
 The solution here is to disable the local storage,
 and save the Adventure's online version to update its save date and make it the most current.
-Then you can re-enable the local storage.
+Then you can re-enable the local storage.  
+This is also useful for the Web App to have a full online experience, or if the browser does not support local storage.
 
 ## Custom Meaning Tables
 
@@ -163,11 +225,12 @@ You can create your own tables or customize existing ones or create translations
 The customized tables must be put in your local data directory if you do not use an online storage,
 or uploaded via the application otherwise (see [Online storage](#online-storage)).  
 If you use the online storage, only the tables in the online storage will be used,
-and not the ones in the local storage.
+and not the ones in the local storage; both sources are not merged.
 
 The custom tables are stored in `<data_folder>/meaning_tables/<language>`
 where `<language>` is an [ISO-639-1 code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes),
-e.g. `en` for English and `<data_folder>` is the folder defined in the Preferences dialog.
+e.g. `en` for English and `<data_folder>` is the folder defined in the *Preferences* dialog.  
+On the Web, the data folder is not accessible, so you must import a zip file containing the language folders at the root.
 
 The language folder must contain one JSON file per table, with this format:
 ```json
@@ -190,12 +253,12 @@ The language folder must contain one JSON file per table, with this format:
 	]
 }
 ```
-- `id`: the ID of the table. When customizing or creating a translation for an existing table
-it must be the same ID as the customized/translated table.
+- `id`: the ID of the table. When customizing or creating a translation for an existing table, it must be the same ID as the customized/translated table.
 - `name`: the text displayed in the application.
 	Mandatory if you create a new table, optional if you customize or translate.
 - `order`: the display order in the list. It overrides the alphabetical order.
 	It is optional and can be customized.
+  It defaults to 1000.
 - `characterTrait`: the label of the trait when rolling the traits in the Notes of a Character, e.g. `"Motivation"`.
 	If not null, the table is displayed in the available traits to roll for a Character.
 	It can be an empty string.
@@ -203,7 +266,7 @@ it must be the same ID as the customized/translated table.
 - `entries`: the entries in the table.
 Mandatory if you create a new table, optional if you customize or translate.
 - `entries2`: an optional additional list of entries for the second Meaning Table roll.
-	If not present the 2 rolls will be done on `entries`.
+	If not present, the 2 rolls will be done on `entries`.
 
 The tables can have an arbitrary number of entries and not necessarily 100.
 

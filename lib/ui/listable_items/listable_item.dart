@@ -1,8 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:get/get.dart';
 
+import '../../helpers/json_utils.dart';
 import '../../helpers/rx_list_extensions.dart';
-import '../../helpers/utils.dart';
 import '../../persisters/persister.dart';
 
 abstract class ListableItem {
@@ -30,7 +30,7 @@ abstract class ListableItem {
 
   String toTag() => id.toString();
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         'id': id,
         'name': name,
         if (summary != null) 'summary': summary,
@@ -38,7 +38,7 @@ abstract class ListableItem {
         'isArchived': isArchived,
       };
 
-  ListableItem.fromJson(Map<String, dynamic> json)
+  ListableItem.fromJson(JsonObj json)
       : this(
           json['id'],
           json['name'],
@@ -89,15 +89,15 @@ class ListableItemsService<TItem extends ListableItem> extends GetxService
     requestSave();
   }
 
-  Map<String, dynamic> toJsonGeneric(String listName) => {
+  JsonObj toJsonGeneric(String listName) => {
         listName: items,
         '${listName}List': itemsList.map((e) => e.value.id).toList(),
       };
 
   ListableItemsService.fromJson(
-    Map<String, dynamic> json,
+    JsonObj json,
     String listName,
-    TItem Function(Map<String, dynamic>) itemFactory,
+    TItem Function(JsonObj) itemFactory,
   ) {
     final itemsListIds =
         List<int>.from(((json['${listName}List'] ?? <int>[]) as List));

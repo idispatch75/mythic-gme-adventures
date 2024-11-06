@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../../helpers/utils.dart';
+import '../../helpers/json_utils.dart';
 import '../../persisters/persister.dart';
 
 class PlayerCharacter {
@@ -9,12 +9,12 @@ class PlayerCharacter {
 
   PlayerCharacter(this.name, {this.notes});
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         'name': name,
         if (notes != null) 'notes': notes,
       };
 
-  PlayerCharacter.fromJson(Map<String, dynamic> json)
+  PlayerCharacter.fromJson(JsonObj json)
       : this(json['name'], notes: json['notes']);
 }
 
@@ -35,11 +35,11 @@ class PlayerCharactersService extends GetxService with SavableMixin {
     requestSave();
   }
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         'playerCharacters': playerCharacters,
       };
 
-  PlayerCharactersService.fromJson(Map<String, dynamic> json) {
+  PlayerCharactersService.fromJson(JsonObj json) {
     for (var item
         in fromJsonList(json['playerCharacters'], PlayerCharacter.fromJson)) {
       add(item);

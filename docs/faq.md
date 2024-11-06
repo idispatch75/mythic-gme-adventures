@@ -37,11 +37,8 @@ I did not investigate these 2 options, but if there is enough demand I may consi
 Apple requires developers to pay a license to publish applications for iOS / macOS.
 It costs $99 **per year**.
 
-If the application has a moderate level of success, I may buy this license,
-provided the Mythic GME owner allows me to charge a minimal fee ($1 or so) for the App.
-
-If someone is willing to build and publish an iOS / macOS version free of charge,
-they can contact me.
+I do not wish to pay this much.  
+The Web version should do for unsupported OS.
 
 ### The application is ugly. Do you plan to do something about it?
 

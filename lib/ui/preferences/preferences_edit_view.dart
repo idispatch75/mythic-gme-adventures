@@ -20,22 +20,31 @@ class PreferencesEditView extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final preferences = Get.find<LocalPreferencesService>();
-    final localDataDirectoryController = useTextEditingController(
-      text: preferences.localDataDirectoryOverride(),
-    );
-
-    final theme = Theme.of(context);
-    final defaultLocalDataDirectoryFuture =
-        useMemoized(() => LocalStorage.getDefaultRootDirectoryPath());
-    final defaultLocalDataDirectory =
-        useFuture(defaultLocalDataDirectoryFuture);
 
     final enableDarkMode = preferences.enableDarkMode().obs;
 
-    return EditDialog<PreferencesEditResult>(
-      itemTypeLabel: 'Preferences',
-      canDelete: false,
-      onSave: () async {
+    final hasLocalFolder = !GetPlatform.isWeb;
+    final TextEditingController localDataDirectoryController;
+    final AsyncSnapshot<String> defaultLocalDataDirectory;
+    final Future<PreferencesEditResult?> Function() onSave;
+
+    void saveBrightness() {
+      AppStyles.setBrightness(
+        enableDarkMode() ? Brightness.dark : Brightness.light,
+      );
+      preferences.enableDarkMode.value = enableDarkMode();
+    }
+
+    if (hasLocalFolder) {
+      localDataDirectoryController = useTextEditingController(
+        text: preferences.localDataDirectoryOverride(),
+      );
+
+      final defaultLocalDataDirectoryFuture =
+          useMemoized(() => LocalStorage.getDefaultRootDirectoryPath());
+      defaultLocalDataDirectory = useFuture(defaultLocalDataDirectoryFuture);
+
+      onSave = () async {
         // copy the files to the new directory?
         final currentDataDirectory = preferences.localDataDirectoryOverride();
         final newDataDirectory =
@@ -58,90 +67,105 @@ class PreferencesEditView extends HookWidget {
         // save the settings
         preferences.localDataDirectoryOverride.value = newDataDirectory;
 
-        AppStyles.setBrightness(
-          enableDarkMode() ? Brightness.dark : Brightness.light,
-        );
-        preferences.enableDarkMode.value = enableDarkMode();
+        saveBrightness();
 
         return PreferencesEditResult(currentDataDirectory != newDataDirectory);
-      },
+      };
+    } else {
+      localDataDirectoryController = useTextEditingController();
+      defaultLocalDataDirectory = const AsyncSnapshot<String>.waiting();
+
+      onSave = () async {
+        saveBrightness();
+
+        return PreferencesEditResult(false);
+      };
+    }
+
+    final theme = Theme.of(context);
+
+    return EditDialog<PreferencesEditResult>(
+      itemTypeLabel: 'Preferences',
+      canDelete: false,
+      onSave: onSave,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // data folder
-              Expanded(
-                child: TextFormField(
-                  controller: localDataDirectoryController,
-                  decoration:
-                      const InputDecoration(labelText: 'Local data folder'),
-                  textCapitalization: TextCapitalization.sentences,
-                  readOnly: true,
-                ),
-              ),
-
-              // choose folder
-              IconButton(
-                onPressed: () async {
-                  final initialDirectory =
-                      localDataDirectoryController.text.nullIfEmpty() ??
-                          defaultLocalDataDirectory.data;
-                  final path = await FilePicker.platform.getDirectoryPath(
-                    dialogTitle: 'Local data folder',
-                    initialDirectory: initialDirectory,
-                    lockParentWindow: true,
-                  );
-
-                  if (path != null) {
-                    localDataDirectoryController.text = path;
-                  }
-                },
-                icon: const Icon(Icons.folder),
-              ),
-
-              // clear folder
-              IconButton(
-                onPressed: () {
-                  localDataDirectoryController.text = '';
-                },
-                icon: const Icon(Icons.clear),
-              ),
-            ],
-          ),
-
-          // tip
-          const SizedBox(height: 4),
-          SubLabel(
-            'Leave blank to use the default folder "${defaultLocalDataDirectory.data}".',
-          ),
-          if (GetPlatform.isDesktop)
-            const SubLabel(
-              'Consider setting your local Google Drive, OneDrive or Dropbox folder,'
-              ' for easy sharing, fast save, and automatic backup with versioning.\n'
-              'Setting the local Google Drive here while using Google Drive as online storage'
-              ' must be avoided because the files uploaded by the Drive App will not be visible by this App.',
-            ),
-          RichText(
-            text: TextSpan(
+          if (hasLocalFolder) ...[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                TextSpan(
-                  text: 'More info in the ',
-                  style: SubLabel.getTextStyle(theme),
+                // data folder
+                Expanded(
+                  child: TextFormField(
+                    controller: localDataDirectoryController,
+                    decoration:
+                        const InputDecoration(labelText: 'Local data folder'),
+                    textCapitalization: TextCapitalization.sentences,
+                    readOnly: true,
+                  ),
                 ),
-                getInlineLink(
-                  text: 'User Manual',
-                  url:
-                      'https://idispatch75.github.io/mythic-gme-adventures/user_manual/',
+
+                // choose folder
+                IconButton(
+                  onPressed: () async {
+                    final initialDirectory =
+                        localDataDirectoryController.text.nullIfEmpty() ??
+                            defaultLocalDataDirectory.data;
+                    final path = await FilePicker.platform.getDirectoryPath(
+                      dialogTitle: 'Local data folder',
+                      initialDirectory: initialDirectory,
+                      lockParentWindow: true,
+                    );
+
+                    if (path != null) {
+                      localDataDirectoryController.text = path;
+                    }
+                  },
+                  icon: const Icon(Icons.folder),
                 ),
-                TextSpan(
-                  text: '.',
-                  style: SubLabel.getTextStyle(theme),
+
+                // clear folder
+                IconButton(
+                  onPressed: () {
+                    localDataDirectoryController.text = '';
+                  },
+                  icon: const Icon(Icons.clear),
                 ),
               ],
             ),
-          ),
+
+            // tip
+            const SizedBox(height: 4),
+            SubLabel(
+              'Leave blank to use the default folder "${defaultLocalDataDirectory.data}".',
+            ),
+            if (!GetPlatform.isWeb && GetPlatform.isDesktop)
+              const SubLabel(
+                'Consider setting your local Google Drive, OneDrive or Dropbox folder,'
+                ' for easy sharing, fast save, and automatic backup with versioning.\n'
+                'Setting the local Google Drive here while using Google Drive as online storage'
+                ' must be avoided because the files uploaded by the Drive App will not be visible by this App.',
+              ),
+            Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'More info in the ',
+                    style: SubLabel.getTextStyle(theme),
+                  ),
+                  getUserManualLink(
+                    anchor: 'storage',
+                    textStyle: SubLabel.getTextStyle(theme),
+                  ),
+                  TextSpan(
+                    text: '.',
+                    style: SubLabel.getTextStyle(theme),
+                  ),
+                ],
+              ),
+            ),
+          ],
 
           // brightness
           BooleanSetting(

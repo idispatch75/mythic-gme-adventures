@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../../helpers/utils.dart';
+import '../../helpers/json_utils.dart';
 import '../../persisters/persister.dart';
 
 class GlobalSettingsService extends GetxService with SavableMixin {
@@ -43,7 +43,7 @@ class GlobalSettingsService extends GetxService with SavableMixin {
     requestSave();
   }
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         'allowChooseInLists': allowChooseInLists,
         'meaningTablesLanguage': meaningTablesLanguage,
         'favoriteMeaningTables': favoriteMeaningTables.toList(),
@@ -51,7 +51,7 @@ class GlobalSettingsService extends GetxService with SavableMixin {
         if (saveTimestamp != null) 'saveTimestamp': saveTimestamp,
       };
 
-  GlobalSettingsService.fromJson(Map<String, dynamic> json)
+  GlobalSettingsService.fromJson(JsonObj json)
       : this(
           allowChooseInLists: json['allowChooseInLists'] ?? true,
           meaningTablesLanguage: json['meaningTablesLanguage'] ?? 'en',

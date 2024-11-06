@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 
+import '../../helpers/json_utils.dart';
 import '../../persisters/persister.dart';
 
 class ChaosFactorService extends GetxService with SavableMixin {
@@ -23,10 +24,9 @@ class ChaosFactorService extends GetxService with SavableMixin {
     }
   }
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         'chaosFactor': chaosFactor(),
       };
 
-  ChaosFactorService.fromJson(Map<String, dynamic> json)
-      : this(json['chaosFactor']);
+  ChaosFactorService.fromJson(JsonObj json) : this(json['chaosFactor']);
 }

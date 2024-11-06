@@ -1,4 +1,3 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -16,6 +15,8 @@ import '../widgets/header.dart';
 import '../widgets/progress_indicators.dart';
 import '../widgets/sub_label.dart';
 import 'adventure_index_ctl.dart';
+import 'adventure_index_ctl.io.dart'
+    if (dart.library.html) 'adventure_index_ctl.web.dart';
 
 class AdventureIndexView extends GetView<AdventureIndexController> {
   final _preferences = Get.find<LocalPreferencesService>();
@@ -57,8 +58,11 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                       list = loadingIndicator;
                     } else if (controller.status().isEmpty) {
                       list = const Center(
-                        child: Text(
-                          'Click the "+" button above to create an Adventure',
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            'Click the "+" button above to create an Adventure',
+                          ),
                         ),
                       );
                     }
@@ -71,6 +75,63 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                           const Header('Adventures'),
                           ButtonRow(
                             children: [
+                              // import meaning tables
+                              if (GetPlatform.isWeb &&
+                                  _preferences.enableLocalStorage())
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: MenuAnchor(
+                                    builder: (
+                                      BuildContext context,
+                                      MenuController menuController,
+                                      Widget? child,
+                                    ) {
+                                      return TextButton(
+                                        onPressed:
+                                            !controller.status().isLoading
+                                                ? () {
+                                                    if (menuController.isOpen) {
+                                                      menuController.close();
+                                                    } else {
+                                                      menuController.open();
+                                                    }
+                                                  }
+                                                : null,
+                                        child:
+                                            const Text('Custom Meaning Tables'),
+                                      );
+                                    },
+                                    menuChildren: [
+                                      MenuItemButton(
+                                        leadingIcon: Icon(Icons.download),
+                                        onPressed: controller
+                                            .importLocalCustomMeaningTables,
+                                        child: Text('Import tables'),
+                                      ),
+                                      MenuItemButton(
+                                        leadingIcon: Icon(Icons.delete_forever),
+                                        onPressed: controller
+                                            .deleteLocalCustomMeaningTables,
+                                        child: Text('Delete tables'),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                              // backup adventures
+                              if (_preferences.enableLocalStorage())
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: IconButton.outlined(
+                                    tooltip: 'Backup local Adventures',
+                                    onPressed: !controller.status().isLoading
+                                        ? controller.backupLocalAdventures
+                                        : null,
+                                    icon: Icon(Icons.save_alt_outlined),
+                                  ),
+                                ),
+
+                              // sync storages
                               if (_preferences.enableGoogleStorage() &&
                                   _preferences.enableLocalStorage())
                                 Padding(
@@ -89,6 +150,8 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                                               'Synchronize local and online storages',
                                         ),
                                 ),
+
+                              // create adventure
                               IconButton.filled(
                                 onPressed: !controller.status().isLoading
                                     ? _create
@@ -188,20 +251,18 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                         ),
                         if (_preferences.enableGoogleStorage()) ...[
                           // read user manual
-                          RichText(
-                            text: TextSpan(
+                          Text.rich(
+                            TextSpan(
                               children: [
                                 TextSpan(
                                   text: 'Please read the ',
                                   style: SubLabel.getTextStyle(theme),
                                 ),
-                                getInlineLink(
-                                  text: 'User Manual',
-                                  url:
-                                      'https://idispatch75.github.io/mythic-gme-adventures/user_manual/',
-                                ),
+                                getUserManualLink(
+                                    anchor: 'storage',
+                                    textStyle: SubLabel.getTextStyle(theme)),
                                 TextSpan(
-                                  text: ' to understand how storage works.',
+                                  text: ' to understand how storages work.',
                                   style: SubLabel.getTextStyle(theme),
                                 ),
                               ],
@@ -218,17 +279,18 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                                 Row(
                                   children: [
                                     const Text('Custom Meaning Tables'),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8.0,
-                                      ),
 
-                                      // upload
+                                    // upload
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
                                       child: _meaningTablesUpload(),
                                     ),
 
                                     // download
-                                    _meaningTablesDownload(context),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: _meaningTablesDownload(context),
+                                    ),
                                   ],
                                 ),
 
@@ -247,6 +309,7 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                                 Padding(
                                   padding: const EdgeInsets.only(left: 8.0),
                                   child: Text(
+                                    '${GetPlatform.isWeb ? 'It is mandatory on iOS: local storage does not work currently.\n' : ''}'
                                     'This might be useful if you want to make the online version of an Adventure'
                                     ' more recent than its local version.',
                                     style: theme.textTheme.labelMedium,
@@ -324,10 +387,11 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
               ),
             )
           : IconButton.outlined(
+              tooltip: 'Upload Custom Meaning Tables to the online storage',
               onPressed: controller.isMeaningTableDownloading()
                   ? null
                   : controller.uploadMeaningTables,
-              icon: const Icon(Icons.upload),
+              icon: const Icon(Icons.backup_outlined),
             ),
     );
   }
@@ -343,10 +407,11 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
               ),
             )
           : IconButton.outlined(
+              tooltip: 'Download Custom Meaning Tables from the online storage',
               onPressed: controller.isMeaningTableUploading()
                   ? null
-                  : () => controller.downloadMeaningTables(context),
-              icon: const Icon(Icons.download),
+                  : () => controller.downloadMeaningTables(),
+              icon: const Icon(Icons.cloud_download_outlined),
             ),
     );
   }
@@ -390,16 +455,9 @@ class _IndexAdventureView extends GetView<AdventureIndexController> {
   }
 
   Future<void> _restoreAdventure() async {
-    final result = await FilePicker.platform.pickFiles(
-      dialogTitle: 'Adventure file',
-      allowedExtensions: ['json'],
-    );
-    if (result == null || result.count != 1) {
-      return;
-    }
+    final json = await pickFileAsJson(dialogTitle: 'Adventure file');
+    if (json == null) return;
 
-    final filePath = result.files[0].path!;
-
-    return controller.restoreAdventure(filePath, _adventure);
+    return controller.restoreAdventure(json, _adventure);
   }
 }

@@ -6,6 +6,7 @@ import 'package:loggy/loggy.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../helpers/get_extensions.dart';
+import '../helpers/json_utils.dart';
 import '../storages/data_storage.dart';
 import '../ui/global_settings/global_settings.dart';
 import 'persister.dart';
@@ -44,22 +45,22 @@ class GlobalSettingsPersisterService
     final local = await localPersister?.loadSettings();
     final remote = await remotePersister?.loadSettings();
 
+    final GlobalSettingsService service;
     if (local != null) {
       if (remote == null ||
           (local.saveTimestamp ?? 0) > (remote.saveTimestamp ?? 0)) {
-        Get.replaceForced(local);
+        service = Get.replaceForced(local);
       } else {
-        Get.replaceForced(remote);
+        service = Get.replaceForced(remote);
       }
     } else {
-      Get.replaceForced(remote);
+      service = Get.replaceForced(remote!);
     }
 
     // save the current adventure when a save is requested by an adventure service
     await _saveRequestsSubscription?.cancel();
 
-    _saveRequestsSubscription = Get.find<GlobalSettingsService>()
-        .saveRequests
+    _saveRequestsSubscription = service.saveRequests
         .debounceTime(const Duration(seconds: 5))
         .listen((value) async {
       try {
@@ -95,7 +96,7 @@ class GlobalSettingsPersister {
     final content = await _storage.load([_directory], _fileName);
 
     if (content != null) {
-      final json = jsonDecode(content) as Map<String, dynamic>;
+      final json = jsonDecode(content) as JsonObj;
 
       return GlobalSettingsService.fromJson(json);
     } else {

@@ -7,8 +7,15 @@ abstract class DataStorage {
 
   // TODO lock remote write to prevent multiple clients writes
   // TODO backup local file before persisting
+
   Future<void> save(List<String> directory, String name, String content);
+
   Future<String?> load(List<String> directory, String name);
+
+  /// Deletes a [directory] recursively.
+  ///
+  /// No effect if the directory does not exist.
+  Future<void> deleteDirectory(List<String> directory);
 
   /// Deletes a file.
   ///
@@ -16,7 +23,8 @@ abstract class DataStorage {
   Future<void> delete(List<String> directory, String name);
 
   /// Loads JSON files content recursively relative to [directory]
-  /// and calls [process] for each file.
+  /// and calls [process] for each file, with `filePath` relative to [directory]
+  /// and including the file name.
   Future<void> loadJsonFiles(
     List<String> directory,
     Future<void> Function(List<String> filePath, String json) process, {
@@ -26,14 +34,18 @@ abstract class DataStorage {
 
 class LocalStorageException implements Exception {
   final String filePath;
-  final Object error;
+  final Object? error;
 
-  LocalStorageException(this.filePath, this.error);
+  LocalStorageException(this.filePath, [this.error]);
 
   @override
   String toString() {
     return '$runtimeType($filePath, $error)';
   }
+}
+
+class LocalStorageNotSupportedException extends LocalStorageException {
+  LocalStorageNotSupportedException(super.filePath, [super.error]);
 }
 
 abstract class RemoteStorageException implements Exception {

@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../../helpers/utils.dart';
+import '../../helpers/json_utils.dart';
 import '../../persisters/persister.dart';
 
 class Note {
@@ -9,13 +9,12 @@ class Note {
 
   Note(this.title, {this.content});
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         'title': title,
         if (content != null) 'content': content,
       };
 
-  Note.fromJson(Map<String, dynamic> json)
-      : this(json['title'], content: json['content']);
+  Note.fromJson(JsonObj json) : this(json['title'], content: json['content']);
 }
 
 class NotesService extends GetxService with SavableMixin {
@@ -35,11 +34,11 @@ class NotesService extends GetxService with SavableMixin {
     requestSave();
   }
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         'notes': notes,
       };
 
-  NotesService.fromJson(Map<String, dynamic> json) {
+  NotesService.fromJson(JsonObj json) {
     for (var item in fromJsonList(json['notes'], Note.fromJson)) {
       add(item);
     }

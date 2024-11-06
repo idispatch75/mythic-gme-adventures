@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../helpers/json_utils.dart';
 import '../../helpers/utils.dart';
 import '../characters/character.dart';
 import '../global_settings/global_settings.dart';
@@ -20,13 +21,13 @@ sealed class RandomEventFocus {
 
   RandomEventFocus();
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         'runtimeType': runtimeType.toString(),
         'name': name,
         if (target != null) 'target': target,
       };
 
-  factory RandomEventFocus.fromJson(Map<String, dynamic> json) =>
+  factory RandomEventFocus.fromJson(JsonObj json) =>
       switch (json['runtimeType']) {
         'RemoteEvent' => RemoteEvent(),
         'AmbiguousEvent' => AmbiguousEvent(),

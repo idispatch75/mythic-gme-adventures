@@ -1,0 +1,63 @@
+# This workflow will build and push a web application to an Azure Static Web App when you change your code.
+#
+# This workflow assumes you have already created the target Azure Static Web App.
+# For instructions see https://docs.microsoft.com/azure/static-web-apps/get-started-portal?tabs=vanilla-javascript
+#
+# To configure this workflow:
+#
+# 1. Set up a secret in your repository named AZURE_STATIC_WEB_APPS_API_TOKEN with the value of your Static Web Apps deployment token.
+#    For instructions on obtaining the deployment token see: https://docs.microsoft.com/azure/static-web-apps/deployment-token-management
+#
+# 3. Change the values for the APP_LOCATION, API_LOCATION and APP_ARTIFACT_LOCATION, AZURE_STATIC_WEB_APPS_API_TOKEN environment variables (below).
+#    For instructions on setting up the appropriate configuration values go to https://docs.microsoft.com/azure/static-web-apps/front-end-frameworks
+name: Deploy to Azure Static Web Apps
+
+on:
+  push:
+    branches:
+      - web/releases/**
+
+permissions:
+  contents: read
+
+env:
+  BUILD_DIR: build/web
+  DIST_DIR: build/web_dist
+  CONTENT_DIR: build/web_dist/${{ github.run_id }}
+
+jobs:
+  build_and_deploy_job:
+    runs-on: ubuntu-latest
+    name: Build and Deploy Job
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2.16.0
+        with:
+          channel: stable
+      - run: flutter --version
+      - name: Get packages
+        run: flutter pub get
+      - name: Build
+        run: flutter build web --base-href /${{ github.run_id }}/
+
+      - name: Copy files
+        run: |
+          mkdir -p ${{ env.CONTENT_DIR }}
+          mv ${{ env.BUILD_DIR }}/* ${{ env.CONTENT_DIR }}
+          cp ${{ env.CONTENT_DIR }}/index.html ${{ env.DIST_DIR }}
+          mv ${{ env.CONTENT_DIR }}/auth.html ${{ env.DIST_DIR }}
+
+      - name: Deploy
+        # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
+        id: builddeploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          action: 'upload'
+          skip_app_build: true
+          skip_api_build: true
+          app_location: ${{ env.DIST_DIR }}
+          output_location: ''

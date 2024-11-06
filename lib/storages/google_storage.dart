@@ -26,10 +26,13 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
     final directoryPath = directory.join('/');
 
     return _performRequest((api) async {
-      final folderId = await _getFolderId(api, directoryPath, false);
+      final folderId =
+          await _getFolderId(api, directoryPath, createIfMissing: false);
+      final folderCacheKey = _getFolderCacheKey(directoryPath);
 
       if (folderId != null) {
-        final fileId = await _getFileInFolder(api, folderId, name);
+        final fileId = await _getFileInFolder(api,
+            folderId: folderId, fileName: name, folderCacheKey: folderCacheKey);
 
         if (fileId != null) {
           return _getFileContent(api, fileId);
@@ -45,13 +48,16 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
     final directoryPath = directory.join('/');
 
     return _performRequest((api) async {
-      final folderId = (await _getFolderId(api, directoryPath, true))!;
+      final folderId =
+          (await _getFolderId(api, directoryPath, createIfMissing: true))!;
+      final folderCacheKey = _getFolderCacheKey(directoryPath);
 
       final bytes = utf8.encoder.convert(content);
       final stream = Stream.value(List<int>.from(bytes));
       final media = drive.Media(stream, bytes.length);
 
-      final existingFileId = await _getFileInFolder(api, folderId, name);
+      final existingFileId = await _getFileInFolder(api,
+          folderId: folderId, fileName: name, folderCacheKey: folderCacheKey);
       if (existingFileId == null) {
         loggy.debug('Creating file "$directoryPath/$name"');
 
@@ -65,7 +71,7 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
         ))
             .id!;
 
-        _fileIdCache['$folderId/$name'] = newFileId;
+        _fileIdCache['$folderCacheKey/$name'] = newFileId;
       } else {
         loggy.debug('Updating file "$directoryPath/$name"');
 
@@ -79,18 +85,42 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
   }
 
   @override
+  Future<void> deleteDirectory(List<String> directory) async {
+    final directoryPath = directory.join('/');
+
+    final folderCacheKey = _getFolderCacheKey(directoryPath);
+
+    await _performRequest((api) async {
+      final folderId =
+          await _getFolderId(api, directoryPath, createIfMissing: false);
+
+      if (folderId != null) {
+        await api.files.delete(folderId);
+      }
+    }, _getAppDirectoryPath(directoryPath));
+
+    // clear the cache AFTER, otherwise the cache is updated while looking up the folder
+    // and then the folder is deleted and the cache still contains the deleted folder
+    _fileIdCache.removeWhere((path, _) => path.startsWith(folderCacheKey));
+  }
+
+  @override
   Future<void> delete(List<String> directory, String name) {
     final directoryPath = directory.join('/');
 
     // remove whatever the result:
     // we don't need to be optimal and it may prevent caching problems
-    _fileIdCache.remove('$directoryPath/$name');
+    final folderCacheKey = _getFolderCacheKey(directoryPath);
+    final fileCacheKey = _getFileCacheKey(folderCacheKey, name);
+    _fileIdCache.remove(fileCacheKey);
 
     return _performRequest((api) async {
-      final folderId = await _getFolderId(api, directoryPath, true);
+      final folderId =
+          await _getFolderId(api, directoryPath, createIfMissing: false);
 
       if (folderId != null) {
-        final fileId = await _getFileInFolder(api, folderId, name);
+        final fileId = await _getFileInFolder(api,
+            folderId: folderId, fileName: name, folderCacheKey: folderCacheKey);
         if (fileId != null) {
           await api.files.delete(fileId);
         }
@@ -112,7 +142,7 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
     final directoryPath = directory.join('/');
 
     final startFolderId = await _performRequest((api) async {
-      return _getFolderId(api, directoryPath, false);
+      return _getFolderId(api, directoryPath, createIfMissing: false);
     }, _getAppFilePath(directoryPath, '/'));
 
     if (startFolderId != null) {
@@ -152,15 +182,16 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
 
   Future<String?> _getFolderId(
     drive.DriveApi api,
-    String directory,
-    bool createIfMissing,
-  ) async {
+    String directory, {
+    required bool createIfMissing,
+  }) async {
     final path = _getAppDirectoryPath(directory);
+    final folderCacheKey = _getFolderCacheKey(directory);
 
     loggy.debug('Looking up folder "$path"');
 
-    if (_fileIdCache.containsKey(path)) {
-      return _fileIdCache[path];
+    if (_fileIdCache.containsKey(folderCacheKey)) {
+      return _fileIdCache[folderCacheKey];
     }
 
     final folderNames = path.split('/')..removeWhere((e) => e.isEmpty);
@@ -173,8 +204,9 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
 
       // get from cache
       final folderPath = folderNames.take(i + 1).join('/');
-      if (_fileIdCache.containsKey(folderPath)) {
-        folderId = _fileIdCache[folderPath];
+      final folderCacheKey = _getFolderCacheKey(folderPath, absolute: true);
+      if (_fileIdCache.containsKey(folderCacheKey)) {
+        folderId = _fileIdCache[folderCacheKey];
 
         // or query google
       } else {
@@ -208,7 +240,7 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
 
       // continue if found, return null otherwise
       if (folderId != null) {
-        _fileIdCache[folderPath] = folderId;
+        _fileIdCache[folderCacheKey] = folderId;
 
         parentId = folderId;
       } else {
@@ -220,17 +252,19 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
   }
 
   Future<String?> _getFileInFolder(
-    drive.DriveApi api,
-    String folderId,
-    String fileName,
-  ) async {
+    drive.DriveApi api, {
+    required String folderId,
+    required String fileName,
+    required String folderCacheKey,
+  }) async {
     // get from cache
-    final fileCacheKey = '$folderId/$fileName';
+    final fileCacheKey = _getFileCacheKey(folderCacheKey, fileName);
     var fileId = _fileIdCache[fileCacheKey];
 
     // or query
     if (fileId == null) {
-      loggy.debug('Querying file "$fileName" in folder $folderId');
+      loggy.debug(
+          'Querying file "$fileName" in folder $folderId ($folderCacheKey)');
 
       fileId = (await api.files.list(
         q: _QueryHelper.fileQuery(
@@ -324,6 +358,12 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
 
   String _getAppFilePath(String directory, String name) =>
       '${_getAppDirectoryPath(directory)}/$name';
+
+  String _getFolderCacheKey(String directory, {bool absolute = false}) =>
+      absolute ? directory : _getAppDirectoryPath(directory);
+
+  String _getFileCacheKey(String folderCacheKey, String fileName) =>
+      '$folderCacheKey/$fileName';
 }
 
 mixin GoogleStorageLoggy implements LoggyType {

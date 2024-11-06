@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../../helpers/utils.dart';
+import '../../helpers/json_utils.dart';
 import '../../persisters/persister.dart';
 
 class KeyedScene {
@@ -14,13 +14,13 @@ class KeyedScene {
     List<KeyedSceneCount>? counts,
   }) : counts = counts ?? List.filled(2, KeyedSceneCount(count: 0));
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         'trigger': trigger,
         'event': event,
         'counts': counts,
       };
 
-  KeyedScene.fromJson(Map<String, dynamic> json)
+  KeyedScene.fromJson(JsonObj json)
       : this(
           trigger: json['trigger'],
           event: json['event'],
@@ -33,12 +33,11 @@ class KeyedSceneCount {
 
   KeyedSceneCount({required this.count});
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         'count': count,
       };
 
-  KeyedSceneCount.fromJson(Map<String, dynamic> json)
-      : this(count: json['count']);
+  KeyedSceneCount.fromJson(JsonObj json) : this(count: json['count']);
 }
 
 class KeyedScenesService extends GetxService with SavableMixin {
@@ -60,11 +59,11 @@ class KeyedScenesService extends GetxService with SavableMixin {
     requestSave();
   }
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         _collectionKey: scenes,
       };
 
-  KeyedScenesService.fromJson(Map<String, dynamic> json) {
+  KeyedScenesService.fromJson(JsonObj json) {
     for (var item in fromJsonList(json[_collectionKey], KeyedScene.fromJson)) {
       add(item);
     }

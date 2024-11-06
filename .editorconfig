@@ -1,0 +1,15 @@
+# Editor configuration, see https://editorconfig.org
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
+end_of_line = crlf
+
+[*.dart]
+max_line_length = 80
+
+[*.md]
+trim_trailing_whitespace = false

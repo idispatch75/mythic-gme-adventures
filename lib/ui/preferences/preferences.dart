@@ -3,6 +3,22 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalPreferencesService extends GetxService {
+  static const _enableGoogleStorageKey = 'enableGoogleStorage';
+  static const _enableLocalStorageKey = 'enableLocalStorage';
+  static const _localDataDirectoryOverrideKey = 'localDataDirectoryOverride';
+  static const _enableDarkModeKey = 'enableDarkMode';
+  static const _enablePhysicalDiceModeKey = 'enablePhysicalDiceMode';
+  static const _physicalDiceModeExplainedKey = 'physicalDiceModeExplained';
+
+  static const keys = {
+    _enableGoogleStorageKey,
+    _enableLocalStorageKey,
+    _localDataDirectoryOverrideKey,
+    _enableDarkModeKey,
+    _enablePhysicalDiceModeKey,
+    _physicalDiceModeExplainedKey,
+  };
+
   final SharedPreferencesWithCache _preferences;
 
   final RxBool enableGoogleStorage;
@@ -14,50 +30,50 @@ class LocalPreferencesService extends GetxService {
 
   LocalPreferencesService(this._preferences)
       : enableGoogleStorage =
-            (_preferences.getBool('enableGoogleStorage') ?? false).obs,
+            (_preferences.getBool(_enableGoogleStorageKey) ?? false).obs,
         enableLocalStorage =
-            (_preferences.getBool('enableLocalStorage') ?? true).obs,
+            (_preferences.getBool(_enableLocalStorageKey) ?? true).obs,
         localDataDirectoryOverride =
-            _preferences.getString('localDataDirectoryOverride').obs,
-        enableDarkMode = (_preferences.getBool('enableDarkMode') ??
+            _preferences.getString(_localDataDirectoryOverrideKey).obs,
+        enableDarkMode = (_preferences.getBool(_enableDarkModeKey) ??
                 WidgetsBinding.instance.platformDispatcher.platformBrightness ==
                     Brightness.dark)
             .obs,
         enablePhysicalDiceMode =
-            (_preferences.getBool('enablePhysicalDiceMode') ?? false).obs,
+            (_preferences.getBool(_enablePhysicalDiceModeKey) ?? false).obs,
         physicalDiceModeExplained =
-            (_preferences.getBool('physicalDiceModeExplained') ?? false).obs;
+            (_preferences.getBool(_physicalDiceModeExplainedKey) ?? false).obs;
 
   @override
   void onInit() {
     super.onInit();
 
     enableGoogleStorage.listen((value) {
-      _preferences.setBool('enableGoogleStorage', value);
+      _preferences.setBool(_enableGoogleStorageKey, value);
     });
 
     enableLocalStorage.listen((value) {
-      _preferences.setBool('enableLocalStorage', value);
+      _preferences.setBool(_enableLocalStorageKey, value);
     });
 
     localDataDirectoryOverride.listen((value) {
       if (value != null) {
-        _preferences.setString('localDataDirectoryOverride', value);
+        _preferences.setString(_localDataDirectoryOverrideKey, value);
       } else {
-        _preferences.remove('localDataDirectoryOverride');
+        _preferences.remove(_localDataDirectoryOverrideKey);
       }
     });
 
     enableDarkMode.listen((value) {
-      _preferences.setBool('enableDarkMode', value);
+      _preferences.setBool(_enableDarkModeKey, value);
     });
 
     enablePhysicalDiceMode.listen((value) {
-      _preferences.setBool('enablePhysicalDiceMode', value);
+      _preferences.setBool(_enablePhysicalDiceModeKey, value);
     });
 
     physicalDiceModeExplained.listen((value) {
-      _preferences.setBool('physicalDiceModeExplained', value);
+      _preferences.setBool(_physicalDiceModeExplainedKey, value);
     });
   }
 }

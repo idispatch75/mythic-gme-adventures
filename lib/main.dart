@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:catcher_2/catcher_2.dart';
@@ -13,14 +14,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'helpers/log_printer.dart';
+import 'helpers/secure_storage.dart';
 import 'helpers/snack_bar_error_handler.dart';
 import 'helpers/utils.dart';
 import 'orientation_locker.dart';
 import 'persisters/adventure_persister.dart';
 import 'persisters/global_settings_persister.dart';
 import 'persisters/meaning_tables_persister.dart';
-import 'storages/google_auth.dart';
+import 'storages/google_auth_oauth2.dart';
+import 'storages/google_auth_service.dart';
+import 'storages/local_storage.dart';
 import 'ui/adventure_index/adventure_index_view.dart';
+import 'ui/change_log/change_log.dart';
+import 'ui/change_log/change_log_view.dart';
 import 'ui/meaning_tables/meaning_table.dart';
 import 'ui/preferences/preferences.dart';
 import 'ui/styles.dart';
@@ -29,17 +35,6 @@ import 'ui/styles.dart';
 final kNavigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // logging
-  Loggy.initLoggy(
-    logOptions: const LogOptions(
-      kDebugMode ? LogLevel.all : LogLevel.info,
-      stackTraceLevel: LogLevel.error,
-    ),
-    logPrinter: kDebugMode ? const LogPrinter() : const DefaultPrinter(),
-  );
-
   // catcher
   final releaseOptions = Catcher2Options(
     SilentReportMode(),
@@ -57,9 +52,43 @@ Future<void> main() async {
       )),
   );
 
+  Catcher2(
+    runAppFunction: _runApp,
+    releaseConfig: releaseOptions,
+    debugConfig: debugOptions,
+    navigatorKey: kNavigatorKey,
+  );
+}
+
+void _runApp() async {
+  // IMPL on the web, Catcher2 runs the app in a guarded zone,
+  // which make a call to WidgetsFlutterBinding.ensureInitialized() fail if it is not done in the same zone,
+  // e.g. before creating Catcher2.
+  // This forces us to pass the run function containing ensureInitialized() to Catcher2 instead of just a widget.
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // logging
+  Loggy.initLoggy(
+    logOptions: const LogOptions(
+      kDebugMode ? LogLevel.all : LogLevel.info,
+      stackTraceLevel: LogLevel.error,
+    ),
+    logPrinter: kDebugMode ? const LogPrinter() : const DefaultPrinter(),
+  );
+
   // get preferences
   final sharedPreferences = await SharedPreferencesWithCache.create(
-      cacheOptions: const SharedPreferencesWithCacheOptions());
+    cacheOptions: const SharedPreferencesWithCacheOptions(
+      allowList: {
+        ...LocalPreferencesService.keys,
+        ...OAuth2GoogleAuthManager.preferenceKeys,
+        ..._WindowGeometry.preferenceKeys,
+        ...ChangeLogService.keys,
+        'isMigrated',
+      },
+    ),
+  );
 
   await _migratePreferences(sharedPreferences);
 
@@ -70,7 +99,7 @@ Future<void> main() async {
   Get.put(meaningTableService);
 
   // handle window size for desktop apps
-  if (GetPlatform.isDesktop) {
+  if (!GetPlatform.isWeb && GetPlatform.isDesktop) {
     await windowManager.ensureInitialized();
 
     final windowGeometry = _WindowGeometry(sharedPreferences);
@@ -111,10 +140,16 @@ Future<void> main() async {
   final preferences = LocalPreferencesService(sharedPreferences);
   Get.put(preferences);
 
+  Get.put(SecureStorage(sharedPreferences));
   Get.put(GoogleAuthService());
   Get.put(GlobalSettingsPersisterService());
   Get.put(MeaningTablesPersisterService());
   Get.put(AdventurePersisterService());
+
+  final appVersion = (await PackageInfo.fromPlatform()).version;
+  final adventureIndex = await AdventurePersister(LocalStorage()).loadIndex();
+  Get.put(ChangeLogService(sharedPreferences, appVersion,
+      isNewInstall: adventureIndex.adventures.isEmpty));
 
   // init locale
   final locale = PlatformDispatcher.instance.locale;
@@ -130,10 +165,10 @@ Future<void> main() async {
     preferences.enableDarkMode() ? Brightness.dark : Brightness.light,
   );
 
-  Widget rootWidget = Obx(
+  Widget appWidget = Obx(
     () => GetMaterialApp(
       title: 'Mythic GME Adventures',
-      home: AdventureIndexView(),
+      home: ChangeLogWrapper(child: AdventureIndexView()),
       navigatorKey: kNavigatorKey,
       theme: AppStyles.lightTheme,
       darkTheme: AppStyles.darkTheme,
@@ -145,18 +180,13 @@ Future<void> main() async {
     ),
   );
 
-  if (!GetPlatform.isDesktop) {
-    rootWidget = OrientationLocker(
-      child: rootWidget,
+  if (!GetPlatform.isWeb && !GetPlatform.isDesktop) {
+    appWidget = OrientationLocker(
+      child: appWidget,
     );
   }
 
-  Catcher2(
-    rootWidget: rootWidget,
-    releaseConfig: releaseOptions,
-    debugConfig: debugOptions,
-    navigatorKey: kNavigatorKey,
-  );
+  runApp(appWidget);
 }
 
 void _addLicense(String package, String asset) {
@@ -169,6 +199,14 @@ void _addLicense(String package, String asset) {
 }
 
 class _WindowGeometry extends WindowListener {
+  static const preferenceKeys = {
+    _widthKey,
+    _heightKey,
+    _topKey,
+    _leftKey,
+    _maximizedKey,
+  };
+
   static const String _widthKey = 'windowWidth';
   static const String _heightKey = 'windowHeight';
   static const String _topKey = 'windowTop';
@@ -231,7 +269,7 @@ class _WindowCloseInterceptor extends WindowListener {
   void onWindowClose() async {
     if (await windowManager.isPreventClose()) {
       if (await showCloseAppConfirmation()) {
-        await windowManager.destroy();
+        exit(0);
       }
     }
   }

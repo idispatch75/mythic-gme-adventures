@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
+import '../../helpers/json_utils.dart';
 import '../../helpers/rx_list_extensions.dart';
-import '../../helpers/utils.dart';
 import '../../persisters/persister.dart';
 import '../fate_chart/fate_chart.dart';
 import '../random_events/random_event.dart';
@@ -14,13 +14,12 @@ sealed class RollEntry {
     required this.timestamp,
   });
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         'runtimeType': runtimeType.toString(),
         'timestamp': timestamp,
       };
 
-  factory RollEntry.fromJson(Map<String, dynamic> json) =>
-      switch (json['runtimeType']) {
+  factory RollEntry.fromJson(JsonObj json) => switch (json['runtimeType']) {
         'FateChartRoll' => FateChartRoll.fromJson(json),
         'RandomEventRoll' => RandomEventRoll.fromJson(json),
         'MeaningTableRoll' => MeaningTableRoll.fromJson(json),
@@ -51,7 +50,7 @@ class FateChartRoll extends RollEntry {
   });
 
   @override
-  Map<String, dynamic> toJson() => super.toJson()
+  JsonObj toJson() => super.toJson()
     ..addAll({
       'probability': probability,
       'chaosFactor': chaosFactor,
@@ -60,7 +59,7 @@ class FateChartRoll extends RollEntry {
       'hasEvent': hasEvent,
     });
 
-  FateChartRoll.fromJson(Map<String, dynamic> json)
+  FateChartRoll.fromJson(JsonObj json)
       : this(
           probability: Probability.fromJson(json['probability']),
           chaosFactor: json['chaosFactor'],
@@ -88,13 +87,13 @@ class RandomEventRoll extends RollEntry {
   });
 
   @override
-  Map<String, dynamic> toJson() => super.toJson()
+  JsonObj toJson() => super.toJson()
     ..addAll({
       'focus': focus,
       'dieRoll': dieRoll,
     });
 
-  RandomEventRoll.fromJson(Map<String, dynamic> json)
+  RandomEventRoll.fromJson(JsonObj json)
       : this(
           focus: RandomEventFocus.fromJson(json['focus']),
           dieRoll: json['dieRoll'],
@@ -113,13 +112,13 @@ class MeaningTableRoll extends RollEntry {
   });
 
   @override
-  Map<String, dynamic> toJson() => super.toJson()
+  JsonObj toJson() => super.toJson()
     ..addAll({
       'tableId': tableId,
       'results': results,
     });
 
-  MeaningTableRoll.fromJson(Map<String, dynamic> json)
+  MeaningTableRoll.fromJson(JsonObj json)
       : this(
           tableId: json['tableId'],
           results: fromJsonList(json['results'], MeaningTableSubRoll.fromJson),
@@ -136,12 +135,12 @@ class MeaningTableSubRoll {
     required this.dieRoll,
   });
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         'entryId': entryId,
         'dieRoll': dieRoll,
       };
 
-  MeaningTableSubRoll.fromJson(Map<String, dynamic> json)
+  MeaningTableSubRoll.fromJson(JsonObj json)
       : this(
           entryId: json['entryId'],
           dieRoll: json['dieRoll'],
@@ -161,14 +160,14 @@ class GenericRoll extends RollEntry {
   });
 
   @override
-  Map<String, dynamic> toJson() => super.toJson()
+  JsonObj toJson() => super.toJson()
     ..addAll({
       'title': title,
       'value': value,
       'dieRoll': dieRoll,
     });
 
-  GenericRoll.fromJson(Map<String, dynamic> json)
+  GenericRoll.fromJson(JsonObj json)
       : this(
           title: json['title'],
           value: json['value'],
@@ -284,11 +283,11 @@ class RollLogService extends GetxService with SavableMixin {
     requestSave();
   }
 
-  Map<String, dynamic> toJson() => {
+  JsonObj toJson() => {
         'rollLog': rollLog,
       };
 
-  RollLogService.fromJson(Map<String, dynamic> json) {
+  RollLogService.fromJson(JsonObj json) {
     for (var item in fromJsonList(json['rollLog'], RollEntry.fromJson)) {
       _addRollLogEntry(item);
     }
