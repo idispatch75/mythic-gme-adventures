@@ -11,7 +11,9 @@ import '../styles.dart';
 /// Right to left on Windows (OK then Cancel),
 /// left to right for the other platforms
 TextDirection dialogButtonDirection =
-    GetPlatform.isWindows ? TextDirection.rtl : TextDirection.ltr;
+    !GetPlatform.isWeb && GetPlatform.isWindows
+        ? TextDirection.rtl
+        : TextDirection.ltr;
 
 enum DeviceType { phone, tablet, desktop }
 

@@ -21,8 +21,15 @@ InlineSpan getInlineLink({
   );
 }
 
-InlineSpan getUserManualLink({TextStyle? textStyle}) => getInlineLink(
-      text: 'User Manual',
-      url: 'https://idispatch75.github.io/mythic-gme-adventures/user_manual/',
-      textStyle: textStyle,
-    );
+InlineSpan getUserManualLink({TextStyle? textStyle, String? anchor}) {
+  var url = 'https://idispatch75.github.io/mythic-gme-adventures/user_manual/';
+  if (anchor != null) {
+    url += '#$anchor';
+  }
+
+  return getInlineLink(
+    text: 'User Manual',
+    url: url,
+    textStyle: textStyle,
+  );
+}

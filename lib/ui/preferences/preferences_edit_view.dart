@@ -154,7 +154,10 @@ class PreferencesEditView extends HookWidget {
                     text: 'More info in the ',
                     style: SubLabel.getTextStyle(theme),
                   ),
-                  getUserManualLink(textStyle: SubLabel.getTextStyle(theme)),
+                  getUserManualLink(
+                    anchor: 'storage',
+                    textStyle: SubLabel.getTextStyle(theme),
+                  ),
                   TextSpan(
                     text: '.',
                     style: SubLabel.getTextStyle(theme),

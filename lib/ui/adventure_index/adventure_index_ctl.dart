@@ -410,8 +410,10 @@ class AdventureIndexController extends GetxController {
 
   void handleError(String action, Object error) {
     String message;
-
-    if (error is LocalStorageException) {
+    if (error is LocalStorageNotSupportedException) {
+      message = 'Local storage is not supported by your browser.\n\n'
+          'You must Use Google Drive and Disable local storage.';
+    } else if (error is LocalStorageException) {
       message =
           'Failed to $action "${error.filePath}" locally: ${error.error}.\n\n';
       switch (action) {

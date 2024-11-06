@@ -88,10 +88,17 @@ This is available in the Roll log and in the bottom sheet displayed when rolling
 
 ## Web App
 
+The App is available at <a href="https://mythic-gme-adventures.idispatch.ovh" target="_blank">[Web](https://mythic-gme-adventures.idispatch.ovh)</a>.
+
+**Local storage is currently not supported by iOS browsers.** You can use the application only if you *Use Google Drive* and *Disable local storage*.  
+**Safari is not supported.** The authentication popup for Google Drive does not open. Use Chrome instead.
+
 Each browser where you open the Web version is its own App with its own local storage.
 So the list of adventures and the settings will be blank the first time you open the site on a specific browser.  
 If you use a remote storage, you can synchronize the adventures to update your local storage.
 Otherwise, you can "import" existing adventures from your data folder or a backup as new Adventures as described in [Adventures list](#adventures-list).
+
+To log into the remote storage, the App creates a new tab that is closed when the login is successful. You may need to authorize popups if your browser blocks them.
 
 The local storage of the App is not accessible. This is a restriction of the browser platform.  
 You are encouraged to make backups of your adventures from the *Adventures list* view.
@@ -108,7 +115,7 @@ The recommended browser is Chrome or Edge.
 This feature is provided by the browser **and** the OS and is implemented differently depending on the platform:
 
 * **Desktop**: when on the web site, click the "Install" icon **in** the navigation bar, on the right, and follow the instructions.
-* **iOS**: TODO
+* **iOS**: on Chrome only, same as on Desktop, then select *On Home Page*. Safari is not supported.
 
 ## Storage
 

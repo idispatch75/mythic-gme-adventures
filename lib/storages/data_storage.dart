@@ -44,6 +44,10 @@ class LocalStorageException implements Exception {
   }
 }
 
+class LocalStorageNotSupportedException extends LocalStorageException {
+  LocalStorageNotSupportedException(super.filePath, [super.error]);
+}
+
 abstract class RemoteStorageException implements Exception {
   final String provider;
   final String filePath;

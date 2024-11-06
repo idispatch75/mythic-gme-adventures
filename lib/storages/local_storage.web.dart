@@ -17,6 +17,12 @@ class LocalStorage extends DataStorage {
       final writable = await handle.file.createWritable().toDart;
       await writable.write(content.toJS).toDart;
       await writable.close().toDart;
+    } on DOMException catch (e) {
+      if (e.name == 'NoSuchMethodError') {
+        throw LocalStorageNotSupportedException(_getFilePath(directory, ''), e);
+      }
+
+      throw LocalStorageException(_getFilePath(directory, name), e);
     } catch (e) {
       throw LocalStorageException(_getFilePath(directory, name), e);
     }

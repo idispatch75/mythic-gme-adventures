@@ -55,7 +55,7 @@ abstract class Dialogs {
     required String message,
   }) {
     return Get.dialog<void>(
-      AlertDialog.adaptive(
+      AlertDialog(
         title: Text(title),
         content: ConstrainedBox(
           constraints: dialogBoxConstraints,
@@ -118,7 +118,7 @@ abstract class Dialogs {
     }
 
     return Get.dialog<TValue?>(
-      AlertDialog.adaptive(
+      AlertDialog(
         title: Text(title),
         content: ConstrainedBox(
           constraints: dialogBoxConstraints,

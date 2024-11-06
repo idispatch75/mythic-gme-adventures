@@ -35,8 +35,7 @@ import 'ui/styles.dart';
 final kNavigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
-// TODO web doc
-// TODO web tracking
+// TODO web install ios
 
   // catcher
   final releaseOptions = Catcher2Options(
