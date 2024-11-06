@@ -50,12 +50,16 @@
   <script src="flutter_bootstrap.js" async></script>
 
   <script type="text/javascript">
-    mixpanel.init("872d13da307f1043e3eacb657d91c1ff", {
-      persistence: "localStorage",
-      ip: false,
-    });
+    const hostname = window.location.hostname;
 
-    mixpanel.track("Opened");
+    if (hostname !== "localhost") {
+      mixpanel.init("872d13da307f1043e3eacb657d91c1ff", {
+        persistence: "localStorage",
+        ip: false,
+      });
+
+      mixpanel.track("Opened");
+    }
   </script>
 </body>
 
