@@ -1,6 +1,7 @@
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
 
+import 'package:loggy/loggy.dart';
 import 'package:web/web.dart';
 
 import 'data_storage.dart';
@@ -18,12 +19,16 @@ class LocalStorage extends DataStorage {
       await writable.write(content.toJS).toDart;
       await writable.close().toDart;
     } on DOMException catch (e) {
+      logError('DOMException: ${e.name}');
+
       if (e.name == 'NoSuchMethodError') {
         throw LocalStorageNotSupportedException(_getFilePath(directory, ''), e);
       }
 
       throw LocalStorageException(_getFilePath(directory, name), e);
     } catch (e) {
+      logError('Error: ${e.runtimeType}');
+
       throw LocalStorageException(_getFilePath(directory, name), e);
     }
   }

@@ -82,11 +82,13 @@ class _Version {
 // add the new version before the previous versions
 const _versions = [
   _Version('1.5.0', [
-    _Entry(_Platform.all,
-        'A Web version of the App is available at https://mythic-gme-adventures.idispatch.ovh'),
     _Entry(
         _Platform.all,
-        'If you missed it from previous versions, added the Physical dice mode:'
+        'A Web version of the App is available at https://mythic-gme-adventures.idispatch.ovh.'
+        ' See the User Manual for more info.'),
+    _Entry(
+        _Platform.all,
+        'If you missed it in previous version, added the Physical dice mode:'
         ' switch to this mode to roll the dice yourself and lookup the result in the App.'
         ' Toggle this in the Adventure menu.'),
     _Entry(_Platform.all, 'Added the ability to backup the local Adventures.'),

@@ -90,8 +90,9 @@ This is available in the Roll log and in the bottom sheet displayed when rolling
 
 The App is available at <a href="https://mythic-gme-adventures.idispatch.ovh" target="_blank">[Web](https://mythic-gme-adventures.idispatch.ovh)</a>.
 
-**Local storage is currently not supported by iOS browsers.** You can use the application only if you *Use Google Drive* and *Disable local storage*.  
-**Safari is not supported.** The authentication popup for Google Drive does not open. Use Chrome instead.
+**Local storage is currently not supported by iOS browsers and by Safari on MacOS.**
+You can use the application only if you *Use Google Drive* and *Disable local storage*.  
+**Safari is not supported on iOS.** The authentication popup for Google Drive does not open. Use Chrome instead.
 
 Each browser where you open the Web version is its own App with its own local storage.
 So the list of adventures and the settings will be blank the first time you open the site on a specific browser.  
@@ -109,13 +110,14 @@ No personal data is stored.
 ### Installation
 
 The Web version can be "installed" as an application on desktop and mobile.  
-It will appear on your home screen on mobile or on your Desktop/taskbar on desktop.  
+It will appear on your home screen on mobile or on your desktop/taskbar/dock on desktop.  
 The recommended browser is Chrome or Edge.
 
 This feature is provided by the browser **and** the OS and is implemented differently depending on the platform:
 
-* **Desktop**: when on the web site, click the "Install" icon **in** the navigation bar, on the right, and follow the instructions.
-* **iOS**: on Chrome only, same as on Desktop, then select *On Home Page*. Safari is not supported.
+* **Desktop with Chrome/Edge**: when on the web site, click the "Install" icon **in** the navigation bar, on the right, and follow the instructions.
+* **MacOS**: on Safari, click the Share icon on the top right of the browser and select *Add to Dock*. On Chrome, same as Desktop, and the App will be available in the Finder.
+* **iOS**: on Chrome only, same as on Desktop, then select *Add to Home Screen*. Safari is not supported.
 
 ## Storage
 
