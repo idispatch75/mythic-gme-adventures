@@ -17,7 +17,8 @@ Features:
 
 Available on [Windows](https://github.com/idispatch75/mythic-gme-adventures/releases), [Android](https://play.google.com/store/apps/details?id=idispatch.mythic_gme_adventures) and [Web](https://mythic-gme-adventures.idispatch.ovh).
 
-The web version can be "installed" as an App on iOS and any desktop.
+The web version can be "installed" as an App on iOS and any desktop.  
+Please refer to the [User Manual](https://idispatch75.github.io/mythic-gme-adventures/user_manual/#web-app) for browser compatibility.
 
 See the [Home page](https://idispatch75.github.io/mythic-gme-adventures/) for more details.
 

@@ -6,19 +6,10 @@ permalink: /faq/
 
 ### Will my language be supported in Meaning Tables?
 
-There are about 4500 words to translate.
+The translations are provided by external contributors.
 
-If you are interested in creating a translation,
-I can bootstrap it with automatic translations by Google,
-and you will have to double-check the 4500 words
-because translating each word without context does not work too well.  
-But maybe translating all the tables is not necessary:
-translating the most used ones or the ones with the most advanced vocabulary
-might be enough.
-
-In any case, to start the process, you must create an issue in [GitHub](https://github.com/idispatch75/mythic-gme-adventures/issues).
-
-Currently only French is supported.
+If you are willing to contribute a translation for a language,
+or amend an existing one, you can find instructions [here](https://github.com/idispatch75/mythic-gme-adventures/blob/master/TRANSLATION.md).
 
 ### Will the application be translated into my language?
 
@@ -37,8 +28,8 @@ I did not investigate these 2 options, but if there is enough demand I may consi
 Apple requires developers to pay a license to publish applications for iOS / macOS.
 It costs $99 **per year**.
 
-I do not wish to pay this much.  
-The Web version should do for unsupported OS.
+I want to keep the App free and do not wish to pay this much.  
+The [Web version](https://idispatch75.github.io/mythic-gme-adventures/user_manual/#web-app) should do for unsupported OS.
 
 ### The application is ugly. Do you plan to do something about it?
 
