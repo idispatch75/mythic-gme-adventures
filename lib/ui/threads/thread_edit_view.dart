@@ -11,8 +11,8 @@ class ThreadEditView extends ListableItemEditView<Thread> {
   ThreadEditView(
     super.controller,
     super.item,
-    super.itemTypeLabel,
-    super.canDelete, {
+    super.itemTypeLabel, {
+    required super.canDelete,
     super.key,
   }) {
     Get.replaceForced(ThreadComplementController(item), tag: item.toTag());

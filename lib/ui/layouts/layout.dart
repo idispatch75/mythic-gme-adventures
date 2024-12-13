@@ -73,6 +73,7 @@ class LayoutTabBar extends HookWidget {
     final tabController = useTabController(
       initialLength: tabs.length,
       initialIndex: min(tabIndex(), children.length - 1),
+      keys: [tabs.length],
     );
 
     useEffect(() {
@@ -81,7 +82,7 @@ class LayoutTabBar extends HookWidget {
       });
 
       return subscription.cancel;
-    }, const []);
+    }, [tabs.length]);
 
     return Column(
       children: [

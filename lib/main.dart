@@ -113,7 +113,7 @@ void _runApp() async {
       center: position == null,
       skipTaskbar: false,
       windowButtonVisibility: true,
-      minimumSize: const Size(330, 500),
+      minimumSize: const Size(360, 500),
       titleBarStyle: TitleBarStyle.normal,
       title: (await PackageInfo.fromPlatform()).appName,
     );

@@ -41,7 +41,7 @@ class NotesView extends GetView<NotesService> {
     final note = Note('');
 
     final result = await Get.dialog<bool>(
-      NoteEditView(note, false),
+      NoteEditView(note, canDelete: false),
       barrierDismissible: false,
     );
 
@@ -68,7 +68,7 @@ class _NoteView extends GetView<NotesService> {
 
   void _edit() async {
     final result = await Get.dialog<bool>(
-      NoteEditView(_note(), true),
+      NoteEditView(_note(), canDelete: true),
       barrierDismissible: false,
     );
 

@@ -14,8 +14,8 @@ class CharacterEditView extends ListableItemEditView<Character> {
   const CharacterEditView(
     super._controller,
     super.item,
-    super._itemTypeLabel,
-    super.canDelete, {
+    super._itemTypeLabel, {
+    required super.canDelete,
     super.key,
   });
 

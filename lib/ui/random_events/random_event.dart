@@ -6,7 +6,9 @@ import 'package:get/get.dart';
 
 import '../../helpers/json_utils.dart';
 import '../../helpers/utils.dart';
+import '../adventure/adventure.dart';
 import '../characters/character.dart';
+import '../features/feature.dart';
 import '../global_settings/global_settings.dart';
 import '../listable_items/listable_item.dart';
 import '../listable_items/listable_items_lookup_view.dart';
@@ -30,6 +32,7 @@ sealed class RandomEventFocus {
   factory RandomEventFocus.fromJson(JsonObj json) =>
       switch (json['runtimeType']) {
         'RemoteEvent' => RemoteEvent(),
+        'AdventureFeature' => AdventureFeature(target: json['target']),
         'AmbiguousEvent' => AmbiguousEvent(),
         'NewNpc' => NewNpc(),
         'NpcEvent' => NpcEvent(eventName: json['name'], target: json['target']),
@@ -63,16 +66,33 @@ class NewNpc extends RandomEventFocus {
   String get name => eventName;
 }
 
+class AdventureFeature extends RandomEventFocus {
+  static const String eventName = 'Adventure Feature';
+  static const int rollThreshold = 20;
+
+  final String _target;
+
+  AdventureFeature({required String target}) : _target = target;
+
+  @override
+  String get name => eventName;
+
+  @override
+  String? get target => _target;
+}
+
 class NpcEvent extends RandomEventFocus {
   static const String actionEventName = 'NPC Action';
   static const String negativeEventName = 'NPC Negative';
   static const String positiveEventName = 'NPC Positive';
-  static const int actionRollThreshold = 40;
-  static const int negativeRollThreshold = 45;
-  static const int positiveRollThreshold = 50;
+  static int actionRollThreshold({required bool isPreparedAdventure}) => 40;
+  static int negativeRollThreshold({required bool isPreparedAdventure}) =>
+      isPreparedAdventure ? 50 : 45;
+  static int positiveRollThreshold({required bool isPreparedAdventure}) =>
+      isPreparedAdventure ? 55 : 50;
 
   final String _eventName;
-  final String? _target;
+  final String _target;
 
   NpcEvent({required String eventName, required String target})
       : _eventName = eventName,
@@ -94,9 +114,9 @@ class ThreadEvent extends RandomEventFocus {
   static const int closeRollThreshold = 70;
 
   final String _eventName;
-  final String? _target;
+  final String _target;
 
-  ThreadEvent({required String eventName, required String? target})
+  ThreadEvent({required String eventName, required String target})
       : _eventName = eventName,
         _target = target;
 
@@ -110,13 +130,15 @@ class ThreadEvent extends RandomEventFocus {
 class PcEvent extends RandomEventFocus {
   static const String negativeEventName = 'PC Negative';
   static const String positiveEventName = 'PC Positive';
-  static const int negativeRollThreshold = 80;
-  static const int positiveRollThreshold = 85;
+  static int negativeRollThreshold({required bool isPreparedAdventure}) =>
+      isPreparedAdventure ? 70 : 80;
+  static int positiveRollThreshold({required bool isPreparedAdventure}) =>
+      isPreparedAdventure ? 80 : 85;
 
   final String _eventName;
-  final String? _target;
+  final String _target;
 
-  PcEvent({required String eventName, required String? target})
+  PcEvent({required String eventName, required String target})
       : _eventName = eventName,
         _target = target;
 
@@ -138,56 +160,94 @@ class CurrentContext extends RandomEventFocus {
 void rollRandomEvent() {
   final dieRoll = roll100Die();
 
+  final isPreparedAdventure =
+      Get.find<AdventureService>().isPreparedAdventure();
+
   RandomEventFocus? focus;
-  if (dieRoll <= RemoteEvent.rollThreshold) {
+  if (dieRoll <= RemoteEvent.rollThreshold && !isPreparedAdventure) {
     focus = RemoteEvent();
-  } else if (dieRoll <= AmbiguousEvent.rollThreshold) {
+  }
+  //
+  else if (dieRoll <= AdventureFeature.rollThreshold && isPreparedAdventure) {
+    final result = rollListItem(Get.find<FeaturesService>()
+        .features
+        .where((e) => !e().isArchived)
+        .toList());
+    if (result != null) {
+      focus = AdventureFeature(
+          target: result.choose ? 'Choose' : result.item!.value.name);
+    }
+  }
+  //
+  else if (dieRoll <= AmbiguousEvent.rollThreshold && !isPreparedAdventure) {
     focus = AmbiguousEvent();
-  } else if (dieRoll <= NewNpc.rollThreshold) {
+  }
+  //
+  else if (dieRoll <= NewNpc.rollThreshold && !isPreparedAdventure) {
     focus = NewNpc();
-  } else if (dieRoll <= NpcEvent.actionRollThreshold) {
+  }
+  //
+  else if (dieRoll <=
+      NpcEvent.actionRollThreshold(isPreparedAdventure: isPreparedAdventure)) {
     final result = rollListItem(Get.find<CharactersService>().itemsList);
     if (result != null) {
       focus = NpcEvent(
           eventName: NpcEvent.actionEventName,
           target: result.choose ? 'Choose' : result.item!.value.name);
     }
-  } else if (dieRoll <= NpcEvent.negativeRollThreshold) {
+  }
+  //
+  else if (dieRoll <=
+      NpcEvent.negativeRollThreshold(
+          isPreparedAdventure: isPreparedAdventure)) {
     final result = rollListItem(Get.find<CharactersService>().itemsList);
     if (result != null) {
       focus = NpcEvent(
           eventName: NpcEvent.negativeEventName,
           target: result.choose ? 'Choose' : result.item!.value.name);
     }
-  } else if (dieRoll <= NpcEvent.positiveRollThreshold) {
+  }
+  //
+  else if (dieRoll <=
+      NpcEvent.positiveRollThreshold(
+          isPreparedAdventure: isPreparedAdventure)) {
     final result = rollListItem(Get.find<CharactersService>().itemsList);
     if (result != null) {
       focus = NpcEvent(
           eventName: NpcEvent.positiveEventName,
           target: result.choose ? 'Choose' : result.item!.value.name);
     }
-  } else if (dieRoll <= ThreadEvent.towardRollThreshold) {
+  }
+  //
+  else if (dieRoll <= ThreadEvent.towardRollThreshold && !isPreparedAdventure) {
     final result = rollListItem(Get.find<ThreadsService>().itemsList);
     if (result != null) {
       focus = ThreadEvent(
           eventName: ThreadEvent.towardEventName,
           target: result.choose ? 'Choose' : result.item!.value.name);
     }
-  } else if (dieRoll <= ThreadEvent.awayRollThreshold) {
+  }
+  //
+  else if (dieRoll <= ThreadEvent.awayRollThreshold && !isPreparedAdventure) {
     final result = rollListItem(Get.find<ThreadsService>().itemsList);
     if (result != null) {
       focus = ThreadEvent(
           eventName: ThreadEvent.awayEventName,
           target: result.choose ? 'Choose' : result.item!.value.name);
     }
-  } else if (dieRoll <= ThreadEvent.closeRollThreshold) {
+  }
+  //
+  else if (dieRoll <= ThreadEvent.closeRollThreshold && !isPreparedAdventure) {
     final result = rollListItem(Get.find<ThreadsService>().itemsList);
     if (result != null) {
       focus = ThreadEvent(
           eventName: ThreadEvent.closeEventName,
           target: result.choose ? 'Choose' : result.item!.value.name);
     }
-  } else if (dieRoll <= PcEvent.negativeRollThreshold) {
+  }
+  //
+  else if (dieRoll <=
+      PcEvent.negativeRollThreshold(isPreparedAdventure: isPreparedAdventure)) {
     final result =
         rollListItem(Get.find<PlayerCharactersService>().playerCharacters);
     focus = result != null
@@ -195,7 +255,10 @@ void rollRandomEvent() {
             eventName: PcEvent.negativeEventName,
             target: result.choose ? 'Choose' : result.item!.value.name)
         : PcEvent(eventName: PcEvent.negativeEventName, target: '');
-  } else if (dieRoll <= PcEvent.positiveRollThreshold) {
+  }
+  //
+  else if (dieRoll <=
+      PcEvent.positiveRollThreshold(isPreparedAdventure: isPreparedAdventure)) {
     final result =
         rollListItem(Get.find<PlayerCharactersService>().playerCharacters);
     focus = result != null
@@ -253,16 +316,7 @@ void showListItemsLookup<T extends ListableItem>(
       .map<String?>((e) => e.name)
       .toList();
 
-  if (itemNames.length % 5 != 0) {
-    final missingItems = (itemNames.length ~/ 5 + 1) * 5 - itemNames.length;
-    for (var i = 0; i < missingItems; i++) {
-      itemNames.add(null);
-    }
-  }
-
-  final content = ListableItemsLookupView(listLabel, itemNames);
-
-  showAppModalBottomSheet<void>(context, content);
+  _showLookup(context, listLabel, itemNames);
 }
 
 void showPlayerCharactersLookup(BuildContext context) {
@@ -270,6 +324,21 @@ void showPlayerCharactersLookup(BuildContext context) {
 
   final itemNames = playerCharacters.map<String?>((e) => e.value.name).toList();
 
+  _showLookup(context, 'Players', itemNames);
+}
+
+void showFeaturesLookup(BuildContext context) {
+  final features = Get.find<FeaturesService>().features;
+
+  final itemNames = features
+      .where((e) => !e().isArchived)
+      .map<String?>((e) => e.value.name)
+      .toList();
+
+  _showLookup(context, 'Features', itemNames);
+}
+
+void _showLookup(BuildContext context, String title, List<String?> itemNames) {
   if (itemNames.length % 5 != 0) {
     final missingItems = (itemNames.length ~/ 5 + 1) * 5 - itemNames.length;
     for (var i = 0; i < missingItems; i++) {
@@ -277,7 +346,7 @@ void showPlayerCharactersLookup(BuildContext context) {
     }
   }
 
-  final content = ListableItemsLookupView('Players', itemNames);
+  final content = ListableItemsLookupView(title, itemNames);
 
   showAppModalBottomSheet<void>(context, content);
 }

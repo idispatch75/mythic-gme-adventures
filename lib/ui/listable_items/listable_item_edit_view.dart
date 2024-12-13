@@ -13,13 +13,13 @@ abstract class ListableItemEditView<TItem extends ListableItem>
   final ListableItemsService<TItem> _controller;
   final TItem item;
   final String _itemTypeLabel;
-  final bool _canDelete;
+  final bool canDelete;
 
   const ListableItemEditView(
     this._controller,
     this.item,
-    this._itemTypeLabel,
-    this._canDelete, {
+    this._itemTypeLabel, {
+    required this.canDelete,
     super.key,
   });
 
@@ -82,7 +82,7 @@ abstract class ListableItemEditView<TItem extends ListableItem>
             ),
 
           // archive
-          if (_canDelete) ...[
+          if (canDelete)
             BooleanSetting(
               setting: isArchived,
               text: 'Archived',
@@ -91,11 +91,10 @@ abstract class ListableItemEditView<TItem extends ListableItem>
                   ' and moves it at the end of the list of ${_itemTypeLabel}s.',
               hasTopPadding: true,
             ),
-          ],
         ],
       ),
       itemTypeLabel: _itemTypeLabel,
-      canDelete: _canDelete,
+      canDelete: canDelete,
       saveTrigger: saveTrigger,
       onSave: () {
         item.name = nameController.text;
