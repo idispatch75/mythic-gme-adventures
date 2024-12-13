@@ -36,7 +36,7 @@ class RollLookupView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final baseColor = rollColors.background;
-    final alternateColor = baseColor.withOpacity(0.5);
+    final alternateColor = baseColor.withValues(alpha: 0.5);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

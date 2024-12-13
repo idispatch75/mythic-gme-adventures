@@ -81,7 +81,7 @@ class _MainRow extends StatelessWidget {
 
     final baseColor = AppStyles.genericColors.background;
     final alternateColor =
-        Color.alphaBlend(baseColor.withOpacity(0.5), colors.surface);
+        Color.alphaBlend(baseColor.withValues(alpha: 0.5), colors.surface);
 
     return Container(
       color: AppStyles.headerColor,
@@ -120,7 +120,7 @@ class _MainRow extends StatelessWidget {
                   entry = DefaultTextStyle.merge(
                     style: TextStyle(
                       fontStyle: FontStyle.italic,
-                      color: colors.onSurface.withOpacity(0.5),
+                      color: colors.onSurface.withValues(alpha: 0.5),
                     ),
                     child: entry,
                   );

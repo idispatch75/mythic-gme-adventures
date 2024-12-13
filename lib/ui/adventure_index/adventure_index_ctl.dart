@@ -238,7 +238,7 @@ class AdventureIndexController extends GetxController {
     );
 
     final zipContent =
-        ZipEncoder().encode(archive, level: Deflate.BEST_COMPRESSION)!;
+        ZipEncoder().encode(archive, level: DeflateLevel.bestCompression);
 
     // save the archive
     return saveBinaryFile(

@@ -156,7 +156,8 @@ class _Count extends StatelessWidget {
           icon: Icon(
             Icons.restart_alt,
             size: 20,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            color:
+                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
           ),
           visualDensity: VisualDensity.compact,
           tooltip: 'Reset the count',

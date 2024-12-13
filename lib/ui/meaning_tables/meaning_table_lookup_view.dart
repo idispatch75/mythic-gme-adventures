@@ -80,7 +80,8 @@ class _MeaningTableLookupViewState extends State<MeaningTableLookupView> {
           return Container(
               color: index.isEven
                   ? AppStyles.meaningTableColors.background
-                  : AppStyles.meaningTableColors.background.withOpacity(0.5),
+                  : AppStyles.meaningTableColors.background
+                      .withValues(alpha: 0.5),
               child: _EntryView(entries[index]));
         },
       ),
