@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
 
-import '../chaos_factor/chaos_factor_view.dart';
+import '../adventure/adventure.dart';
 import '../characters/characters_list.dart';
 import '../characters/characters_view.dart';
 import '../dice_roller/dice_roller_view.dart';
 import '../fate_chart/fate_chart.dart';
 import '../fate_chart/fate_chart_view.dart';
+import '../features/features_view.dart';
 import '../keyed_scenes/keyed_scene.dart';
 import '../keyed_scenes/keyed_scenes_view.dart';
 import '../meaning_tables/meaning_tables_ctl.dart';
@@ -178,29 +179,15 @@ class SmallLayoutScenes extends HookWidget {
             Tab(child: keyedSceneTab),
           ],
           children: [
-            // threads
             const ThreadsListView(),
-
-            // characters
             const CharactersListView(),
-
-            // scenes
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                getZoneDecoration(const ChaosFactorView(dense: true)),
-                const Header('Scenes'),
-                const Expanded(child: ScenesView(dense: true)),
-              ],
+            _HeaderView(
+              title: 'Scenes',
+              child: const ScenesView(dense: true),
             ),
-
-            // keyed scenes
-            const Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Header('Keyed Scenes'),
-                Expanded(child: KeyedScenesView()),
-              ],
+            _HeaderView(
+              title: 'Keyed Scenes',
+              child: const KeyedScenesView(),
             ),
           ],
         );
@@ -218,19 +205,62 @@ class SmallLayoutOther extends HookWidget {
 
     setupRollIndicator(context);
 
-    return LayoutTabBar(
-      tabIndex: controller.otherTabIndex,
-      tabs: const [
-        Tab(text: 'Threads'),
-        Tab(text: 'Characters'),
-        Tab(text: 'Players'),
-        Tab(text: 'Notes'),
-      ],
+    return Obx(() {
+      final hasFeatures = Get.find<AdventureService>().isPreparedAdventure();
+
+      return LayoutTabBar(
+        tabIndex: controller.otherTabIndex,
+        tabs: [
+          const Tab(text: 'Threads'),
+          const Tab(text: 'Characters'),
+          if (hasFeatures) const Tab(text: 'Features'),
+          const Tab(text: 'Players'),
+          const Tab(text: 'Notes'),
+        ],
+        children: [
+          _HeaderView(
+            title: 'Threads',
+            child: ThreadsView(showAddToListNotification: true),
+          ),
+          _HeaderView(
+            title: 'Characters',
+            child: CharactersView(showAddToListNotification: true),
+          ),
+          if (hasFeatures)
+            _HeaderView(
+              title: 'Features',
+              child: const FeaturesView(),
+            ),
+          _HeaderView(
+            title: 'Players',
+            child: const PlayerCharactersView(),
+          ),
+          _HeaderView(
+            title: 'Notes',
+            child: const NotesView(),
+          ),
+        ],
+      );
+    });
+  }
+}
+
+class _HeaderView extends StatelessWidget {
+  final String title;
+  final Widget child;
+
+  const _HeaderView({
+    required this.title,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        ThreadsView(showAddToListNotification: true),
-        CharactersView(showAddToListNotification: true),
-        const PlayerCharactersView(),
-        const NotesView(),
+        Header(title),
+        Expanded(child: child),
       ],
     );
   }

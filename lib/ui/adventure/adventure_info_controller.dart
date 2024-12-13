@@ -13,8 +13,10 @@ import '../../persisters/global_settings_persister.dart';
 import '../../persisters/persister.dart';
 import '../adventure_index/adventure_index_view.dart';
 import '../characters/character.dart';
+import '../features/feature.dart';
 import '../global_settings/global_settings.dart';
 import '../global_settings/global_settings_edit_view.dart';
+import '../keyed_scenes/keyed_scene.dart';
 import '../notes/note.dart';
 import '../player_characters/player_character.dart';
 import '../preferences/preferences.dart';
@@ -157,8 +159,17 @@ class AdventureInfoController extends GetxController {
     final scenes = Get.find<ScenesService>().scenes();
     if (scenes.isNotEmpty) {
       addTitle('Scenes');
-      for (var scene in scenes.map((e) => e())) {
-        addItem(scene.summary, null, scene.notes);
+      for (var item in scenes.map((e) => e())) {
+        addItem(item.summary, null, item.notes);
+      }
+    }
+
+    // keyed scenes
+    final keyedScenes = Get.find<KeyedScenesService>().scenes();
+    if (keyedScenes.isNotEmpty) {
+      addTitle('Keyed Scenes');
+      for (var item in keyedScenes.map((e) => e())) {
+        addItem(item.trigger, null, item.event);
       }
     }
 
@@ -177,6 +188,15 @@ class AdventureInfoController extends GetxController {
       addTitle('Characters');
       for (var item in characters.map((e) => e())) {
         addItem(item.name, item.summary, item.notes);
+      }
+    }
+
+    // features
+    final features = Get.find<FeaturesService>().features();
+    if (features.isNotEmpty) {
+      addTitle('Adventure Features');
+      for (var item in features.map((e) => e())) {
+        addItem(item.name, null, item.notes);
       }
     }
 

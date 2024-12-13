@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
 
+import '../adventure/adventure.dart';
 import '../adventure/adventure_info_view.dart';
 import '../chaos_factor/chaos_factor_view.dart';
 import '../characters/characters_list.dart';
 import '../characters/characters_view.dart';
 import '../dice_roller/dice_roller_view.dart';
 import '../fate_chart/fate_chart_view.dart';
+import '../features/features_view.dart';
 import '../meaning_tables/meaning_tables_view.dart';
 import '../notes/notes_view.dart';
 import '../player_characters/player_characters_view.dart';
@@ -25,8 +27,6 @@ class LargeLayout extends HookWidget {
   Widget build(context) {
     final layoutController = Get.find<LayoutController>();
 
-    final tabController = useTabController(initialLength: 5, initialIndex: 0);
-
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(4.0),
@@ -42,6 +42,9 @@ class LargeLayout extends HookWidget {
             // third column
             Expanded(
               child: Obx(() {
+                final hasFeatures =
+                    Get.find<AdventureService>().isPreparedAdventure();
+
                 final Widget widget;
                 if (layoutController.hasEditScenePage()) {
                   widget = SceneEditPageView();
@@ -90,32 +93,7 @@ class LargeLayout extends HookWidget {
                       // tabs
                       Expanded(
                         child: getZoneDecoration(
-                          Column(
-                            children: [
-                              TabBar(
-                                controller: tabController,
-                                tabs: const [
-                                  Tab(text: 'Scenes'),
-                                  Tab(text: 'Characters'),
-                                  Tab(text: 'Threads'),
-                                  Tab(text: 'Players'),
-                                  Tab(text: 'Notes'),
-                                ],
-                              ),
-                              Expanded(
-                                child: TabBarView(
-                                  controller: tabController,
-                                  children: [
-                                    const ScenesView(),
-                                    CharactersView(),
-                                    ThreadsView(),
-                                    const PlayerCharactersView(),
-                                    const NotesView(),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                          _LargeLayoutTabs(hasFeatures: hasFeatures),
                         ),
                       ),
                     ],
@@ -187,6 +165,50 @@ class _LargeLayoutTables extends StatelessWidget {
         // roll log
         Expanded(
           child: getZoneDecoration(const RollLogOrLookupView()),
+        ),
+      ],
+    );
+  }
+}
+
+class _LargeLayoutTabs extends HookWidget {
+  final bool hasFeatures;
+
+  const _LargeLayoutTabs({required this.hasFeatures});
+
+  @override
+  Widget build(BuildContext context) {
+    final tabController = useTabController(
+      initialLength: hasFeatures ? 6 : 5,
+      initialIndex: 0,
+      keys: [hasFeatures],
+    );
+
+    return Column(
+      children: [
+        TabBar(
+          controller: tabController,
+          tabs: [
+            const Tab(text: 'Scenes'),
+            const Tab(text: 'Characters'),
+            const Tab(text: 'Threads'),
+            if (hasFeatures) const Tab(text: 'Features'),
+            const Tab(text: 'Players'),
+            const Tab(text: 'Notes'),
+          ],
+        ),
+        Expanded(
+          child: TabBarView(
+            controller: tabController,
+            children: [
+              const ScenesView(),
+              CharactersView(),
+              ThreadsView(),
+              if (hasFeatures) const FeaturesView(),
+              const PlayerCharactersView(),
+              const NotesView(),
+            ],
+          ),
         ),
       ],
     );

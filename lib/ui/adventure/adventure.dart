@@ -10,6 +10,7 @@ class AdventureService extends GetxService with SavableMixin {
   final Rx<String> name;
   FateChartType fateChartType;
   Set<String> favoriteMeaningTables;
+  final RxBool isPreparedAdventure;
   final Rx<int?> saveTimestamp;
 
   AdventureService({
@@ -17,10 +18,12 @@ class AdventureService extends GetxService with SavableMixin {
     required String name,
     this.fateChartType = FateChartType.standard,
     Set<String>? favoriteMeaningTables,
+    bool isPreparedAdventure = false,
     int? saveTimestamp,
   })  : id = id ?? newId,
         name = name.obs,
         favoriteMeaningTables = favoriteMeaningTables ?? {},
+        isPreparedAdventure = isPreparedAdventure.obs,
         saveTimestamp = saveTimestamp.obs;
 
   bool addMeaningTableFavorite(String id) {
@@ -48,6 +51,7 @@ class AdventureService extends GetxService with SavableMixin {
         'name': name(),
         'fateChartType': fateChartTypeToJson(fateChartType),
         'favoriteMeaningTables': favoriteMeaningTables.toList(),
+        'isPreparedAdventure': isPreparedAdventure(),
         if (saveTimestamp() != null) 'saveTimestamp': saveTimestamp(),
       };
 
@@ -58,6 +62,7 @@ class AdventureService extends GetxService with SavableMixin {
           fateChartType: fateChartTypeFromJson(json['fateChartType']),
           favoriteMeaningTables:
               fromJsonValueList<String>(json['favoriteMeaningTables']).toSet(),
+          isPreparedAdventure: json['isPreparedAdventure'] ?? false,
           saveTimestamp: json['saveTimestamp'],
         );
 }

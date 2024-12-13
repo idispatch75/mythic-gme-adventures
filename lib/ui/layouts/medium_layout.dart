@@ -25,6 +25,7 @@ class MediumLayout extends GetView<LayoutController> {
       () => Scaffold(
         appBar: const AdventureAppBar(),
         bottomNavigationBar: NavigationBar(
+          height: 64,
           onDestinationSelected: (int index) {
             controller.navigationTabIndex.value = index;
           },

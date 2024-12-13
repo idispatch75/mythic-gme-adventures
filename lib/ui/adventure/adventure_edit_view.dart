@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 
 import '../../helpers/input_validators.dart';
 import '../fate_chart/fate_chart.dart';
+import '../widgets/boolean_setting.dart';
 import '../widgets/edit_dialog.dart';
 import 'adventure.dart';
 
@@ -25,6 +26,7 @@ class AdventureEditView extends HookWidget {
   Widget build(BuildContext context) {
     final nameController = useTextEditingController(text: _adventure.name());
     final chartType = _adventure.fateChartType.obs;
+    final isPreparedAdventure = _adventure.isPreparedAdventure().obs;
 
     final saveTrigger = false.obs;
 
@@ -34,6 +36,7 @@ class AdventureEditView extends HookWidget {
       onSave: () {
         _adventure.name(nameController.text);
         _adventure.fateChartType = chartType();
+        _adventure.isPreparedAdventure(isPreparedAdventure());
 
         return Future.value(true);
       },
@@ -62,6 +65,14 @@ class AdventureEditView extends HookWidget {
                 },
               ),
             ),
+          ),
+          BooleanSetting(
+            setting: isPreparedAdventure,
+            text: 'Prepared Adventure',
+            subtext: 'If checked, the Features list appears in the More tab,'
+                ' Random Events use the Event Focus table of Prepared Adventures,'
+                ' and altered/interrupt scenes are replaced with a Random Event.',
+            hasTopPadding: true,
           ),
         ],
       ),

@@ -3,15 +3,15 @@ import 'package:get/get.dart';
 
 import '../../helpers/utils.dart';
 import '../widgets/button_row.dart';
-import 'note.dart';
-import 'note_edit_view.dart';
+import 'feature.dart';
+import 'feature_edit_view.dart';
 
-class NotesView extends GetView<NotesService> {
-  const NotesView({super.key});
+class FeaturesView extends GetView<FeaturesService> {
+  const FeaturesView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final notes = controller.notes;
+    final features = controller.features;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -20,15 +20,15 @@ class NotesView extends GetView<NotesService> {
           IconButton.filled(
             onPressed: _create,
             icon: const Icon(Icons.add),
-            tooltip: 'Create a Note',
+            tooltip: 'Create a Feature',
           ),
         ]),
         Expanded(
           child: Obx(
             () => defaultListView(
-              itemCount: notes.length,
+              itemCount: features.length,
               itemBuilder: (_, index) {
-                return _NoteView(notes[index]);
+                return _FeatureView(features[index]);
               },
             ),
           ),
@@ -38,29 +38,29 @@ class NotesView extends GetView<NotesService> {
   }
 
   void _create() async {
-    final note = Note('');
+    final feature = Feature('');
 
     final result = await Get.dialog<bool>(
-      NoteEditView(note, canDelete: false),
+      FeatureEditView(feature, canDelete: false),
       barrierDismissible: false,
     );
 
     if (result ?? false) {
-      controller.add(note);
+      controller.add(feature);
     }
   }
 }
 
-class _NoteView extends GetView<NotesService> {
-  final Rx<Note> _note;
+class _FeatureView extends GetView<FeaturesService> {
+  final Rx<Feature> _feature;
 
-  const _NoteView(this._note);
+  const _FeatureView(this._feature);
 
   @override
   Widget build(BuildContext context) {
     return Obx(
       () => ListTile(
-        title: Text(_note().title),
+        title: Text(_feature().name),
         onTap: _edit,
       ),
     );
@@ -68,12 +68,12 @@ class _NoteView extends GetView<NotesService> {
 
   void _edit() async {
     final result = await Get.dialog<bool>(
-      NoteEditView(_note(), canDelete: true),
+      FeatureEditView(_feature(), canDelete: true),
       barrierDismissible: false,
     );
 
     if (result ?? false) {
-      _note.refresh();
+      _feature.refresh();
 
       controller.requestSave();
     }

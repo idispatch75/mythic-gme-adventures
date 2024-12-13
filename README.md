@@ -9,6 +9,7 @@ Features:
 - Thread progress track and Discovery questions
 - Scenes with Adjustments
 - Keyed Scenes
+- Prepared Adventures
 - Basic dice roller
 - Save on Google Drive: you can share your adventures between your devices
 - Works offline

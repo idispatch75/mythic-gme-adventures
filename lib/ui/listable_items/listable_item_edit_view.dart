@@ -82,7 +82,7 @@ abstract class ListableItemEditView<TItem extends ListableItem>
             ),
 
           // archive
-          if (_canDelete) ...[
+          if (_canDelete)
             BooleanSetting(
               setting: isArchived,
               text: 'Archived',
@@ -91,7 +91,6 @@ abstract class ListableItemEditView<TItem extends ListableItem>
                   ' and moves it at the end of the list of ${_itemTypeLabel}s.',
               hasTopPadding: true,
             ),
-          ],
         ],
       ),
       itemTypeLabel: _itemTypeLabel,

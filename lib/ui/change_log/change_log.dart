@@ -81,6 +81,12 @@ class _Version {
 
 // add the new version before the previous versions
 const _versions = [
+  _Version('1.6.0', [
+    _Entry(
+        _Platform.all,
+        'Added support for Prepared Adventures, with Adventure Features and adapted Event Focus table.'
+        ' Toggle this in the Adventure Settings.'),
+  ]),
   _Version('1.5.0', [
     _Entry(
         _Platform.all,

@@ -9,9 +9,9 @@ import 'note.dart';
 
 class NoteEditView extends HookWidget {
   final Note _note;
-  final bool _canDelete;
+  final bool canDelete;
 
-  const NoteEditView(this._note, this._canDelete, {super.key});
+  const NoteEditView(this._note, {required this.canDelete, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class NoteEditView extends HookWidget {
 
     return EditDialog<bool>(
       itemTypeLabel: 'Note',
-      canDelete: _canDelete,
+      canDelete: canDelete,
       onSave: () {
         _note.title = titleController.text;
         _note.content = contentController.text.nullIfEmpty();
