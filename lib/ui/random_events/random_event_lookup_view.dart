@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../adventure/adventure.dart';
 import '../characters/character.dart';
 import '../characters/characters_list.dart';
+import '../features/feature.dart';
 import '../player_characters/player_character.dart';
 import '../roll_log/roll_lookup_view.dart';
 import '../styles.dart';
@@ -21,7 +23,7 @@ class RandomEventLookupView extends StatelessWidget {
         : null;
 
     final threads = Get.find<ThreadsListController>();
-    final lookupThreads = threads.items.isNotEmpty
+    final lookupThreads = Get.find<ThreadsListController>().items.isNotEmpty
         ? () => _showThreadsLookup(context, threads)
         : null;
 
@@ -30,75 +32,124 @@ class RandomEventLookupView extends StatelessWidget {
             ? () => _showPlayerCharactersLookup(context)
             : null;
 
+    final lookupFeatures = Get.find<FeaturesService>().features.isNotEmpty
+        ? () => _showFeaturesLookup(context)
+        : null;
+
+    final isPreparedAdventure =
+        Get.find<AdventureService>().isPreparedAdventure();
+
     return RollLookupView(
       header: 'Random Event',
       rollColors: AppStyles.randomEventColors,
       entries: [
-        const RollLookupEntry(
-          value: '1 - ${RemoteEvent.rollThreshold}',
-          label: RemoteEvent.eventName,
-        ),
-        const RollLookupEntry(
-          value:
-              '${RemoteEvent.rollThreshold + 1} - ${AmbiguousEvent.rollThreshold}',
-          label: AmbiguousEvent.eventName,
-        ),
-        const RollLookupEntry(
-          value:
-              '${AmbiguousEvent.rollThreshold + 1} - ${NewNpc.rollThreshold}',
-          label: NewNpc.eventName,
-        ),
+        // RemoteEvent
+        if (!isPreparedAdventure)
+          const RollLookupEntry(
+            value: '1 - ${RemoteEvent.rollThreshold}',
+            label: RemoteEvent.eventName,
+          ),
+
+        // Adventure Feature
+        if (isPreparedAdventure)
+          RollLookupEntry(
+            value: '1 - ${AdventureFeature.rollThreshold}',
+            label: AdventureFeature.eventName,
+            onRoll: lookupFeatures,
+          ),
+
+        // Ambiguous Event
+        if (!isPreparedAdventure)
+          const RollLookupEntry(
+            value:
+                '${RemoteEvent.rollThreshold + 1} - ${AmbiguousEvent.rollThreshold}',
+            label: AmbiguousEvent.eventName,
+          ),
+
+        // New NPC
+        if (!isPreparedAdventure)
+          const RollLookupEntry(
+            value:
+                '${AmbiguousEvent.rollThreshold + 1} - ${NewNpc.rollThreshold}',
+            label: NewNpc.eventName,
+          ),
+
+        // NPC Action
         RollLookupEntry(
           value:
-              '${NewNpc.rollThreshold + 1} - ${NpcEvent.actionRollThreshold}',
+              '${(isPreparedAdventure ? AdventureFeature.rollThreshold : NewNpc.rollThreshold) + 1}'
+              ' - ${NpcEvent.actionRollThreshold(isPreparedAdventure: isPreparedAdventure)}',
           label: NpcEvent.actionEventName,
           onRoll: lookupCharacters,
         ),
+
+        // NPC Negative
         RollLookupEntry(
           value:
-              '${NpcEvent.actionRollThreshold + 1} - ${NpcEvent.negativeRollThreshold}',
+              '${NpcEvent.actionRollThreshold(isPreparedAdventure: isPreparedAdventure) + 1}'
+              ' - ${NpcEvent.negativeRollThreshold(isPreparedAdventure: isPreparedAdventure)}',
           label: NpcEvent.negativeEventName,
           onRoll: lookupCharacters,
         ),
+
+        // NPC Positive
         RollLookupEntry(
           value:
-              '${NpcEvent.negativeRollThreshold + 1} - ${NpcEvent.positiveRollThreshold}',
+              '${NpcEvent.negativeRollThreshold(isPreparedAdventure: isPreparedAdventure) + 1}'
+              ' - ${NpcEvent.positiveRollThreshold(isPreparedAdventure: isPreparedAdventure)}',
           label: NpcEvent.positiveEventName,
           onRoll: lookupCharacters,
         ),
+
+        // Thread toward
+        if (!isPreparedAdventure)
+          RollLookupEntry(
+            value:
+                '${NpcEvent.positiveRollThreshold(isPreparedAdventure: isPreparedAdventure) + 1}'
+                ' - ${ThreadEvent.towardRollThreshold}',
+            label: ThreadEvent.towardEventName,
+            onRoll: lookupThreads,
+          ),
+
+        // Thread away
+        if (!isPreparedAdventure)
+          RollLookupEntry(
+            value:
+                '${ThreadEvent.towardRollThreshold + 1} - ${ThreadEvent.awayRollThreshold}',
+            label: ThreadEvent.awayEventName,
+            onRoll: lookupThreads,
+          ),
+
+        // Thread close
+        if (!isPreparedAdventure)
+          RollLookupEntry(
+            value:
+                '${ThreadEvent.awayRollThreshold + 1} - ${ThreadEvent.closeRollThreshold}',
+            label: ThreadEvent.closeEventName,
+            onRoll: lookupThreads,
+          ),
+
+        // PC Negative
         RollLookupEntry(
           value:
-              '${NpcEvent.positiveRollThreshold + 1} - ${ThreadEvent.towardRollThreshold}',
-          label: ThreadEvent.towardEventName,
-          onRoll: lookupThreads,
-        ),
-        RollLookupEntry(
-          value:
-              '${ThreadEvent.towardRollThreshold + 1} - ${ThreadEvent.awayRollThreshold}',
-          label: ThreadEvent.awayEventName,
-          onRoll: lookupThreads,
-        ),
-        RollLookupEntry(
-          value:
-              '${ThreadEvent.awayRollThreshold + 1} - ${ThreadEvent.closeRollThreshold}',
-          label: ThreadEvent.closeEventName,
-          onRoll: lookupThreads,
-        ),
-        RollLookupEntry(
-          value:
-              '${ThreadEvent.closeRollThreshold + 1} - ${PcEvent.negativeRollThreshold}',
+              '${(isPreparedAdventure ? NpcEvent.positiveRollThreshold(isPreparedAdventure: isPreparedAdventure) : ThreadEvent.closeRollThreshold) + 1}'
+              ' - ${PcEvent.negativeRollThreshold(isPreparedAdventure: isPreparedAdventure)}',
           label: PcEvent.negativeEventName,
           onRoll: lookupPlayerCharacters,
         ),
+
+        // PC Positive
         RollLookupEntry(
           value:
-              '${PcEvent.negativeRollThreshold + 1} - ${PcEvent.positiveRollThreshold}',
+              '${PcEvent.negativeRollThreshold(isPreparedAdventure: isPreparedAdventure) + 1} - ${PcEvent.positiveRollThreshold(isPreparedAdventure: isPreparedAdventure)}',
           label: PcEvent.positiveEventName,
           onRoll: lookupPlayerCharacters,
         ),
-        const RollLookupEntry(
+
+        // CurrentContext
+        RollLookupEntry(
           value:
-              '${PcEvent.positiveRollThreshold + 1} - ${CurrentContext.rollThreshold}',
+              '${PcEvent.positiveRollThreshold(isPreparedAdventure: isPreparedAdventure) + 1} - ${CurrentContext.rollThreshold}',
           label: CurrentContext.eventName,
         ),
       ],
@@ -121,5 +172,9 @@ class RandomEventLookupView extends StatelessWidget {
 
   void _showPlayerCharactersLookup(BuildContext context) {
     showPlayerCharactersLookup(context);
+  }
+
+  void _showFeaturesLookup(BuildContext context) {
+    showFeaturesLookup(context);
   }
 }

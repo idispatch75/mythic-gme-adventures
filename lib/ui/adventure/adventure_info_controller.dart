@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart' as rxdart;
@@ -177,7 +178,7 @@ class AdventureInfoController extends GetxController {
     final threads = Get.find<ThreadsService>().items();
     if (threads.isNotEmpty) {
       addTitle('Threads');
-      for (var item in threads.map((e) => e())) {
+      for (var item in threads.map((e) => e()).sorted((a, b) => a.id - b.id)) {
         addItem(item.name, item.summary, item.notes);
       }
     }
@@ -186,7 +187,8 @@ class AdventureInfoController extends GetxController {
     final characters = Get.find<CharactersService>().items();
     if (characters.isNotEmpty) {
       addTitle('Characters');
-      for (var item in characters.map((e) => e())) {
+      for (var item
+          in characters.map((e) => e()).sorted((a, b) => a.id - b.id)) {
         addItem(item.name, item.summary, item.notes);
       }
     }
@@ -194,8 +196,8 @@ class AdventureInfoController extends GetxController {
     // features
     final features = Get.find<FeaturesService>().features();
     if (features.isNotEmpty) {
-      addTitle('Adventure Features');
-      for (var item in features.map((e) => e())) {
+      addTitle('Features');
+      for (var item in features.map((e) => e()).sorted((a, b) => a.id - b.id)) {
         addItem(item.name, null, item.notes);
       }
     }

@@ -49,7 +49,7 @@ class _CharacterView extends ListableItemView<Character> {
       _service,
       item,
       characterItemTypeLabel,
-      canDelete,
+      canDelete: canDelete,
     );
   }
 }
@@ -63,7 +63,7 @@ Future<Rx<Character>?> createCharacter() async {
           controller,
           character,
           characterItemTypeLabel,
-          false,
+          canDelete: false,
         ),
         barrierDismissible: false,
       ) ??

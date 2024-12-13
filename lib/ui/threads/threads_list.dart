@@ -59,7 +59,7 @@ class _ThreadView extends ListableItemListItemView<Thread> {
       _service,
       item,
       threadItemTypeLabel,
-      canDelete,
+      canDelete: canDelete,
     );
   }
 

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../helpers/dialogs.dart';
 import '../../helpers/utils.dart';
+import '../adventure/adventure.dart';
 import '../chaos_factor/chaos_factor.dart';
 import '../keyed_scenes/keyed_scene.dart';
 import '../keyed_scenes/keyed_scenes_view.dart';
@@ -141,23 +142,36 @@ class ScenesView extends GetView<ScenesService> {
         message: 'The scene happens as expected.',
       );
     } else {
-      if (dieRoll.isOdd) {
-        // altered
+      final isPreparedAdventure =
+          Get.find<AdventureService>().isPreparedAdventure();
+
+      if (isPreparedAdventure) {
         await Dialogs.showAlert(
-          title: 'Altered Scene',
+          title: 'Random Event',
           message: 'Your expectations are sightly altered.\n'
-              'You may consult the Fate Chart or the Meaning Tables.\n'
-              'You may also roll an Adjustment.',
-        );
-      } else {
-        // interrupt
-        await Dialogs.showAlert(
-          title: 'Interrupt Scene',
-          message: 'Mythic derails your expectations.\n'
               'A Random Event will be rolled.',
         );
 
         rollRandomEvent();
+      } else {
+        if (dieRoll.isOdd) {
+          // altered
+          await Dialogs.showAlert(
+            title: 'Altered Scene',
+            message: 'Your expectations are sightly altered.\n'
+                'You may consult the Fate Chart or the Meaning Tables.\n'
+                'You may also roll an Adjustment.',
+          );
+        } else {
+          // interrupt
+          await Dialogs.showAlert(
+            title: 'Interrupt Scene',
+            message: 'Mythic derails your expectations.\n'
+                'A Random Event will be rolled.',
+          );
+
+          rollRandomEvent();
+        }
       }
     }
   }

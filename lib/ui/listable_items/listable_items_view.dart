@@ -116,7 +116,7 @@ abstract class ListableItemView<TItem extends ListableItem>
 
         TextStyle? textStyle;
         if (item.isArchived) {
-          textStyle = const TextStyle(color: Colors.grey);
+          textStyle = const TextStyle(color: AppStyles.archivedColor);
         }
 
         Widget? subtitle;

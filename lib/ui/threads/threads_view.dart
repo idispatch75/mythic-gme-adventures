@@ -58,7 +58,7 @@ class _ThreadView extends ListableItemView<Thread> {
       _service,
       item,
       threadItemTypeLabel,
-      canDelete,
+      canDelete: canDelete,
     );
   }
 
@@ -77,7 +77,7 @@ Future<Rx<Thread>?> createThread() async {
           controller,
           thread,
           threadItemTypeLabel,
-          false,
+          canDelete: false,
         ),
         barrierDismissible: false,
       ) ??

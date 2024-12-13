@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../helpers/utils.dart';
+import '../adventure/adventure.dart';
 import '../chaos_factor/chaos_factor.dart';
 import '../random_events/random_event.dart';
 import '../roll_log/roll_lookup_view.dart';
@@ -14,14 +15,22 @@ class SceneTestLookupView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final chaosFactor = Get.find<ChaosFactorService>().chaosFactor();
+    final isPreparedAdventure =
+        Get.find<AdventureService>().isPreparedAdventure();
 
     final entries = <RollLookupEntry>[];
-    var i = 0;
-    for (i = 0; i < chaosFactor; i++) {
+    if (isPreparedAdventure) {
       entries.add(RollLookupEntry(
-        value: (i + 1).toString(),
-        label: i.isEven ? 'Altered Scene' : 'Interrupt Scene',
+        value: '1 - $chaosFactor',
+        label: 'Random Event',
       ));
+    } else {
+      for (var i = 0; i < chaosFactor; i++) {
+        entries.add(RollLookupEntry(
+          value: (i + 1).toString(),
+          label: i.isEven ? 'Altered Scene' : 'Interrupt Scene',
+        ));
+      }
     }
 
     entries.add(RollLookupEntry(

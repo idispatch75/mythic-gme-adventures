@@ -49,7 +49,7 @@ class _CharacterView extends ListableItemListItemView<Character> {
       _service,
       item,
       characterItemTypeLabel,
-      canDelete,
+      canDelete: canDelete,
     );
   }
 }

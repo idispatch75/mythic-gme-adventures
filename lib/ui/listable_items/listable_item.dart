@@ -61,6 +61,7 @@ class ListableItemsService<TItem extends ListableItem> extends GetxService
     _sortItems(items);
 
     requestSave();
+
     return rx;
   }
 

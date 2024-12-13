@@ -28,13 +28,13 @@ class FeatureEditView extends HookWidget {
     final saveTrigger = false.obs;
 
     return EditDialog<bool>(
-      itemTypeLabel: 'Adventure Feature',
+      itemTypeLabel: 'Feature',
       canDelete: canDelete,
       saveTrigger: saveTrigger,
       onSave: () {
         _feature.name = nameController.text;
         _feature.notes = notesController.text.nullIfEmpty();
-        _feature.isArchived = isArchived();
+        Get.find<FeaturesService>().archive(_feature, isArchived());
 
         return Future.value(true);
       },
@@ -69,12 +69,14 @@ class FeatureEditView extends HookWidget {
           ),
 
           // archive
-          BooleanSetting(
-            setting: isArchived,
-            text: 'Archived',
-            subtext: 'Archiving a Feature excludes it from Random Event rolls',
-            hasTopPadding: true,
-          ),
+          if (canDelete)
+            BooleanSetting(
+              setting: isArchived,
+              text: 'Archived',
+              subtext:
+                  'Archiving a Feature excludes it from Random Event rolls',
+              hasTopPadding: true,
+            ),
         ],
       ),
     );

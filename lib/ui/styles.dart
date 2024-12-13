@@ -43,6 +43,8 @@ abstract class AppStyles {
   static Color get sceneBadgeOnBackground => _sceneBadgeOnBackground;
   static Color _sceneBadgeOnBackground = Colors.black;
 
+  static const Color archivedColor = Colors.grey;
+
   static const EdgeInsets listTileTitlePadding = EdgeInsets.only(left: 12);
 
   static const rollIcon = Icon(Icons.casino_outlined);
