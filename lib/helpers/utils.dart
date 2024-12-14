@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../persisters/persister.dart';
 import '../ui/adventure_index/adventure_index.dart';
 import 'datetime_extensions.dart';
 import 'dialogs.dart';
@@ -120,4 +122,22 @@ Future<bool> showCloseAppConfirmation() {
     title: 'Close the application?',
     message: message,
   );
+}
+
+Future<void> handleUnsupportedSchemaVersion(
+    UnsupportedSchemaVersionException exception) async {
+  final actionMessage =
+      GetPlatform.isWeb ? 'please close this page.' : 'the App will be closed.';
+
+  await Dialogs.showAlert(
+    title: 'Unsupported data format',
+    message:
+        'This version of the App does not support the new data format of the file ${exception.fileName}.'
+        '\nPlease update the App to the latest version.'
+        '\n\nTo prevent data loss, $actionMessage',
+  );
+
+  if (!GetPlatform.isWeb) {
+    exit(0);
+  }
 }

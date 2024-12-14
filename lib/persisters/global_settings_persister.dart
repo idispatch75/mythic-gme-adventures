@@ -98,7 +98,13 @@ class GlobalSettingsPersister {
     if (content != null) {
       final json = jsonDecode(content) as JsonObj;
 
-      return GlobalSettingsService.fromJson(json);
+      final settings = GlobalSettingsService.fromJson(json);
+      if (settings.schemaVersion >
+          GlobalSettingsService.supportedSchemaVersion) {
+        throw const UnsupportedSchemaVersionException(fileName: _fileName);
+      }
+
+      return settings;
     } else {
       return GlobalSettingsService(
         favoriteMeaningTables: {

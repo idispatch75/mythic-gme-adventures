@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -14,6 +16,7 @@ import '../../helpers/utils.dart';
 import '../../persisters/adventure_persister.dart';
 import '../../persisters/global_settings_persister.dart';
 import '../../persisters/meaning_tables_persister.dart';
+import '../../persisters/persister.dart';
 import '../../storages/data_storage.dart';
 import '../../storages/google_auth_service.dart';
 import '../../storages/local_storage.dart';
@@ -29,7 +32,7 @@ class IndexAdventureVM {
   final IndexAdventure source;
   final String saveDateText;
 
-  IndexAdventureVM(this.source, this.saveDateText);
+  const IndexAdventureVM(this.source, this.saveDateText);
 }
 
 class AdventureIndexController extends GetxController {
@@ -352,6 +355,10 @@ class AdventureIndexController extends GetxController {
       await Get.find<AdventurePersisterService>().loadIndex();
       Get.find<MeaningTablesService>().language.value =
           Get.find<GlobalSettingsService>().meaningTablesLanguage;
+    } on UnsupportedSchemaVersionException catch (e) {
+      handleUnsupportedSchemaVersion(e).ignore();
+
+      return;
     } catch (e) {
       handleError('load', e);
 

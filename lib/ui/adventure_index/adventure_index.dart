@@ -3,15 +3,22 @@ import 'package:get/get.dart';
 import '../../helpers/json_utils.dart';
 
 class AdventureIndexService extends GetxService {
+  static const supportedSchemaVersion = 1;
+
+  final int schemaVersion;
   final List<IndexAdventure> adventures;
 
-  AdventureIndexService(this.adventures);
+  AdventureIndexService({
+    this.schemaVersion = supportedSchemaVersion,
+    required this.adventures,
+  });
 
   void addAdventure(IndexAdventure adventure) {
     adventures.add(adventure);
   }
 
   JsonObj toJson(bool isLocal) => {
+        'schemaVersion': supportedSchemaVersion,
         'adventures': adventures
             .where((e) =>
                 isLocal ? e.localSaveTimestamp > 0 : e.remoteSaveTimestamp > 0)
@@ -20,7 +27,8 @@ class AdventureIndexService extends GetxService {
 
   AdventureIndexService.fromJson(JsonObj json)
       : this(
-          fromJsonList(json['adventures'], IndexAdventure.fromJson),
+          schemaVersion: json['schemaVersion'] ?? 1,
+          adventures: fromJsonList(json['adventures'], IndexAdventure.fromJson),
         );
 }
 

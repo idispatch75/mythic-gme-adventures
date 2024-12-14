@@ -28,16 +28,16 @@ class ChangeLogService extends GetxService {
       lastViewedVersion = '1.4.0';
     }
 
-    final _Platform platform;
-    if (GetPlatform.isWeb) {
-      platform = _Platform.web;
-    } else if (GetPlatform.isAndroid) {
-      platform = _Platform.android;
-    } else {
-      platform = _Platform.windows;
-    }
-
     if (lastViewedVersion != null) {
+      final _Platform platform;
+      if (GetPlatform.isWeb) {
+        platform = _Platform.web;
+      } else if (GetPlatform.isAndroid) {
+        platform = _Platform.android;
+      } else {
+        platform = _Platform.windows;
+      }
+
       for (final version in _versions) {
         if (version.version == lastViewedVersion) {
           break;
@@ -81,6 +81,9 @@ class _Version {
 
 // add the new version before the previous versions
 const _versions = [
+  _Version('1.7.0', [
+    _Entry(_Platform.all, 'Handle data format upgrades to prevent data loss.'),
+  ]),
   _Version('1.6.0', [
     _Entry(
         _Platform.all,

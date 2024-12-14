@@ -79,3 +79,12 @@ class SaveResult {
 
   SaveResult.error(this.error) : isSuccess = false;
 }
+
+class UnsupportedSchemaVersionException implements Exception {
+  final String fileName;
+
+  const UnsupportedSchemaVersionException({required this.fileName});
+
+  @override
+  String toString() => 'Unsupported schema version for $fileName';
+}

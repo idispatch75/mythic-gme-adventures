@@ -192,7 +192,7 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
 
     // TODO purge old deleted adventures
 
-    Get.replaceForced(AdventureIndexService(adventures));
+    Get.replaceForced(AdventureIndexService(adventures: adventures));
   }
 
   Future<void> loadAdventure(int id) async {
@@ -370,7 +370,7 @@ class AdventurePersister {
   }
 
   Future<void> saveIndexAdventures(List<IndexAdventure> adventures) {
-    return _saveIndex(AdventureIndexService(adventures));
+    return _saveIndex(AdventureIndexService(adventures: adventures));
   }
 
   Future<void> _saveIndex(AdventureIndexService index) {
@@ -389,6 +389,10 @@ class AdventurePersister {
       final json = jsonDecode(content) as JsonObj;
 
       final index = AdventureIndexService.fromJson(json);
+      if (index.schemaVersion > AdventureIndexService.supportedSchemaVersion) {
+        throw const UnsupportedSchemaVersionException(fileName: _indexFileName);
+      }
+
       if (_storage.isLocal) {
         for (var adventure in index.adventures) {
           adventure.localSaveTimestamp = adventure.saveTimestamp ?? 0;
@@ -401,7 +405,7 @@ class AdventurePersister {
 
       return index;
     } else {
-      return AdventureIndexService([]);
+      return AdventureIndexService(adventures: []);
     }
   }
 
@@ -452,11 +456,16 @@ class AdventurePersister {
 
   Future<({int saveTimestamp, void Function() publisher})?> loadAdventure(
       int id) async {
-    final content = await _storage.load([directory], _adventureFileName(id));
+    final fileName = _adventureFileName(id);
+    final content = await _storage.load([directory], fileName);
 
     if (content != null) {
       final json = jsonDecode(content) as JsonObj;
       final adventure = AdventureService.fromJson(json);
+      if (adventure.schemaVersion > AdventureService.supportedSchemaVersion) {
+        throw UnsupportedSchemaVersionException(
+            fileName: '$directory/$fileName');
+      }
 
       return (
         saveTimestamp: adventure.saveTimestamp()!,

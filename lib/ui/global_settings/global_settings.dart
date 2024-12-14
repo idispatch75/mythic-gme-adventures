@@ -4,6 +4,9 @@ import '../../helpers/json_utils.dart';
 import '../../persisters/persister.dart';
 
 class GlobalSettingsService extends GetxService with SavableMixin {
+  static const supportedSchemaVersion = 1;
+
+  final int schemaVersion;
   bool allowChooseInLists;
   String meaningTablesLanguage;
   final Set<String> favoriteMeaningTables;
@@ -11,6 +14,7 @@ class GlobalSettingsService extends GetxService with SavableMixin {
   int? saveTimestamp;
 
   GlobalSettingsService({
+    this.schemaVersion = supportedSchemaVersion,
     this.allowChooseInLists = true,
     this.meaningTablesLanguage = 'en',
     Set<String>? favoriteMeaningTables,
@@ -44,6 +48,7 @@ class GlobalSettingsService extends GetxService with SavableMixin {
   }
 
   JsonObj toJson() => {
+        'schemaVersion': supportedSchemaVersion,
         'allowChooseInLists': allowChooseInLists,
         'meaningTablesLanguage': meaningTablesLanguage,
         'favoriteMeaningTables': favoriteMeaningTables.toList(),
@@ -53,6 +58,7 @@ class GlobalSettingsService extends GetxService with SavableMixin {
 
   GlobalSettingsService.fromJson(JsonObj json)
       : this(
+          schemaVersion: json['schemaVersion'] ?? 1,
           allowChooseInLists: json['allowChooseInLists'] ?? true,
           meaningTablesLanguage: json['meaningTablesLanguage'] ?? 'en',
           favoriteMeaningTables:

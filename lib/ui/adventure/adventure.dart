@@ -6,6 +6,9 @@ import '../../persisters/persister.dart';
 import '../fate_chart/fate_chart.dart';
 
 class AdventureService extends GetxService with SavableMixin {
+  static const supportedSchemaVersion = 1;
+
+  final int schemaVersion;
   final int id;
   final Rx<String> name;
   FateChartType fateChartType;
@@ -14,6 +17,7 @@ class AdventureService extends GetxService with SavableMixin {
   final Rx<int?> saveTimestamp;
 
   AdventureService({
+    this.schemaVersion = supportedSchemaVersion,
     int? id,
     required String name,
     this.fateChartType = FateChartType.standard,
@@ -47,6 +51,7 @@ class AdventureService extends GetxService with SavableMixin {
   String toTag() => id.toString();
 
   JsonObj toJson() => {
+        'schemaVersion': supportedSchemaVersion,
         'id': id,
         'name': name(),
         'fateChartType': fateChartTypeToJson(fateChartType),
@@ -57,6 +62,7 @@ class AdventureService extends GetxService with SavableMixin {
 
   AdventureService.fromJson(JsonObj json)
       : this(
+          schemaVersion: json['schemaVersion'] ?? 1,
           id: json['id'],
           name: json['name'],
           fateChartType: fateChartTypeFromJson(json['fateChartType']),

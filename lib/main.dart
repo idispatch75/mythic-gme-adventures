@@ -147,9 +147,15 @@ void _runApp() async {
   Get.put(AdventurePersisterService());
 
   final appVersion = (await PackageInfo.fromPlatform()).version;
-  final adventureIndex = await AdventurePersister(LocalStorage()).loadIndex();
+  var isNewInstall = false;
+  try {
+    final adventureIndex = await AdventurePersister(LocalStorage()).loadIndex();
+    isNewInstall = adventureIndex.adventures.isEmpty;
+  } catch (e) {
+    // ignore
+  }
   Get.put(ChangeLogService(sharedPreferences, appVersion,
-      isNewInstall: adventureIndex.adventures.isEmpty));
+      isNewInstall: isNewInstall));
 
   // init locale
   final locale = PlatformDispatcher.instance.locale;
