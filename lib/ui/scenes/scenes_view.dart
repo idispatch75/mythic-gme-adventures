@@ -45,7 +45,7 @@ class ScenesView extends GetView<ScenesService> {
                   icon,
                   const Positioned(
                     top: 0,
-                    left: 20,
+                    left: 16,
                     child: Badge(smallSize: 8),
                   ),
                 ],

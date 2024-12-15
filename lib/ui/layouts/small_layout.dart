@@ -5,6 +5,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
 
 import '../adventure/adventure.dart';
+import '../chaos_factor/chaos_factor_view.dart';
 import '../characters/characters_list.dart';
 import '../characters/characters_view.dart';
 import '../dice_roller/dice_roller_view.dart';
@@ -181,9 +182,17 @@ class SmallLayoutScenes extends HookWidget {
           children: [
             const ThreadsListView(),
             const CharactersListView(),
-            _HeaderView(
-              title: 'Scenes',
-              child: const ScenesView(dense: true),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                getZoneDecoration(const ChaosFactorView(dense: true)),
+                Expanded(
+                  child: _HeaderView(
+                    title: 'Scenes',
+                    child: const ScenesView(dense: true),
+                  ),
+                ),
+              ],
             ),
             _HeaderView(
               title: 'Keyed Scenes',
@@ -258,6 +267,7 @@ class _HeaderView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Header(title),
         Expanded(child: child),
