@@ -164,7 +164,7 @@ void _runApp() async {
 
   // add licenses
   _addLicense('Rubik', 'assets/google_fonts/Rubik-OFL.txt');
-  _addLicense('Staatliches', 'assets/google_fonts/Staatliches-OFL.txt');
+  _addLicense('Noto Sans', 'assets/google_fonts/NotoSans-OFL.txt');
 
   // start the app
   AppStyles.setBrightness(

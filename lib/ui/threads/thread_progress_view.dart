@@ -6,12 +6,12 @@ import '../widgets/actions_menu.dart';
 import 'thread.dart';
 import 'thread_ctl.dart';
 
-Widget threadProgressViewWrapper(Thread thread) {
+Widget threadProgressViewWrapper(Thread thread, {bool isDeleted = false}) {
   return Obx(() {
     return (thread.isTracked() && !thread.isArchived)
         ? Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),
-            child: ThreadProgressView(thread.toTag()),
+            child: ThreadProgressView(thread.toTag(), isDeleted: isDeleted),
           )
         : const SizedBox();
   });
@@ -19,8 +19,9 @@ Widget threadProgressViewWrapper(Thread thread) {
 
 class ThreadProgressView extends GetView<ThreadController> {
   final String _tag;
+  final bool isDeleted;
 
-  const ThreadProgressView(this._tag, {super.key});
+  const ThreadProgressView(this._tag, {this.isDeleted = false, super.key});
 
   @override
   String get tag => _tag;
@@ -46,14 +47,15 @@ class ThreadProgressView extends GetView<ThreadController> {
           additionalButtons = [
             buttonWrapper(
               child: IconButton.outlined(
-                onPressed: controller.rollDiscovery,
+                onPressed: !isDeleted ? controller.rollDiscovery : null,
                 icon: AppStyles.rollIcon,
                 tooltip: 'Roll Discovery',
               ),
             ),
             buttonWrapper(
               child: IconButton.outlined(
-                onPressed: () => controller.addFlashpoint(2),
+                onPressed:
+                    !isDeleted ? () => controller.addFlashpoint(2) : null,
                 tooltip: 'Mark a Flashpoint and +2 progress',
                 icon: const _MarkFlashpointIcon(add: true),
               ),
@@ -65,7 +67,7 @@ class ThreadProgressView extends GetView<ThreadController> {
           additionalMenuEntries = [
             MenuItemButton(
               leadingIcon: const _MarkFlashpointIcon(add: true),
-              onPressed: () => controller.addFlashpoint(2),
+              onPressed: !isDeleted ? () => controller.addFlashpoint(2) : null,
               child: const SizedBox(
                 width: 252,
                 child: Text(
@@ -76,7 +78,7 @@ class ThreadProgressView extends GetView<ThreadController> {
             ),
             MenuItemButton(
               leadingIcon: AppStyles.rollIcon,
-              onPressed: () => controller.rollDiscovery(),
+              onPressed: !isDeleted ? controller.rollDiscovery : null,
               child: const Text('Roll Discovery'),
             ),
           ];
@@ -91,7 +93,7 @@ class ThreadProgressView extends GetView<ThreadController> {
             // add progress button
             buttonWrapper(
               child: IconButton.outlined(
-                onPressed: () => controller.addProgress(2),
+                onPressed: !isDeleted ? () => controller.addProgress(2) : null,
                 icon: const Icon(Icons.exposure_plus_2),
                 tooltip: 'Mark +2 progress',
               ),
@@ -107,7 +109,7 @@ class ThreadProgressView extends GetView<ThreadController> {
                 // Mark Flashpoint with no progress
                 MenuItemButton(
                   leadingIcon: const Icon(Icons.flash_on),
-                  onPressed: () => controller.addFlashpoint(),
+                  onPressed: !isDeleted ? controller.addFlashpoint : null,
                   child: const SizedBox(
                     width: 252,
                     child: Text(
@@ -120,21 +122,23 @@ class ThreadProgressView extends GetView<ThreadController> {
                 // Remove Flashpoint
                 MenuItemButton(
                   leadingIcon: const _MarkFlashpointIcon(add: false),
-                  onPressed: controller.removeFlashpoint,
+                  onPressed: !isDeleted ? controller.removeFlashpoint : null,
                   child: const Text('Remove Flashpoint'),
                 ),
 
                 // Remove 2 progress
                 MenuItemButton(
                   leadingIcon: const Icon(Icons.exposure_minus_2),
-                  onPressed: () => controller.removeProgress(2),
+                  onPressed:
+                      !isDeleted ? () => controller.removeProgress(2) : null,
                   child: const Text('Remove 2 progress'),
                 ),
 
                 // Remove 1 progress
                 MenuItemButton(
                   leadingIcon: const Icon(Icons.exposure_minus_1),
-                  onPressed: () => controller.removeProgress(1),
+                  onPressed:
+                      !isDeleted ? () => controller.removeProgress(1) : null,
                   child: const Text('Remove 1 progress'),
                 ),
               ]),
@@ -219,12 +223,23 @@ class _ProgressPhaseView extends StatelessWidget {
 
         return Padding(
           padding: EdgeInsets.only(left: index == 0 ? 0 : 4),
-          child: Container(
-            width: progressWidth,
-            height: progressWidth,
-            color: color,
-            foregroundDecoration: BoxDecoration(
-              border: Border.all(color: borderColor),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 400),
+            switchInCurve: Curves.easeIn,
+            switchOutCurve: Curves.easeOut,
+            transitionBuilder: (child, animation) => FadeTransition(
+              key: ValueKey<Key?>(child.key),
+              opacity: animation,
+              child: child,
+            ),
+            child: Container(
+              key: ValueKey(color),
+              width: progressWidth,
+              height: progressWidth,
+              color: color,
+              foregroundDecoration: BoxDecoration(
+                border: Border.all(color: borderColor),
+              ),
             ),
           ),
         );

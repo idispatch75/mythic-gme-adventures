@@ -25,6 +25,7 @@ class AdventureInfoView extends GetView<AdventureInfoController> {
     final theme = Theme.of(context);
 
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Obx(
@@ -33,7 +34,7 @@ class AdventureInfoView extends GetView<AdventureInfoController> {
               // name
               Expanded(
                 child: Text(
-                  adventure.name(),
+                  adventure.name().toUpperCase(),
                   style: dense
                       ? theme.textTheme.titleLarge
                       : theme.textTheme.headlineMedium,
@@ -193,7 +194,8 @@ class _AdventureActionsButton extends GetView<AdventureInfoController> {
 
             if (context.mounted) {
               showAboutDialog(
-                  applicationName: info.appName,
+                  applicationName:
+                      'Mythic GME Adventures', // info.appName is wrong for web (retrieved from generated version.json, where it is wrong)
                   applicationVersion: info.version,
                   context: context,
                   children: [
@@ -205,7 +207,7 @@ class _AdventureActionsButton extends GetView<AdventureInfoController> {
                           Text.rich(
                             TextSpan(
                               children: [
-                                TextSpan(
+                                const TextSpan(
                                   text:
                                       'Manage adventures using the rules of Mythic Game Master Emulator, 2nd Edition.\n'
                                       'Find out more on the ',
@@ -215,7 +217,7 @@ class _AdventureActionsButton extends GetView<AdventureInfoController> {
                                   url:
                                       'https://idispatch75.github.io/mythic-gme-adventures/',
                                 ),
-                                TextSpan(text: '.'),
+                                const TextSpan(text: '.'),
                               ],
                             ),
                           ),
@@ -223,7 +225,8 @@ class _AdventureActionsButton extends GetView<AdventureInfoController> {
                             padding: const EdgeInsets.only(top: 16.0),
                             child: Text(
                               'This work is based on Mythic Game Master Emulator, 2nd Edition by Tana Pigeon,'
-                              ' published by Word Mill Games, and licensed for our use under the Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0) license.'
+                              ' published by Word Mill Games, and licensed for our use under the'
+                              ' Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0) license.'
                               ' Find out more at www.wordmillgames.com.\n'
                               'The App icon was created by Muhammad Miftakhul Rizky'
                               ' from thenounproject.com (CC BY 3.0).',

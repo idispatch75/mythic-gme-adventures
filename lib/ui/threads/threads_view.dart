@@ -23,7 +23,7 @@ class ThreadsView extends ListableItemsView<Thread> {
   void createItem() => createThread();
 
   @override
-  Widget createItemView(Rx<Thread> item) {
+  Widget createItemView(Rx<Thread> item, {bool isDeleted = false}) {
     return Column(
       children: [
         // list item
@@ -32,10 +32,11 @@ class ThreadsView extends ListableItemsView<Thread> {
           item,
           itemTypeLabel,
           showAddToListNotification,
+          isDeleted: isDeleted,
         ),
 
         // progress view
-        threadProgressViewWrapper(item()),
+        threadProgressViewWrapper(item(), isDeleted: isDeleted),
       ],
     );
   }
@@ -49,8 +50,9 @@ class _ThreadView extends ListableItemView<Thread> {
     super._controller,
     super.item,
     super.itemTypeLabel,
-    super._showAddToListNotification,
-  );
+    super._showAddToListNotification, {
+    super.isDeleted,
+  });
 
   @override
   Widget createEditView(Thread item, bool canDelete) {

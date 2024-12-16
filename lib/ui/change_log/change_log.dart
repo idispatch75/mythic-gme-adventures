@@ -81,6 +81,11 @@ class _Version {
 
 // add the new version before the previous versions
 const _versions = [
+  _Version('1.7.0', [
+    _Entry(
+        _Platform.all, 'Added animations to lists, and thread progress track.'),
+    _Entry(_Platform.all, 'Use a more legible font for titles and headers.'),
+  ]),
   _Version('1.6.1', [
     _Entry(_Platform.all, 'Fixed Chaos Factor no more available. Sorry.'),
     _Entry(_Platform.all, 'Handle data format upgrades to prevent data loss.'),

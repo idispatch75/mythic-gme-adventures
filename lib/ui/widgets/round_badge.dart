@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'animated_counter.dart';
+
 class RoundBadge extends StatelessWidget {
   final Color? backgroundColor;
   final Color? color;
@@ -27,11 +29,14 @@ class RoundBadge extends StatelessWidget {
         child: Baseline(
           baseline: 17,
           baselineType: TextBaseline.alphabetic,
-          child: Text(
-            text,
-            style: TextStyle(
-              fontSize: 16,
-              color: color,
+          child: AnimatedCounter(
+            child: Text(
+              key: Key(text),
+              text,
+              style: TextStyle(
+                fontSize: 16,
+                color: color,
+              ),
             ),
           ),
         ),

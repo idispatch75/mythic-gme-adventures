@@ -28,14 +28,14 @@ abstract class Dialogs {
         mainAxisSize: MainAxisSize.min,
         children: [
           child!,
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text.rich(
             TextSpan(
               children: [
-                TextSpan(text: 'See the '),
+                const TextSpan(text: 'See the '),
                 getUserManualLink(
                     anchor: userManualAnchor.isEmpty ? null : userManualAnchor),
-                TextSpan(text: ' for more info.'),
+                const TextSpan(text: ' for more info.'),
               ],
             ),
           )

@@ -18,7 +18,7 @@ class Header extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(4, 3, 4, 2),
           child: Text(
-            _text,
+            _text.toUpperCase(),
             style: theme.textTheme.titleMedium!
                 .copyWith(color: AppStyles.onHeaderColor),
           ),
