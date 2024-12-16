@@ -1,6 +1,13 @@
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+class ChangeLogVersion {
+  final String version;
+  final List<String> entries;
+
+  const ChangeLogVersion(this.version, this.entries);
+}
+
 class ChangeLogService extends GetxService {
   static const _versionKey = 'changeLogVersion';
 
@@ -18,8 +25,8 @@ class ChangeLogService extends GetxService {
     required this.isNewInstall,
   });
 
-  List<String> getEntries() {
-    final entries = <String>[];
+  List<ChangeLogVersion> getVersions() {
+    final versions = <ChangeLogVersion>[];
 
     var lastViewedVersion = _preferences.getString(_versionKey);
 
@@ -42,15 +49,19 @@ class ChangeLogService extends GetxService {
         if (version.version == lastViewedVersion) {
           break;
         } else {
-          entries.addAll(version.entries
+          final entries = version.entries
               .where(
                   (e) => e.platform == _Platform.all || e.platform == platform)
-              .map((e) => e.text));
+              .map((e) => e.text)
+              .toList();
+          if (entries.isNotEmpty) {
+            versions.add(ChangeLogVersion(version.version, entries));
+          }
         }
       }
     }
 
-    return entries;
+    return versions;
   }
 
   void markRead() {
