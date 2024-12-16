@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../widgets/animated_counter.dart';
 import '../widgets/header.dart';
 import 'chaos_factor.dart';
 
@@ -25,11 +26,14 @@ class ChaosFactorView extends GetView<ChaosFactorService> {
                 icon: const Icon(Icons.chevron_left),
               ),
               Expanded(
-                child: Obx(
-                  () => Center(
-                    child: Text(
-                      controller.chaosFactor.toString(),
-                      style: const TextStyle(fontSize: 32),
+                child: Center(
+                  child: Obx(
+                    () => AnimatedCounter(
+                      child: Text(
+                        controller.chaosFactor().toString(),
+                        key: Key(controller.chaosFactor().toString()),
+                        style: const TextStyle(fontSize: 32),
+                      ),
                     ),
                   ),
                 ),

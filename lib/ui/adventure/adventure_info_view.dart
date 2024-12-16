@@ -25,6 +25,7 @@ class AdventureInfoView extends GetView<AdventureInfoController> {
     final theme = Theme.of(context);
 
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Obx(

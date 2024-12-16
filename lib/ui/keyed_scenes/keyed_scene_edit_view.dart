@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import '../../helpers/input_validators.dart';
 import '../../helpers/utils.dart';
 import '../styles.dart';
+import '../widgets/animated_counter.dart';
 import '../widgets/edit_dialog.dart';
 import 'keyed_scene.dart';
 
@@ -129,17 +130,22 @@ class _Count extends StatelessWidget {
               ),
 
               // value
-              Obx(() => SizedBox(
+              Obx(
+                () => AnimatedCounter(
+                  child: SizedBox(
+                    key: Key(count.toString()),
                     width: 28,
                     child: Text(
-                      count.value.toString(),
+                      count.toString(),
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                  )),
+                  ),
+                ),
+              ),
 
               // plus 1
               IconButton(

@@ -215,6 +215,7 @@ abstract class ListableItemListItemView<TItem extends ListableItem>
 
             // number of items
             RoundBadge(
+              key: key,
               backgroundColor: colorScheme.secondary,
               color: colorScheme.onSecondary,
               text: 'x${_listItem.count}',

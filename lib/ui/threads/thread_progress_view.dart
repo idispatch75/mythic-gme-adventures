@@ -223,12 +223,23 @@ class _ProgressPhaseView extends StatelessWidget {
 
         return Padding(
           padding: EdgeInsets.only(left: index == 0 ? 0 : 4),
-          child: Container(
-            width: progressWidth,
-            height: progressWidth,
-            color: color,
-            foregroundDecoration: BoxDecoration(
-              border: Border.all(color: borderColor),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 400),
+            switchInCurve: Curves.easeIn,
+            switchOutCurve: Curves.easeOut,
+            transitionBuilder: (child, animation) => FadeTransition(
+              key: ValueKey<Key?>(child.key),
+              opacity: animation,
+              child: child,
+            ),
+            child: Container(
+              key: ValueKey(color),
+              width: progressWidth,
+              height: progressWidth,
+              color: color,
+              foregroundDecoration: BoxDecoration(
+                border: Border.all(color: borderColor),
+              ),
             ),
           ),
         );

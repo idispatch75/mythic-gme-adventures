@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:animated_list_plus/animated_list_plus.dart';
-import 'package:animated_list_plus/transitions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -75,15 +74,15 @@ Widget defaultAnimatedListView<TItem extends Object>({
   return ImplicitlyAnimatedList<TItem>(
     items: items,
     areItemsTheSame: comparer ?? (a, b) => a == b,
-    itemBuilder: (context, animation, item, index) => SizeFadeTransition(
-      animation: animation,
-      curve: Curves.easeOut,
+    insertDuration: const Duration(milliseconds: 500),
+    removeDuration: const Duration(milliseconds: 400),
+    updateDuration: const Duration(milliseconds: 300),
+    itemBuilder: (context, animation, item, index) => SizeTransition(
+      sizeFactor: CurvedAnimation(parent: animation, curve: Curves.easeOut),
       child: itemBuilder(context, item, index),
     ),
-    insertDuration: const Duration(milliseconds: 700),
-    removeItemBuilder: (context, animation, item) => SizeFadeTransition(
-      animation: animation,
-      curve: Curves.easeIn,
+    removeItemBuilder: (context, animation, item) => SizeTransition(
+      sizeFactor: CurvedAnimation(parent: animation, curve: Curves.easeIn),
       child: removedItemBuilder(context, item),
     ),
     separatorBuilder: (_, __) => const Divider(height: 0, thickness: 1),

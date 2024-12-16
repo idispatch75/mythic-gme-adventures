@@ -121,7 +121,7 @@ class AdventureAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return const Padding(
-      padding: EdgeInsets.fromLTRB(16, 4, 4, 4),
+      padding: EdgeInsets.fromLTRB(16, 4, 4, 0),
       child: AdventureInfoView(dense: true),
     );
   }
