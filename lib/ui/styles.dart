@@ -158,13 +158,22 @@ ThemeData _buildTheme(ColorScheme colorScheme) {
     navigationBarTheme: const NavigationBarThemeData(elevation: 6),
   );
 
-  final textTheme = GoogleFonts.rubikTextTheme(theme.textTheme).copyWith(
-    headlineMedium:
-        GoogleFonts.staatliches(textStyle: theme.textTheme.headlineMedium),
-    titleLarge: GoogleFonts.staatliches(textStyle: theme.textTheme.titleLarge),
-    titleMedium:
-        GoogleFonts.staatliches(textStyle: theme.textTheme.titleMedium),
-    titleSmall: GoogleFonts.staatliches(textStyle: theme.textTheme.titleSmall),
+  const bodyTextTheme = GoogleFonts.rubikTextTheme;
+  const titleTextStyle = GoogleFonts.notoSans;
+
+  final textTheme = bodyTextTheme(theme.textTheme).copyWith(
+    headlineMedium: titleTextStyle(
+        textStyle: theme.textTheme.headlineMedium!
+            .copyWith(fontWeight: FontWeight.w600)),
+    titleLarge: titleTextStyle(
+        textStyle:
+            theme.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w600)),
+    titleMedium: titleTextStyle(
+        textStyle:
+            theme.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w600)),
+    titleSmall: titleTextStyle(
+        textStyle: theme.textTheme.titleSmall!
+            .copyWith(fontWeight: FontWeight.w600, fontSize: 12)),
   );
 
   return theme.copyWith(textTheme: textTheme);

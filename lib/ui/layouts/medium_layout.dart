@@ -56,8 +56,8 @@ class _MediumLayoutOracles extends GetView<LayoutController> {
     return LayoutTabBar(
       tabIndex: controller.oraclesTabIndex,
       tabs: const [
-        Tab(text: 'Tables'),
-        Tab(text: 'Dice Roller'),
+        Tab(text: 'TABLES'),
+        Tab(text: 'DICE ROLLER'),
       ],
       children: [
         // tables
@@ -167,7 +167,7 @@ class _MediumLayoutScenes extends HookWidget {
             Layout.horizontalSpacer,
 
             // scenes
-            const Header('Scenes'),
+            const Header('SCENES'),
             const Expanded(child: ScenesView()),
           ],
         );

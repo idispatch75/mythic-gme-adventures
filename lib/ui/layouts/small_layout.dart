@@ -64,11 +64,11 @@ class _SmallLayoutOracles extends HookWidget {
     return LayoutTabBar(
       tabIndex: controller.oraclesTabIndex,
       tabs: [
-        Tab(text: 'Tables'),
+        Tab(text: 'TABLES'),
         Obx(() {
-          return Tab(text: getPhysicalDiceModeEnabled ? 'Lookup' : 'Roll Log');
+          return Tab(text: getPhysicalDiceModeEnabled ? 'LOOKUP' : 'ROLL LOG');
         }),
-        Tab(text: 'Dice Roller'),
+        Tab(text: 'DICE ROLLER'),
       ],
       children: [
         // tables
@@ -151,7 +151,7 @@ class SmallLayoutScenes extends HookWidget {
         );
       } else {
         Widget keyedSceneTab = const Text(
-          'Keyed Scenes',
+          'KEYED SCENES',
           softWrap: false,
           overflow: TextOverflow.fade,
         );
@@ -174,9 +174,9 @@ class SmallLayoutScenes extends HookWidget {
         return LayoutTabBar(
           tabIndex: layoutController.sceneTabIndex,
           tabs: [
-            const Tab(text: 'Threads'),
-            const Tab(text: 'Characters'),
-            const Tab(text: 'Scenes'),
+            const Tab(text: 'THREADS'),
+            const Tab(text: 'CHARACTERS'),
+            const Tab(text: 'SCENES'),
             Tab(child: keyedSceneTab),
           ],
           children: [
@@ -188,14 +188,14 @@ class SmallLayoutScenes extends HookWidget {
                 getZoneDecoration(const ChaosFactorView(dense: true)),
                 Expanded(
                   child: _HeaderView(
-                    title: 'Scenes',
+                    title: 'SCENES',
                     child: const ScenesView(dense: true),
                   ),
                 ),
               ],
             ),
             _HeaderView(
-              title: 'Keyed Scenes',
+              title: 'KEYED SCENES',
               child: const KeyedScenesView(),
             ),
           ],
@@ -220,32 +220,32 @@ class SmallLayoutOther extends HookWidget {
       return LayoutTabBar(
         tabIndex: controller.otherTabIndex,
         tabs: [
-          const Tab(text: 'Threads'),
-          const Tab(text: 'Characters'),
-          if (hasFeatures) const Tab(text: 'Features'),
-          const Tab(text: 'Players'),
-          const Tab(text: 'Notes'),
+          const Tab(text: 'THREADS'),
+          const Tab(text: 'CHARACTERS'),
+          if (hasFeatures) const Tab(text: 'FEATURES'),
+          const Tab(text: 'PLAYERS'),
+          const Tab(text: 'NOTES'),
         ],
         children: [
           _HeaderView(
-            title: 'Threads',
+            title: 'THREADS',
             child: ThreadsView(showAddToListNotification: true),
           ),
           _HeaderView(
-            title: 'Characters',
+            title: 'CHARACTERS',
             child: CharactersView(showAddToListNotification: true),
           ),
           if (hasFeatures)
             _HeaderView(
-              title: 'Features',
+              title: 'FEATURES',
               child: const FeaturesView(),
             ),
           _HeaderView(
-            title: 'Players',
+            title: 'PLAYERS',
             child: const PlayerCharactersView(),
           ),
           _HeaderView(
-            title: 'Notes',
+            title: 'NOTES',
             child: const NotesView(),
           ),
         ],
