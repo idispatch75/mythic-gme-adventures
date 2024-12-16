@@ -103,16 +103,17 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                                     },
                                     menuChildren: [
                                       MenuItemButton(
-                                        leadingIcon: Icon(Icons.download),
+                                        leadingIcon: const Icon(Icons.download),
                                         onPressed: controller
                                             .importLocalCustomMeaningTables,
-                                        child: Text('Import tables'),
+                                        child: const Text('Import tables'),
                                       ),
                                       MenuItemButton(
-                                        leadingIcon: Icon(Icons.delete_forever),
+                                        leadingIcon:
+                                            const Icon(Icons.delete_forever),
                                         onPressed: controller
                                             .deleteLocalCustomMeaningTables,
-                                        child: Text('Delete tables'),
+                                        child: const Text('Delete tables'),
                                       ),
                                     ],
                                   ),
@@ -127,7 +128,7 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                                     onPressed: !controller.status().isLoading
                                         ? controller.backupLocalAdventures
                                         : null,
-                                    icon: Icon(Icons.save_alt_outlined),
+                                    icon: const Icon(Icons.save_alt_outlined),
                                   ),
                                 ),
 

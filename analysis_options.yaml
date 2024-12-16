@@ -26,3 +26,7 @@ linter:
     - unawaited_futures
     - use_is_even_rather_than_modulo
     - avoid_dynamic_calls
+    - prefer_const_constructors
+    - prefer_const_constructors_in_immutables
+    - prefer_const_declarations
+    - prefer_const_literals_to_create_immutables

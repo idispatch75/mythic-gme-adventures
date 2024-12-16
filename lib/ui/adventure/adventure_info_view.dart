@@ -205,7 +205,7 @@ class _AdventureActionsButton extends GetView<AdventureInfoController> {
                           Text.rich(
                             TextSpan(
                               children: [
-                                TextSpan(
+                                const TextSpan(
                                   text:
                                       'Manage adventures using the rules of Mythic Game Master Emulator, 2nd Edition.\n'
                                       'Find out more on the ',
@@ -215,7 +215,7 @@ class _AdventureActionsButton extends GetView<AdventureInfoController> {
                                   url:
                                       'https://idispatch75.github.io/mythic-gme-adventures/',
                                 ),
-                                TextSpan(text: '.'),
+                                const TextSpan(text: '.'),
                               ],
                             ),
                           ),
