@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:animated_list_plus/animated_list_plus.dart';
+import 'package:animated_list_plus/transitions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -63,14 +65,27 @@ Future<T?> showAppModalBottomSheet<T>(BuildContext context, Widget content) {
   );
 }
 
-/// Builds a [ListView] with a [Divider] as separator.
-ListView defaultListView({
-  required int itemCount,
-  required NullableIndexedWidgetBuilder itemBuilder,
+/// Builds an animated list view with a [Divider] as separator.
+Widget defaultAnimatedListView<TItem extends Object>({
+  required List<TItem> items,
+  required Widget Function(BuildContext, TItem item, int index) itemBuilder,
+  required Widget Function(BuildContext, TItem item) removedItemBuilder,
+  bool Function(TItem a, TItem b)? comparer,
 }) {
-  return ListView.separated(
-    itemCount: itemCount,
-    itemBuilder: itemBuilder,
+  return ImplicitlyAnimatedList<TItem>(
+    items: items,
+    areItemsTheSame: comparer ?? (a, b) => a == b,
+    itemBuilder: (context, animation, item, index) => SizeFadeTransition(
+      animation: animation,
+      curve: Curves.easeOut,
+      child: itemBuilder(context, item, index),
+    ),
+    insertDuration: const Duration(milliseconds: 700),
+    removeItemBuilder: (context, animation, item) => SizeFadeTransition(
+      animation: animation,
+      curve: Curves.easeIn,
+      child: removedItemBuilder(context, item),
+    ),
     separatorBuilder: (_, __) => const Divider(height: 0, thickness: 1),
   );
 }

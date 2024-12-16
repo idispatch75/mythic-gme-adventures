@@ -47,12 +47,15 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                     // choose between the list or the loader
                     Widget? list;
                     if (controller.status().isSuccess) {
-                      list = defaultListView(
-                        itemCount: controller.adventures.length,
-                        itemBuilder: (_, index) {
-                          final adventure = controller.adventures[index];
-                          return _IndexAdventureView(adventure);
+                      list = defaultAnimatedListView(
+                        items: controller.adventures,
+                        itemBuilder: (_, item, __) {
+                          return _IndexAdventureView(item);
                         },
+                        removedItemBuilder: (_, item) {
+                          return _IndexAdventureView(item, isDeleted: true);
+                        },
+                        comparer: (a, b) => a.source.id == b.source.id,
                       );
                     } else if (controller.status().isLoading) {
                       list = loadingIndicator;
@@ -420,8 +423,9 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
 
 class _IndexAdventureView extends GetView<AdventureIndexController> {
   final IndexAdventureVM _adventure;
+  final bool isDeleted;
 
-  const _IndexAdventureView(this._adventure);
+  const _IndexAdventureView(this._adventure, {this.isDeleted = false});
 
   @override
   Widget build(BuildContext context) {
@@ -433,25 +437,29 @@ class _IndexAdventureView extends GetView<AdventureIndexController> {
         _adventure.saveDateText,
         style: theme.textTheme.labelSmall,
       ),
-      trailing: ActionsMenu([
-        // restore
-        MenuItemButton(
-          onPressed: _restoreAdventure,
-          leadingIcon: const Icon(Icons.restore),
-          child: const Text('Restore'),
-        ),
+      trailing: !isDeleted
+          ? ActionsMenu([
+              // restore
+              MenuItemButton(
+                onPressed: _restoreAdventure,
+                leadingIcon: const Icon(Icons.restore),
+                child: const Text('Restore'),
+              ),
 
-        // delete
-        MenuItemButton(
-          onPressed: () => controller.deleteAdventure(_adventure),
-          leadingIcon: Icon(
-            Icons.delete_forever,
-            color: theme.colorScheme.error,
-          ),
-          child: const Text('Delete'),
-        ),
-      ]),
-      onTap: () => controller.showAdventure(context, _adventure),
+              // delete
+              MenuItemButton(
+                onPressed: () => controller.deleteAdventure(_adventure),
+                leadingIcon: Icon(
+                  Icons.delete_forever,
+                  color: theme.colorScheme.error,
+                ),
+                child: const Text('Delete'),
+              ),
+            ])
+          : null,
+      onTap: !isDeleted
+          ? () => controller.showAdventure(context, _adventure)
+          : null,
     );
   }
 

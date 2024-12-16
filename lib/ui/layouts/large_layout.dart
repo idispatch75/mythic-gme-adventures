@@ -190,8 +190,8 @@ class _LargeLayoutTabs extends HookWidget {
           controller: tabController,
           tabs: [
             const Tab(text: 'Scenes'),
-            const Tab(text: 'Characters'),
             const Tab(text: 'Threads'),
+            const Tab(text: 'Characters'),
             if (hasFeatures) const Tab(text: 'Features'),
             const Tab(text: 'Players'),
             const Tab(text: 'Notes'),
@@ -202,8 +202,8 @@ class _LargeLayoutTabs extends HookWidget {
             controller: tabController,
             children: [
               const ScenesView(),
-              CharactersView(),
               ThreadsView(),
+              CharactersView(),
               if (hasFeatures) const FeaturesView(),
               const PlayerCharactersView(),
               const NotesView(),

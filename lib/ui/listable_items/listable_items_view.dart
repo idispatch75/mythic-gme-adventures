@@ -23,7 +23,7 @@ abstract class ListableItemsView<TItem extends ListableItem>
 
   void createItem();
 
-  Widget createItemView(Rx<TItem> item);
+  Widget createItemView(Rx<TItem> item, {bool isDeleted = false});
 
   @override
   Widget build(BuildContext context) {
@@ -61,11 +61,15 @@ abstract class ListableItemsView<TItem extends ListableItem>
         // list
         Expanded(
           child: Obx(
-            () => defaultListView(
-              itemCount: _controller.items.length,
-              itemBuilder: (_, index) {
-                return createItemView(_controller.items[index]);
+            () => defaultAnimatedListView(
+              items: _controller.items(),
+              itemBuilder: (_, item, __) {
+                return createItemView(item);
               },
+              removedItemBuilder: (_, item) {
+                return createItemView(item, isDeleted: true);
+              },
+              comparer: (a, b) => a().id == b().id,
             ),
           ),
         ),
@@ -89,16 +93,17 @@ abstract class ListableItemsView<TItem extends ListableItem>
 abstract class ListableItemView<TItem extends ListableItem>
     extends StatelessWidget {
   final ListableItemsService<TItem> _controller;
-
   final Rx<TItem> _item;
   final String _itemTypeLabel;
   final bool _showAddToListNotification;
+  final bool isDeleted;
 
   const ListableItemView(
     this._controller,
     this._item,
     this._itemTypeLabel,
     this._showAddToListNotification, {
+    this.isDeleted = false,
     super.key,
   });
 
@@ -127,7 +132,7 @@ abstract class ListableItemView<TItem extends ListableItem>
         Widget? addToListButton;
         if (!item.isArchived) {
           addToListButton = IconButton(
-            onPressed: () => _addToList(context),
+            onPressed: !isDeleted ? () => _addToList(context) : null,
             icon: const Icon(Icons.playlist_add),
             tooltip: 'Add this $_itemTypeLabel'
                 ' to the ${_itemTypeLabel}s List',
@@ -138,7 +143,7 @@ abstract class ListableItemView<TItem extends ListableItem>
           title: Text(item.name, style: textStyle),
           subtitle: subtitle,
           trailing: addToListButton,
-          onTap: _edit,
+          onTap: !isDeleted ? _edit : null,
         );
       }),
     );

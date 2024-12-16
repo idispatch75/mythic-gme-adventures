@@ -104,11 +104,13 @@ class ScenesView extends GetView<ScenesService> {
           // list
           Expanded(
             child: Obx(
-              () => defaultListView(
-                itemCount: scenes.length,
-                itemBuilder: (_, index) {
-                  final reverseIndex = scenes.length - index - 1;
-                  return _SceneView(reverseIndex, scenes[reverseIndex]);
+              () => defaultAnimatedListView(
+                items: scenes.reversed.toList(),
+                itemBuilder: (_, item, index) {
+                  return _SceneView(scenes.length - index - 1, item);
+                },
+                removedItemBuilder: (_, item) {
+                  return _SceneView(0, item, isDeleted: true);
                 },
               ),
             ),
@@ -252,8 +254,9 @@ class ScenesView extends GetView<ScenesService> {
 class _SceneView extends GetView<ScenesService> {
   final int _sceneIndex;
   final Rx<Scene> _scene;
+  final bool isDeleted;
 
-  const _SceneView(this._sceneIndex, this._scene);
+  const _SceneView(this._sceneIndex, this._scene, {this.isDeleted = false});
 
   @override
   Widget build(BuildContext context) {
@@ -262,14 +265,14 @@ class _SceneView extends GetView<ScenesService> {
         leading: RoundBadge(
           backgroundColor: AppStyles.sceneBadgeBackground,
           color: AppStyles.sceneBadgeOnBackground,
-          text: (_sceneIndex + 1).toString(),
+          text: !isDeleted ? (_sceneIndex + 1).toString() : '',
         ),
         title: Text(
           _scene().summary,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
-        onTap: _edit,
+        onTap: !isDeleted ? _edit : null,
       ),
     );
   }

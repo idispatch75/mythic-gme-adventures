@@ -22,12 +22,13 @@ class CharactersView extends ListableItemsView<Character> {
   void createItem() => createCharacter();
 
   @override
-  Widget createItemView(Rx<Character> item) {
+  Widget createItemView(Rx<Character> item, {bool isDeleted = false}) {
     return _CharacterView(
       _service,
       item,
       itemTypeLabel,
       showAddToListNotification,
+      isDeleted: isDeleted,
     );
   }
 
@@ -40,8 +41,9 @@ class _CharacterView extends ListableItemView<Character> {
     super._controller,
     super.item,
     super.itemTypeLabel,
-    super._showAddToListNotification,
-  );
+    super._showAddToListNotification, {
+    super.isDeleted,
+  });
 
   @override
   Widget createEditView(Character item, bool canDelete) {

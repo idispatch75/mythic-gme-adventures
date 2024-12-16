@@ -35,23 +35,34 @@ class ThreadsListView extends ListableItemsListView<Thread> {
   }
 
   @override
-  Widget createItemView(ListItem item, String itemLabel) {
-    final thread = _service.items.firstWhere((e) => e.value.id == item.itemId);
+  Widget createItemView(
+    ListItem<Thread> item,
+    String itemLabel, {
+    bool isDeleted = false,
+  }) {
+    final thread =
+        _service.items.firstWhereOrNull((e) => e.value.id == item.item.id) ??
+            item.item.obs;
 
     return Column(
       children: [
         // thread view
-        _ThreadView(_service, item, itemLabel),
+        _ThreadView(_service, item, itemLabel, isDeleted: isDeleted),
 
         // progress view
-        threadProgressViewWrapper(thread()),
+        threadProgressViewWrapper(thread(), isDeleted: isDeleted),
       ],
     );
   }
 }
 
 class _ThreadView extends ListableItemListItemView<Thread> {
-  const _ThreadView(super._controller, super._item, super._itemTypeLabel);
+  const _ThreadView(
+    super._controller,
+    super._item,
+    super._itemTypeLabel, {
+    super.isDeleted,
+  });
 
   @override
   Widget createEditView(Thread item, bool canDelete) {

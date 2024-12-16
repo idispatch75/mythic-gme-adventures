@@ -44,14 +44,15 @@ class FeaturesView extends GetView<FeaturesService> {
         }),
         Expanded(
           child: Obx(
-            () {
-              return defaultListView(
-                itemCount: features.length,
-                itemBuilder: (_, index) {
-                  return _FeatureView(features[index]);
-                },
-              );
-            },
+            () => defaultAnimatedListView(
+              items: features(),
+              itemBuilder: (_, item, __) {
+                return _FeatureView(item);
+              },
+              removedItemBuilder: (_, item) {
+                return _FeatureView(item, isDeleted: true);
+              },
+            ),
           ),
         ),
       ],
@@ -90,8 +91,9 @@ class FeaturesView extends GetView<FeaturesService> {
 
 class _FeatureView extends GetView<FeaturesService> {
   final Rx<Feature> _feature;
+  final bool isDeleted;
 
-  const _FeatureView(this._feature);
+  const _FeatureView(this._feature, {this.isDeleted = false});
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +109,7 @@ class _FeatureView extends GetView<FeaturesService> {
             _feature().name,
             style: textStyle,
           ),
-          onTap: _edit,
+          onTap: !isDeleted ? _edit : null,
         );
       },
     );

@@ -29,10 +29,13 @@ class KeyedScenesView extends GetView<KeyedScenesService> {
         // list
         Expanded(
           child: Obx(
-            () => defaultListView(
-              itemCount: scenes.length,
-              itemBuilder: (_, index) {
-                return _SceneView(scenes[index]);
+            () => defaultAnimatedListView(
+              items: scenes(),
+              itemBuilder: (_, item, __) {
+                return _SceneView(item);
+              },
+              removedItemBuilder: (_, item) {
+                return _SceneView(item, isDeleted: true);
               },
             ),
           ),
@@ -57,8 +60,9 @@ class KeyedScenesView extends GetView<KeyedScenesService> {
 
 class _SceneView extends GetView<KeyedScenesService> {
   final Rx<KeyedScene> _scene;
+  final bool isDeleted;
 
-  const _SceneView(this._scene);
+  const _SceneView(this._scene, {this.isDeleted = false});
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +73,7 @@ class _SceneView extends GetView<KeyedScenesService> {
           maxLines: 3,
           overflow: TextOverflow.ellipsis,
         ),
-        onTap: _edit,
+        onTap: !isDeleted ? _edit : null,
       ),
     );
   }

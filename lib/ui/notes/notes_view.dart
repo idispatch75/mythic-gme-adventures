@@ -25,10 +25,13 @@ class NotesView extends GetView<NotesService> {
         ]),
         Expanded(
           child: Obx(
-            () => defaultListView(
-              itemCount: notes.length,
-              itemBuilder: (_, index) {
-                return _NoteView(notes[index]);
+            () => defaultAnimatedListView(
+              items: notes(),
+              itemBuilder: (_, item, __) {
+                return _NoteView(item);
+              },
+              removedItemBuilder: (_, item) {
+                return _NoteView(item, isDeleted: true);
               },
             ),
           ),
@@ -53,15 +56,16 @@ class NotesView extends GetView<NotesService> {
 
 class _NoteView extends GetView<NotesService> {
   final Rx<Note> _note;
+  final bool isDeleted;
 
-  const _NoteView(this._note);
+  const _NoteView(this._note, {this.isDeleted = false});
 
   @override
   Widget build(BuildContext context) {
     return Obx(
       () => ListTile(
         title: Text(_note().title),
-        onTap: _edit,
+        onTap: !isDeleted ? _edit : null,
       ),
     );
   }

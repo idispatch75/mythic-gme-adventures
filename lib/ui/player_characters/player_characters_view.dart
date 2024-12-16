@@ -47,10 +47,13 @@ class PlayerCharactersView extends GetView<PlayerCharactersService> {
         }),
         Expanded(
           child: Obx(
-            () => defaultListView(
-              itemCount: players.length,
-              itemBuilder: (_, index) {
-                return _PlayerCharacterView(players[index]);
+            () => defaultAnimatedListView(
+              items: players(),
+              itemBuilder: (_, item, __) {
+                return _PlayerCharacterView(item);
+              },
+              removedItemBuilder: (_, item) {
+                return _PlayerCharacterView(item, isDeleted: true);
               },
             ),
           ),
@@ -86,15 +89,16 @@ class PlayerCharactersView extends GetView<PlayerCharactersService> {
 
 class _PlayerCharacterView extends GetView<PlayerCharactersService> {
   final Rx<PlayerCharacter> _player;
+  final bool isDeleted;
 
-  const _PlayerCharacterView(this._player);
+  const _PlayerCharacterView(this._player, {this.isDeleted = false});
 
   @override
   Widget build(BuildContext context) {
     return Obx(
       () => ListTile(
         title: Text(_player().name),
-        onTap: _edit,
+        onTap: !isDeleted ? _edit : null,
       ),
     );
   }
