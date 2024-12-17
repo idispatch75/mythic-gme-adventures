@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../helpers/utils.dart';
+import '../../helpers/list_view_utils.dart';
 import '../widgets/button_row.dart';
 import 'keyed_scene.dart';
 import 'keyed_scene_edit_view.dart';
@@ -29,7 +29,7 @@ class KeyedScenesView extends GetView<KeyedScenesService> {
         // list
         Expanded(
           child: Obx(
-            () => defaultAnimatedListView(
+            () => defaultReorderableListView(
               items: scenes(),
               itemBuilder: (_, item, __) {
                 return _SceneView(item);
@@ -37,6 +37,7 @@ class KeyedScenesView extends GetView<KeyedScenesService> {
               removedItemBuilder: (_, item) {
                 return _SceneView(item, isDeleted: true);
               },
+              onReorderFinished: controller.replaceAll,
             ),
           ),
         ),

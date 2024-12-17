@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../helpers/list_view_utils.dart';
 import '../../helpers/utils.dart';
 import '../preferences/preferences.dart';
 import '../random_events/random_event.dart';
@@ -44,7 +45,7 @@ class FeaturesView extends GetView<FeaturesService> {
         }),
         Expanded(
           child: Obx(
-            () => defaultAnimatedListView(
+            () => defaultReorderableListView(
               items: features(),
               itemBuilder: (_, item, __) {
                 return _FeatureView(item);
@@ -52,6 +53,7 @@ class FeaturesView extends GetView<FeaturesService> {
               removedItemBuilder: (_, item) {
                 return _FeatureView(item, isDeleted: true);
               },
+              onReorderFinished: controller.replaceAll,
             ),
           ),
         ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../helpers/utils.dart';
+import '../../helpers/list_view_utils.dart';
 import '../widgets/button_row.dart';
 import 'note.dart';
 import 'note_edit_view.dart';
@@ -11,8 +11,6 @@ class NotesView extends GetView<NotesService> {
 
   @override
   Widget build(BuildContext context) {
-    final notes = controller.notes;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -25,14 +23,15 @@ class NotesView extends GetView<NotesService> {
         ]),
         Expanded(
           child: Obx(
-            () => defaultAnimatedListView(
-              items: notes(),
+            () => defaultReorderableListView(
+              items: controller.notes(),
               itemBuilder: (_, item, __) {
                 return _NoteView(item);
               },
               removedItemBuilder: (_, item) {
                 return _NoteView(item, isDeleted: true);
               },
+              onReorderFinished: controller.replaceAll,
             ),
           ),
         ),

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:animated_list_plus/animated_list_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -61,31 +60,6 @@ Future<T?> showAppModalBottomSheet<T>(BuildContext context, Widget content) {
         ],
       );
     },
-  );
-}
-
-/// Builds an animated list view with a [Divider] as separator.
-Widget defaultAnimatedListView<TItem extends Object>({
-  required List<TItem> items,
-  required Widget Function(BuildContext, TItem item, int index) itemBuilder,
-  required Widget Function(BuildContext, TItem item) removedItemBuilder,
-  bool Function(TItem a, TItem b)? comparer,
-}) {
-  return ImplicitlyAnimatedList<TItem>(
-    items: items,
-    areItemsTheSame: comparer ?? (a, b) => a == b,
-    insertDuration: const Duration(milliseconds: 500),
-    removeDuration: const Duration(milliseconds: 400),
-    updateDuration: const Duration(milliseconds: 300),
-    itemBuilder: (context, animation, item, index) => SizeTransition(
-      sizeFactor: CurvedAnimation(parent: animation, curve: Curves.easeOut),
-      child: itemBuilder(context, item, index),
-    ),
-    removeItemBuilder: (context, animation, item) => SizeTransition(
-      sizeFactor: CurvedAnimation(parent: animation, curve: Curves.easeIn),
-      child: removedItemBuilder(context, item),
-    ),
-    separatorBuilder: (_, __) => const Divider(height: 0, thickness: 1),
   );
 }
 

@@ -11,6 +11,7 @@ abstract class ListableItem {
   String? summary;
   String? notes;
   bool isArchived;
+  int displayOrder;
 
   ListableItem(
     this.id,
@@ -18,6 +19,7 @@ abstract class ListableItem {
     this.summary,
     this.notes,
     this.isArchived = false,
+    this.displayOrder = 0,
   });
 
   @override
@@ -36,6 +38,7 @@ abstract class ListableItem {
         if (summary != null) 'summary': summary,
         if (notes != null) 'notes': notes,
         'isArchived': isArchived,
+        'displayOrder': displayOrder,
       };
 
   ListableItem.fromJson(JsonObj json)
@@ -45,6 +48,7 @@ abstract class ListableItem {
           summary: json['summary'],
           notes: json['notes'],
           isArchived: json['isArchived'],
+          displayOrder: json['displayOrder'] ?? 0,
         );
 }
 
@@ -56,13 +60,19 @@ class ListableItemsService<TItem extends ListableItem> extends GetxService
   ListableItemsService();
 
   Rx<TItem> add(TItem item) {
+    item.displayOrder = items.length;
+
     final rx = item.obs;
-    items.add(item.obs);
+    items.add(rx);
     _sortItems(items);
 
     requestSave();
 
     return rx;
+  }
+
+  void archive(TItem item, bool isArchived) {
+    _archiveItem(item, isArchived, items, itemsList);
   }
 
   void delete(TItem item) {
@@ -74,8 +84,14 @@ class ListableItemsService<TItem extends ListableItem> extends GetxService
     requestSave();
   }
 
-  void archive(TItem item, bool isArchived) {
-    _archiveItem(item, isArchived, items, itemsList);
+  void replaceAll(List<Rx<TItem>> newItems) {
+    for (var i = 0; i < newItems.length; i++) {
+      newItems[i].value.displayOrder = i;
+    }
+    items.replaceAll(newItems);
+    _sortItems(items);
+
+    requestSave();
   }
 
   void addToItemsList(Rx<TItem> item) {
@@ -138,10 +154,12 @@ class ListableItemsService<TItem extends ListableItem> extends GetxService
     // sort the list of items based on archived status
     items.value = items.sorted((a, b) {
       if (a.value.isArchived == b.value.isArchived) {
-        return a.value.id - b.value.id;
+        return a.value.displayOrder - b.value.displayOrder;
       } else {
         return a.value.isArchived ? 1 : -1;
       }
     });
+
+    itemsList.refresh();
   }
 }

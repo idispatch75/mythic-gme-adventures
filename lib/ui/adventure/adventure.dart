@@ -6,7 +6,7 @@ import '../../persisters/persister.dart';
 import '../fate_chart/fate_chart.dart';
 
 class AdventureService extends GetxService with SavableMixin {
-  static const supportedSchemaVersion = 1;
+  static const supportedSchemaVersion = 2;
 
   final int schemaVersion;
   final int id;

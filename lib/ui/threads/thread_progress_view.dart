@@ -7,14 +7,19 @@ import 'thread.dart';
 import 'thread_ctl.dart';
 
 Widget threadProgressViewWrapper(Thread thread, {bool isDeleted = false}) {
-  return Obx(() {
-    return (thread.isTracked() && !thread.isArchived)
-        ? Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: ThreadProgressView(thread.toTag(), isDeleted: isDeleted),
-          )
-        : const SizedBox();
-  });
+  return AnimatedSize(
+    duration: const Duration(milliseconds: 400),
+    curve: Curves.easeOut,
+    alignment: Alignment.topCenter,
+    child: Obx(() {
+      return (thread.isTracked() && !thread.isArchived)
+          ? Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: ThreadProgressView(thread.toTag(), isDeleted: isDeleted),
+            )
+          : const SizedBox(width: double.infinity);
+    }),
+  );
 }
 
 class ThreadProgressView extends GetView<ThreadController> {

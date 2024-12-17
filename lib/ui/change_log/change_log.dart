@@ -95,6 +95,7 @@ const _versions = [
   _Version('1.7.0', [
     _Entry(
         _Platform.all, 'Added animations to lists, and thread progress track.'),
+    _Entry(_Platform.all, 'Added the ability to sort some lists.'),
     _Entry(_Platform.all, 'Use a more legible font for titles and headers.'),
   ]),
   _Version('1.6.1', [
