@@ -45,6 +45,7 @@ class ThreadsListView extends ListableItemsListView<Thread> {
             item.item.obs;
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         // thread view
         _ThreadView(_service, item, itemLabel, isDeleted: isDeleted),

@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
 import '../../helpers/json_utils.dart';
+import '../../helpers/rx_list_extensions.dart';
 import '../../persisters/persister.dart';
 
 class Note {
@@ -30,6 +31,12 @@ class NotesService extends GetxService with SavableMixin {
 
   void delete(Note note) {
     notes.removeWhere((e) => e.value == note);
+
+    requestSave();
+  }
+
+  void replaceAll(List<Rx<Note>> newNotes) {
+    notes.replaceAll(newNotes);
 
     requestSave();
   }

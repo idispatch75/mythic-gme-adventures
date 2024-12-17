@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
 import '../../helpers/json_utils.dart';
+import '../../helpers/rx_list_extensions.dart';
 import '../../persisters/persister.dart';
 
 class KeyedScene {
@@ -55,6 +56,12 @@ class KeyedScenesService extends GetxService with SavableMixin {
 
   void delete(KeyedScene scene) {
     scenes.removeWhere((e) => e.value == scene);
+
+    requestSave();
+  }
+
+  void replaceAll(List<Rx<KeyedScene>> newScenes) {
+    scenes.replaceAll(newScenes);
 
     requestSave();
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../helpers/list_view_utils.dart';
 import '../../helpers/utils.dart';
 import '../preferences/preferences.dart';
 import '../roll_log/roll_log.dart';
@@ -61,7 +62,7 @@ abstract class ListableItemsView<TItem extends ListableItem>
         // list
         Expanded(
           child: Obx(
-            () => defaultAnimatedListView(
+            () => defaultReorderableListView(
               items: _controller.items(),
               itemBuilder: (_, item, __) {
                 return createItemView(item);
@@ -70,6 +71,8 @@ abstract class ListableItemsView<TItem extends ListableItem>
                 return createItemView(item, isDeleted: true);
               },
               comparer: (a, b) => a().id == b().id,
+              keyProvider: (item) => ValueKey(item().id),
+              onReorderFinished: _controller.replaceAll,
             ),
           ),
         ),

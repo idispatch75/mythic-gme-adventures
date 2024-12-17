@@ -25,6 +25,7 @@ class ThreadsView extends ListableItemsView<Thread> {
   @override
   Widget createItemView(Rx<Thread> item, {bool isDeleted = false}) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         // list item
         _ThreadView(

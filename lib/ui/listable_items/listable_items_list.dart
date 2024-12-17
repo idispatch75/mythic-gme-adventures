@@ -4,8 +4,8 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../helpers/list_view_utils.dart';
 import '../../helpers/rx_list_extensions.dart';
-import '../../helpers/utils.dart';
 import '../preferences/preferences.dart';
 import '../random_events/random_event.dart';
 import '../roll_log/roll_log.dart';
@@ -50,7 +50,7 @@ abstract class ListableItemsListController<TItem extends ListableItem>
       this.items.replaceAll(groupBy(items, (e) => e.value)
           .entries
           .map((e) => ListItem(item: e.key, count: e.value.length))
-          .sorted((a, b) => a.item.id - b.item.id));
+          .sorted((a, b) => a.item.displayOrder - b.item.displayOrder));
     });
   }
 
