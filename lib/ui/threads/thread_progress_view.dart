@@ -13,9 +13,13 @@ Widget threadProgressViewWrapper(Thread thread, {bool isDeleted = false}) {
     alignment: Alignment.topCenter,
     child: Obx(() {
       return (thread.isTracked() && !thread.isArchived)
-          ? Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: ThreadProgressView(thread.toTag(), isDeleted: isDeleted),
+          ? Card(
+              margin: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+              elevation: 1,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: ThreadProgressView(thread.toTag(), isDeleted: isDeleted),
+              ),
             )
           : const SizedBox(width: double.infinity);
     }),
@@ -241,8 +245,9 @@ class _ProgressPhaseView extends StatelessWidget {
               key: ValueKey(color),
               width: progressWidth,
               height: progressWidth,
-              color: color,
               foregroundDecoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(5),
                 border: Border.all(color: borderColor),
               ),
             ),
