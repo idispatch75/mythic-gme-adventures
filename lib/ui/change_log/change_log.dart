@@ -92,6 +92,10 @@ class _Version {
 
 // add the new version before the previous versions
 const _versions = [
+  _Version('1.8.0', [
+    _Entry(_Platform.all,
+        'Fixed incorrect wording "Extreme" instead of "Exceptional" in Fate answers.'),
+  ]),
   _Version('1.7.0', [
     _Entry(
         _Platform.all, 'Added animations to lists, and thread progress track.'),

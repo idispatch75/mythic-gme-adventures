@@ -130,10 +130,10 @@ class _FateChartView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final outcomeText = switch (_roll.outcome) {
-      FateChartRollOutcome.extremeNo => 'Extreme No',
+      FateChartRollOutcome.extremeNo => 'Exceptional No',
       FateChartRollOutcome.no => 'No',
       FateChartRollOutcome.yes => 'Yes',
-      FateChartRollOutcome.extremeYes => 'Extreme Yes',
+      FateChartRollOutcome.extremeYes => 'Exceptional Yes',
     };
 
     return Column(
