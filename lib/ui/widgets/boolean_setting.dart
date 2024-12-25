@@ -7,13 +7,13 @@ class BooleanSetting extends StatelessWidget {
   final RxBool setting;
   final String text;
   final String? subtext;
-  final bool hasTopPadding;
+  final bool withTopPadding;
 
   const BooleanSetting({
     required this.setting,
     required this.text,
     this.subtext,
-    this.hasTopPadding = false,
+    this.withTopPadding = false,
     super.key,
   });
 
@@ -51,7 +51,7 @@ class BooleanSetting extends StatelessWidget {
       );
     }
 
-    if (hasTopPadding) {
+    if (withTopPadding) {
       widget = Padding(
         padding: const EdgeInsets.only(top: 16.0),
         child: widget,

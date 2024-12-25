@@ -72,7 +72,7 @@ class AdventureEditView extends HookWidget {
             subtext: 'If checked, the Features list appears in the More tab,'
                 ' Random Events use the Event Focus table of Prepared Adventures,'
                 ' and altered/interrupt scenes are replaced with a Random Event.',
-            hasTopPadding: true,
+            withTopPadding: true,
           ),
         ],
       ),

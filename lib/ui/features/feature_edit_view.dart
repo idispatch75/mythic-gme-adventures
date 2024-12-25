@@ -75,7 +75,7 @@ class FeatureEditView extends HookWidget {
               text: 'Archived',
               subtext:
                   'Archiving a Feature excludes it from Random Event rolls',
-              hasTopPadding: true,
+              withTopPadding: true,
             ),
         ],
       ),

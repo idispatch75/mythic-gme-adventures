@@ -171,7 +171,7 @@ class PreferencesEditView extends HookWidget {
           BooleanSetting(
             setting: enableDarkMode,
             text: 'Dark mode',
-            hasTopPadding: true,
+            withTopPadding: true,
           ),
         ],
       ),

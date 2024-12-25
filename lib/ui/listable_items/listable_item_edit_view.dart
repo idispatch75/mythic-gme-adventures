@@ -89,7 +89,7 @@ abstract class ListableItemEditView<TItem extends ListableItem>
               subtext:
                   'Archiving a $_itemTypeLabel removes it from the ${_itemTypeLabel}s List'
                   ' and moves it at the end of the list of ${_itemTypeLabel}s.',
-              hasTopPadding: true,
+              withTopPadding: true,
             ),
         ],
       ),

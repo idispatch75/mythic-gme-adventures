@@ -95,6 +95,10 @@ const _versions = [
   _Version('1.8.0', [
     _Entry(_Platform.all,
         'Fixed incorrect wording "Extreme" instead of "Exceptional" in Fate answers.'),
+    _Entry(
+        _Platform.all,
+        'Lock the counter of Characters/Threads list to a maximum of 3, as recommended in the rules.'
+        'Can be toggled in the Global Settings.'),
   ]),
   _Version('1.7.0', [
     _Entry(

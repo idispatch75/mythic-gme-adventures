@@ -165,9 +165,9 @@ abstract class ListableItemView<TItem extends ListableItem>
   }
 
   void _addToList(BuildContext context) {
-    _controller.addToItemsList(_item);
+    final wasAdded = _controller.addToItemsList(_item);
 
-    if (_showAddToListNotification) {
+    if (wasAdded && _showAddToListNotification) {
       showSnackBar(
         context,
         '"${_item.value.name}" was added to the ${_itemTypeLabel}s List.',

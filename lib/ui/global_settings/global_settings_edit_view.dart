@@ -56,6 +56,7 @@ class GlobalSettingsEditView extends HookWidget {
         .toList();
 
     final allowChooseInLists = _settings.allowChooseInLists.obs;
+    final allowUnlimitedListCount = _settings.allowUnlimitedListCount.obs;
     final meaningTablesLanguage = _settings.meaningTablesLanguage.obs;
     if (!controller.meaningTableLanguages
         .containsKey(meaningTablesLanguage())) {
@@ -67,6 +68,7 @@ class GlobalSettingsEditView extends HookWidget {
       canDelete: false,
       onSave: () {
         _settings.allowChooseInLists = allowChooseInLists();
+        _settings.allowUnlimitedListCount = allowUnlimitedListCount();
         _settings.meaningTablesLanguage = meaningTablesLanguage();
         Get.find<MeaningTablesService>().language.value =
             _settings.meaningTablesLanguage;
@@ -85,6 +87,16 @@ class GlobalSettingsEditView extends HookWidget {
                   'Allow to roll "Choose" in the Characters and Threads lists',
               subtext:
                   'If unchecked, rolling will always pick an item in the list.',
+            ),
+
+            // Allow unlimited list count
+            BooleanSetting(
+              withTopPadding: true,
+              setting: allowUnlimitedListCount,
+              text: 'Allow unlimited counter in Characters/Threads Lists',
+              subtext:
+                  'The rules recommend not having more than ${GlobalSettingsService.maxNumberOfItemsInList} identical items in a List.'
+                  ' This is enforced unless you check this option.',
             ),
 
             // meaning tables language

@@ -4,13 +4,16 @@ import '../../helpers/json_utils.dart';
 import '../../persisters/persister.dart';
 
 class GlobalSettingsService extends GetxService with SavableMixin {
-  static const supportedSchemaVersion = 1;
+  static const supportedSchemaVersion = 2;
+
+  static const maxNumberOfItemsInList = 3;
 
   final int schemaVersion;
   bool allowChooseInLists;
   String meaningTablesLanguage;
   final Set<String> favoriteMeaningTables;
   List<String> characterTraitMeaningTables;
+  bool allowUnlimitedListCount;
   int? saveTimestamp;
 
   GlobalSettingsService({
@@ -19,6 +22,7 @@ class GlobalSettingsService extends GetxService with SavableMixin {
     this.meaningTablesLanguage = 'en',
     Set<String>? favoriteMeaningTables,
     List<String>? characterTraitMeaningTables,
+    this.allowUnlimitedListCount = false,
     this.saveTimestamp,
   })  : favoriteMeaningTables = favoriteMeaningTables ?? {},
         characterTraitMeaningTables = characterTraitMeaningTables ?? [];
@@ -53,6 +57,7 @@ class GlobalSettingsService extends GetxService with SavableMixin {
         'meaningTablesLanguage': meaningTablesLanguage,
         'favoriteMeaningTables': favoriteMeaningTables.toList(),
         'characterTraitMeaningTables': characterTraitMeaningTables,
+        'allowUnlimitedListCount': allowUnlimitedListCount,
         if (saveTimestamp != null) 'saveTimestamp': saveTimestamp,
       };
 
@@ -65,6 +70,7 @@ class GlobalSettingsService extends GetxService with SavableMixin {
               fromJsonValueList<String>(json['favoriteMeaningTables']).toSet(),
           characterTraitMeaningTables:
               fromJsonValueList<String>(json['characterTraitMeaningTables']),
+          allowUnlimitedListCount: json['allowUnlimitedListCount'] ?? false,
           saveTimestamp: json['saveTimestamp'],
         );
 }

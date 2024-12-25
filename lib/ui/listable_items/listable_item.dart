@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 
 import '../../helpers/json_utils.dart';
 import '../../helpers/rx_list_extensions.dart';
+import '../../helpers/utils.dart';
 import '../../persisters/persister.dart';
+import '../global_settings/global_settings.dart';
 
 abstract class ListableItem {
   final int id;
@@ -94,10 +96,30 @@ class ListableItemsService<TItem extends ListableItem> extends GetxService
     requestSave();
   }
 
-  void addToItemsList(Rx<TItem> item) {
+  bool addToItemsList(Rx<TItem> item) {
+    // prevent exceeding the recommended number of items
+    final itemCount =
+        itemsList.where((e) => e.value.id == item.value.id).length;
+    if (itemCount >= GlobalSettingsService.maxNumberOfItemsInList) {
+      final globalSettings = Get.find<GlobalSettingsService>();
+      if (!globalSettings.allowUnlimitedListCount) {
+        if (Get.context != null) {
+          showSnackBar(
+            Get.context!,
+            'The rules recommend not having more than ${GlobalSettingsService.maxNumberOfItemsInList} identical items in a List.'
+            '\nYou can change this in the Global Settings.',
+          );
+        }
+
+        return false;
+      }
+    }
+
     itemsList.add(item);
 
     requestSave();
+
+    return true;
   }
 
   void removeFromItemsList(Rx<TItem> item) {
@@ -123,7 +145,7 @@ class ListableItemsService<TItem extends ListableItem> extends GetxService
 
       for (final itemsListId in itemsListIds) {
         if (itemsListId == item.id) {
-          addToItemsList(rxItem);
+          itemsList.add(rxItem);
         }
       }
     }
