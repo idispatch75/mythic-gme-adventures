@@ -201,7 +201,9 @@ class _LargeLayoutTabs extends HookWidget {
           child: TabBarView(
             controller: tabController,
             children: [
-              const ScenesView(),
+              const ScenesView(
+                withHelpButton: true,
+              ),
               ThreadsView(),
               CharactersView(),
               if (hasFeatures) const FeaturesView(),

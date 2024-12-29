@@ -8,6 +8,8 @@ import '../../helpers/dialogs.dart';
 import '../../helpers/inline_link.dart';
 import '../../storages/data_storage.dart';
 import '../preferences/preferences.dart';
+import '../rules_help/rules_help_button.dart';
+import '../rules_help/rules_help_view.dart';
 import '../styles.dart';
 import '../widgets/actions_menu.dart';
 import '../widgets/progress_indicators.dart';
@@ -173,21 +175,28 @@ class _AdventureActionsButton extends GetView<AdventureInfoController> {
           );
         }),
 
-        // Save
+        // save
         MenuItemButton(
           onPressed: controller.save,
           leadingIcon: const Icon(Icons.save_outlined),
           child: const Text('Save'),
         ),
 
-        // Export
+        // export
         MenuItemButton(
           onPressed: controller.export,
           leadingIcon: const Icon(Icons.archive_outlined),
           child: const Text('Export'),
         ),
 
-        // About
+        // rules help
+        const MenuItemButton(
+          onPressed: showRulesHelp,
+          leadingIcon: Icon(Icons.help_outline),
+          child: Text(RulesHelpView.title),
+        ),
+
+        // about
         MenuItemButton(
           onPressed: () async {
             final info = await PackageInfo.fromPlatform();

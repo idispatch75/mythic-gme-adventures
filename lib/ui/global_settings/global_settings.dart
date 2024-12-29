@@ -14,6 +14,7 @@ class GlobalSettingsService extends GetxService with SavableMixin {
   final Set<String> favoriteMeaningTables;
   List<String> characterTraitMeaningTables;
   bool allowUnlimitedListCount;
+  final RxBool hideHelpButtons;
   int? saveTimestamp;
 
   GlobalSettingsService({
@@ -23,9 +24,11 @@ class GlobalSettingsService extends GetxService with SavableMixin {
     Set<String>? favoriteMeaningTables,
     List<String>? characterTraitMeaningTables,
     this.allowUnlimitedListCount = false,
+    bool hideHelpButtons = false,
     this.saveTimestamp,
   })  : favoriteMeaningTables = favoriteMeaningTables ?? {},
-        characterTraitMeaningTables = characterTraitMeaningTables ?? [];
+        characterTraitMeaningTables = characterTraitMeaningTables ?? [],
+        hideHelpButtons = hideHelpButtons.obs;
 
   bool addMeaningTableFavorite(String id) {
     if (favoriteMeaningTables.add(id)) {
@@ -58,6 +61,7 @@ class GlobalSettingsService extends GetxService with SavableMixin {
         'favoriteMeaningTables': favoriteMeaningTables.toList(),
         'characterTraitMeaningTables': characterTraitMeaningTables,
         'allowUnlimitedListCount': allowUnlimitedListCount,
+        'hideHelpButtons': hideHelpButtons(),
         if (saveTimestamp != null) 'saveTimestamp': saveTimestamp,
       };
 
@@ -71,6 +75,7 @@ class GlobalSettingsService extends GetxService with SavableMixin {
           characterTraitMeaningTables:
               fromJsonValueList<String>(json['characterTraitMeaningTables']),
           allowUnlimitedListCount: json['allowUnlimitedListCount'] ?? false,
+          hideHelpButtons: json['hideHelpButtons'] ?? false,
           saveTimestamp: json['saveTimestamp'],
         );
 }

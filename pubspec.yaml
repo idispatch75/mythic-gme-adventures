@@ -8,7 +8,7 @@ environment:
 
 dependencies:
   animated_list_plus: ^0.5.2
-  archive: ^4.0.1
+  archive: ^4.0.2
   catcher_2: ^2.0.1
   collection: ^1.18.0
   cross_file: ^0.3.4+2
@@ -25,6 +25,7 @@ dependencies:
   flutter_hooks: ^0.20.3
   flutter_secure_storage: ^9.0.0
   flutter_web_auth_2: ^4.0.1
+  formatted_text: ^4.0.1
   get: ^4.6.6
   google_fonts: ^6.1.0
   google_sign_in: ^6.1.5

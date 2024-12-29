@@ -11,10 +11,12 @@ import '../keyed_scenes/keyed_scenes_view.dart';
 import '../preferences/preferences.dart';
 import '../random_events/random_event.dart';
 import '../roll_log/roll_log.dart';
+import '../rules_help/rules_help_button.dart';
+import '../rules_help/rules_help_view.dart';
 import '../styles.dart';
 import '../widgets/button_row.dart';
-import '../widgets/edit_dialog.dart';
 import '../widgets/header.dart';
+import '../widgets/responsive_dialog.dart';
 import '../widgets/round_badge.dart';
 import 'scene.dart';
 import 'scene_adjustment_lookup_view.dart';
@@ -23,8 +25,13 @@ import 'scene_test_lookup_view.dart';
 
 class ScenesView extends GetView<ScenesService> {
   final bool dense;
+  final bool withHelpButton;
 
-  const ScenesView({this.dense = false, super.key});
+  const ScenesView({
+    this.dense = false,
+    this.withHelpButton = false,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -64,43 +71,53 @@ class ScenesView extends GetView<ScenesService> {
     return Obx(() {
       final isPhysicalDiceModeEnabled = getPhysicalDiceModeEnabled;
 
+      Widget buttonRow = ButtonRow(
+        children: [
+          // keyed scenes
+          if (keyedScenesButton != null) keyedScenesButton,
+
+          // roll adjustment
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: OutlinedButton(
+              onPressed: isPhysicalDiceModeEnabled
+                  ? () => _showAdjustmentLookup(context)
+                  : _rollAdjustment,
+              child: Text(dense ? 'Roll Adjust.' : 'Roll Adjustment'),
+            ),
+          ),
+
+          // test scene
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: OutlinedButton(
+              onPressed: isPhysicalDiceModeEnabled
+                  ? () => _showSceneTestLookup(context)
+                  : _testScene,
+              child: Text(dense ? 'Test Scene' : 'Test Expected Scene'),
+            ),
+          ),
+
+          // add scene
+          IconButton.filled(
+            onPressed: _create,
+            icon: const Icon(Icons.add),
+            tooltip: 'Create a Scene',
+          ),
+        ],
+      );
+
+      if (withHelpButton) {
+        buttonRow = RulesHelpWrapper(
+          helpEntry: scenesHelp,
+          alignment: Alignment.centerLeft,
+          child: buttonRow,
+        );
+      }
+
       return Column(
         children: [
-          ButtonRow(
-            children: [
-              // keyed scenes
-              if (keyedScenesButton != null) keyedScenesButton,
-
-              // roll adjustment
-              Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: OutlinedButton(
-                  onPressed: isPhysicalDiceModeEnabled
-                      ? () => _showAdjustmentLookup(context)
-                      : _rollAdjustment,
-                  child: Text(dense ? 'Roll Adjust.' : 'Roll Adjustment'),
-                ),
-              ),
-
-              // test scene
-              Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: OutlinedButton(
-                  onPressed: isPhysicalDiceModeEnabled
-                      ? () => _showSceneTestLookup(context)
-                      : _testScene,
-                  child: Text(dense ? 'Test Scene' : 'Test Expected Scene'),
-                ),
-              ),
-
-              // add scene
-              IconButton.filled(
-                onPressed: _create,
-                icon: const Icon(Icons.add),
-                tooltip: 'Create a Scene',
-              ),
-            ],
-          ),
+          buttonRow,
 
           // list
           Expanded(
@@ -229,7 +246,7 @@ class ScenesView extends GetView<ScenesService> {
     Get.dialog<bool>(
       Dialog(
         child: ConstrainedBox(
-          constraints: EditDialog.boxConstraints,
+          constraints: ResponsiveDialog.boxConstraints,
           child: Column(
             children: [
               // scenes

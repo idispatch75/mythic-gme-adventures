@@ -20,6 +20,8 @@ import '../notes/notes_view.dart';
 import '../player_characters/player_characters_view.dart';
 import '../preferences/preferences.dart';
 import '../roll_log/roll_log_view.dart';
+import '../rules_help/rules_help_button.dart';
+import '../rules_help/rules_help_view.dart';
 import '../scenes/scene_edit_page_view.dart';
 import '../scenes/scenes_view.dart';
 import '../threads/threads_list.dart';
@@ -97,9 +99,8 @@ class _SmallLayoutTables extends HookWidget {
           children: [
             FateChartView(),
             Expanded(
-                child: MeaningTablesView(
-              isSmallLayout: true,
-            )),
+              child: MeaningTablesView(isSmallLayout: true),
+            ),
           ],
         );
       } else {
@@ -118,7 +119,10 @@ class _SmallLayoutTables extends HookWidget {
                 1 + fateChartRows.length + 1 + meaningTableButtons.length,
             itemBuilder: (_, index) {
               if (index == 0) {
-                return fateCharts.getHeader();
+                return RulesHelpWrapper.header(
+                  helpEntry: fateChartHelp,
+                  child: fateCharts.getHeader(),
+                );
               } else if (index < 1 + fateChartRows.length) {
                 return fateChartRows[index - 1];
               } else if (index == 1 + fateChartRows.length) {
@@ -179,24 +183,25 @@ class SmallLayoutScenes extends HookWidget {
             const Tab(text: 'SCENES'),
             Tab(child: keyedSceneTab),
           ],
-          children: [
-            const ThreadsListView(),
-            const CharactersListView(),
+          children: const [
+            ThreadsListView(),
+            CharactersListView(),
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                getZoneDecoration(const ChaosFactorView(dense: true)),
+                ChaosFactorView(dense: true),
                 Expanded(
                   child: _HeaderView(
                     title: 'SCENES',
-                    child: const ScenesView(dense: true),
+                    helpEntry: scenesHelp,
+                    child: ScenesView(dense: true),
                   ),
                 ),
               ],
             ),
             _HeaderView(
               title: 'KEYED SCENES',
-              child: const KeyedScenesView(),
+              child: KeyedScenesView(),
             ),
           ],
         );
@@ -256,20 +261,30 @@ class SmallLayoutOther extends HookWidget {
 
 class _HeaderView extends StatelessWidget {
   final String title;
+  final RulesHelpEntry? helpEntry;
   final Widget child;
 
   const _HeaderView({
     required this.title,
+    this.helpEntry,
     required this.child,
   });
 
   @override
   Widget build(BuildContext context) {
+    Widget header = Header(title);
+    if (helpEntry != null) {
+      header = RulesHelpWrapper.header(
+        helpEntry: helpEntry!,
+        child: header,
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Header(title),
+        header,
         Expanded(child: child),
       ],
     );

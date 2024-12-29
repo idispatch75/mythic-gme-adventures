@@ -57,6 +57,7 @@ class GlobalSettingsEditView extends HookWidget {
 
     final allowChooseInLists = _settings.allowChooseInLists.obs;
     final allowUnlimitedListCount = _settings.allowUnlimitedListCount.obs;
+    final hideHelpButtons = _settings.hideHelpButtons().obs;
     final meaningTablesLanguage = _settings.meaningTablesLanguage.obs;
     if (!controller.meaningTableLanguages
         .containsKey(meaningTablesLanguage())) {
@@ -69,6 +70,7 @@ class GlobalSettingsEditView extends HookWidget {
       onSave: () {
         _settings.allowChooseInLists = allowChooseInLists();
         _settings.allowUnlimitedListCount = allowUnlimitedListCount();
+        _settings.hideHelpButtons.value = hideHelpButtons();
         _settings.meaningTablesLanguage = meaningTablesLanguage();
         Get.find<MeaningTablesService>().language.value =
             _settings.meaningTablesLanguage;
@@ -80,7 +82,7 @@ class GlobalSettingsEditView extends HookWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Allow to roll "Choose"
+            // allow to roll "Choose"
             BooleanSetting(
               setting: allowChooseInLists,
               text:
@@ -89,14 +91,23 @@ class GlobalSettingsEditView extends HookWidget {
                   'If unchecked, rolling will always pick an item in the list.',
             ),
 
-            // Allow unlimited list count
+            // allow unlimited list count
             BooleanSetting(
               withTopPadding: true,
               setting: allowUnlimitedListCount,
               text: 'Allow unlimited counter in Characters/Threads Lists',
-              subtext:
-                  'The rules recommend not having more than ${GlobalSettingsService.maxNumberOfItemsInList} identical items in a List.'
+              subtext: 'The rules recommend not having more than'
+                  ' ${GlobalSettingsService.maxNumberOfItemsInList} identical items in a List.'
                   ' This is enforced unless you check this option.',
+            ),
+
+            // hide help buttons
+            BooleanSetting(
+              withTopPadding: true,
+              setting: hideHelpButtons,
+              text: 'Hide Help buttons',
+              subtext: 'Hides the Help buttons in the application.'
+                  ' You can still access the Help in the Adventure menu.',
             ),
 
             // meaning tables language

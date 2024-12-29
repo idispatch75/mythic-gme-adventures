@@ -7,7 +7,7 @@ title: ''
 
 Features:
 - Fate chart with Chaos variations (standard, mid, low, none)
-- Meaning tables (from the book + user-created + translation support)
+- Meaning Tables (from the book + user-created + translation support)
 - Threads and Characters lists
 - Thread progress track and Discovery questions
 - Scenes with Adjustments

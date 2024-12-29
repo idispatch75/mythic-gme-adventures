@@ -11,7 +11,7 @@ extension AdventureIndexControllerX on AdventureIndexController {
     if (!await Dialogs.showConfirmation(
       title: 'Upload Custom Meaning Tables?',
       message: 'This will delete the Custom Meaning Tables'
-          ' in your online storage and upload the meaning tables in the selected directory.\n\n'
+          ' in your online storage and upload the Custom Meaning Tables in the selected directory.\n\n'
           'You may need to restart the application for the changes to take effect.',
       userManualAnchor: 'custom-meaning-tables',
     )) {

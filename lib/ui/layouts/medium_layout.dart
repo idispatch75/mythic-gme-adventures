@@ -8,6 +8,8 @@ import '../dice_roller/dice_roller_view.dart';
 import '../fate_chart/fate_chart_view.dart';
 import '../meaning_tables/meaning_tables_view.dart';
 import '../roll_log/roll_log_view.dart';
+import '../rules_help/rules_help_button.dart';
+import '../rules_help/rules_help_view.dart';
 import '../scenes/scene_edit_page_view.dart';
 import '../scenes/scenes_view.dart';
 import '../threads/threads_list.dart';
@@ -167,7 +169,10 @@ class _MediumLayoutScenes extends HookWidget {
             Layout.horizontalSpacer,
 
             // scenes
-            const Header('SCENES'),
+            RulesHelpWrapper.header(
+              helpEntry: scenesHelp,
+              child: const Header('SCENES'),
+            ),
             const Expanded(child: ScenesView()),
           ],
         );

@@ -5,7 +5,7 @@ import '../styles.dart';
 class Header extends StatelessWidget {
   final String _text;
 
-  /// A header using [headerColor] as background.
+  /// A header using [AppStyles.headerColor] as background.
   const Header(this._text, {super.key});
 
   @override

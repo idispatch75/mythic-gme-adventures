@@ -31,9 +31,9 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
     final theme = Theme.of(context);
 
     return protectClose(
-      child: Scaffold(
-        body: SafeArea(
-          child: LayoutBuilder(builder: (_, constraints) {
+      child: SafeArea(
+        child: Scaffold(
+          body: LayoutBuilder(builder: (_, constraints) {
             final isPhone = constraints.maxWidth <= kPhoneBreakPoint;
             bool isDarkMode = false;
             if (isPhone) {

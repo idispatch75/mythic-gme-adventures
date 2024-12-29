@@ -7,6 +7,8 @@ import '../chaos_factor/chaos_factor.dart';
 import '../preferences/preferences.dart';
 import '../random_events/random_event.dart';
 import '../roll_log/roll_log.dart';
+import '../rules_help/rules_help_button.dart';
+import '../rules_help/rules_help_view.dart';
 import '../styles.dart';
 import '../threads/thread.dart';
 import '../widgets/header.dart';
@@ -174,7 +176,7 @@ class _ChaosFactorOutcomeProbabilities {
 
 class FateChartService extends GetxService {
   FateChartRoll roll(Probability probability, {bool skipEvents = false}) {
-    final outcomeProbability = _getOutcomeProbability(probability);
+    final outcomeProbability = getOutcomeProbability(probability);
 
     // roll the die
     final dieRoll = roll100Die();
@@ -203,9 +205,12 @@ class FateChartService extends GetxService {
     );
   }
 
-  void showFateChartLookup(BuildContext context, Probability probability,
-      {Thread? thread}) {
-    final outcomeProbability = _getOutcomeProbability(probability);
+  void showFateChartLookup(
+    BuildContext context,
+    Probability probability, {
+    Thread? thread,
+  }) {
+    final outcomeProbability = getOutcomeProbability(probability);
 
     final content = FateChartLookupView(
       probability: probability,
@@ -218,7 +223,7 @@ class FateChartService extends GetxService {
 
   /// Determines the outcome probability of the specified [probability]
   /// based on the current chaos factor and fate chart type.
-  FateChartOutcomeProbability _getOutcomeProbability(Probability probability) {
+  FateChartOutcomeProbability getOutcomeProbability(Probability probability) {
     final chaosFactor = Get.find<ChaosFactorService>().chaosFactor.value;
 
     final adventure = Get.find<AdventureService>();
@@ -283,14 +288,22 @@ class FateChartService extends GetxService {
               isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled),
         ],
       ),
-      FateChartButton(
-        text: 'RANDOM EVENT',
-        onPressed: isPhysicalDiceModeEnabled
-            ? () => showRandomEventLookup(context)
-            : rollRandomEvent,
-        rollColors: AppStyles.randomEventColors,
-        hasRightBorder: true,
-        hasFullWidth: true,
+      RulesHelpWrapper(
+        helpEntry: randomEventHelp,
+        iconColor: AppStyles.randomEventColors.onBackground,
+        alignment: Alignment.centerRight,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints.tightFor(width: double.infinity),
+          child: FateChartButton(
+            text: 'RANDOM EVENT',
+            onPressed: isPhysicalDiceModeEnabled
+                ? () => showRandomEventLookup(context)
+                : rollRandomEvent,
+            rollColors: AppStyles.randomEventColors,
+            hasRightBorder: true,
+            hasFullWidth: true,
+          ),
+        ),
       ),
     ];
   }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../rules_help/rules_help_button.dart';
+import '../rules_help/rules_help_view.dart';
 import '../styles.dart';
 import 'fate_chart.dart';
 
@@ -15,7 +17,10 @@ class FateChartView extends GetView<FateChartService> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            controller.getHeader(),
+            RulesHelpWrapper.header(
+              helpEntry: fateChartHelp,
+              child: controller.getHeader(),
+            ),
             ...controller.getRows(context),
           ],
         );
@@ -48,8 +53,9 @@ class FateChartButton extends GetView<FateChartService> {
 
     final button = Container(
       color: rollColors.background,
-      constraints:
-          const BoxConstraints(maxHeight: AppStyles.oraclesButtonMaxHeight),
+      constraints: const BoxConstraints(
+        maxHeight: AppStyles.oraclesButtonMaxHeight,
+      ),
       foregroundDecoration: BoxDecoration(
         border: Border(
           left: _borderSide,

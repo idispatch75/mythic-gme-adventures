@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../global_settings/global_settings.dart';
+import '../rules_help/rules_help_button.dart';
+import '../rules_help/rules_help_view.dart';
 import '../styles.dart';
 import '../widgets/actions_menu.dart';
 import 'thread.dart';
@@ -14,7 +17,7 @@ Widget threadProgressViewWrapper(Thread thread, {bool isDeleted = false}) {
     child: Obx(() {
       return (thread.isTracked() && !thread.isArchived)
           ? Card(
-              margin: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+              margin: const EdgeInsets.fromLTRB(8, 0, 4, 8),
               elevation: 1,
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
@@ -41,7 +44,7 @@ class ThreadProgressView extends GetView<ThreadController> {
 
     Widget buttonWrapper({required Widget child}) {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        padding: const EdgeInsets.only(right: 8.0),
         child: child,
       );
     }
@@ -52,7 +55,7 @@ class ThreadProgressView extends GetView<ThreadController> {
         var additionalMenuEntries = <MenuItemButton>[];
 
         // buttons + menu entries for large layout
-        if (constraints.maxWidth > 220) {
+        if (constraints.maxWidth > 212) {
           additionalButtons = [
             buttonWrapper(
               child: IconButton.outlined(
@@ -70,9 +73,10 @@ class ThreadProgressView extends GetView<ThreadController> {
               ),
             )
           ];
+        }
 
-          // buttons + menu entries for small layout
-        } else {
+        // buttons + menu entries for small layout
+        else {
           additionalMenuEntries = [
             MenuItemButton(
               leadingIcon: const _MarkFlashpointIcon(add: true),
@@ -96,105 +100,110 @@ class ThreadProgressView extends GetView<ThreadController> {
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
+            // help button
+            Obx(() {
+              final hideButton =
+                  Get.find<GlobalSettingsService>().hideHelpButtons();
+              if (hideButton) {
+                return const SizedBox.shrink();
+              }
+
+              return const RulesHelpButton(
+                helpEntry: threadProgressTrackHelp,
+              );
+            }),
+
             // additional buttons
             ...additionalButtons,
 
             // add progress button
-            buttonWrapper(
-              child: IconButton.outlined(
-                onPressed: !isDeleted ? () => controller.addProgress(2) : null,
-                icon: const Icon(Icons.exposure_plus_2),
-                tooltip: 'Mark +2 progress',
-              ),
+            IconButton.outlined(
+              onPressed: !isDeleted ? () => controller.addProgress(2) : null,
+              icon: const Icon(Icons.exposure_plus_2),
+              tooltip: 'Mark +2 progress',
             ),
 
             // more button
-            Padding(
-              padding: const EdgeInsets.only(left: 4),
-              child: ActionsMenu([
-                // additional menu entries
-                ...additionalMenuEntries,
+            ActionsMenu([
+              // additional menu entries
+              ...additionalMenuEntries,
 
-                // Mark Flashpoint with no progress
-                MenuItemButton(
-                  leadingIcon: const Icon(Icons.flash_on),
-                  onPressed: !isDeleted ? controller.addFlashpoint : null,
-                  child: const SizedBox(
-                    width: 252,
-                    child: Text(
-                      'Mark Flashpoint with no progress',
-                      softWrap: true,
-                    ),
+              // Mark Flashpoint with no progress
+              MenuItemButton(
+                leadingIcon: const Icon(Icons.flash_on),
+                onPressed: !isDeleted ? controller.addFlashpoint : null,
+                child: const SizedBox(
+                  width: 252,
+                  child: Text(
+                    'Mark Flashpoint with no progress',
+                    softWrap: true,
                   ),
                 ),
+              ),
 
-                // Remove Flashpoint
-                MenuItemButton(
-                  leadingIcon: const _MarkFlashpointIcon(add: false),
-                  onPressed: !isDeleted ? controller.removeFlashpoint : null,
-                  child: const Text('Remove Flashpoint'),
-                ),
+              // Remove Flashpoint
+              MenuItemButton(
+                leadingIcon: const _MarkFlashpointIcon(add: false),
+                onPressed: !isDeleted ? controller.removeFlashpoint : null,
+                child: const Text('Remove Flashpoint'),
+              ),
 
-                // Remove 2 progress
-                MenuItemButton(
-                  leadingIcon: const Icon(Icons.exposure_minus_2),
-                  onPressed:
-                      !isDeleted ? () => controller.removeProgress(2) : null,
-                  child: const Text('Remove 2 progress'),
-                ),
+              // Remove 2 progress
+              MenuItemButton(
+                leadingIcon: const Icon(Icons.exposure_minus_2),
+                onPressed:
+                    !isDeleted ? () => controller.removeProgress(2) : null,
+                child: const Text('Remove 2 progress'),
+              ),
 
-                // Remove 1 progress
-                MenuItemButton(
-                  leadingIcon: const Icon(Icons.exposure_minus_1),
-                  onPressed:
-                      !isDeleted ? () => controller.removeProgress(1) : null,
-                  child: const Text('Remove 1 progress'),
-                ),
-              ]),
-            ),
+              // Remove 1 progress
+              MenuItemButton(
+                leadingIcon: const Icon(Icons.exposure_minus_1),
+                onPressed:
+                    !isDeleted ? () => controller.removeProgress(1) : null,
+                child: const Text('Remove 1 progress'),
+              ),
+            ]),
           ],
         );
       },
     );
 
     return Padding(
-      padding: AppStyles.listTileTitlePadding +
-          const EdgeInsets.fromLTRB(0, 4, 0, 2),
+      padding: const EdgeInsets.fromLTRB(8, 4, 0, 2),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // progress indicator
-          Obx(
-            () {
-              final phaseViews = List.generate(thread.phases.length, (index) {
-                final phase = thread.phases[index].value;
+          Obx(() {
+            final phaseViews = List.generate(thread.phases.length, (index) {
+              final phase = thread.phases[index].value;
 
-                final maxProgress = index * 5;
-                final phaseProgress = thread.progress() - maxProgress;
+              final maxProgress = index * 5;
+              final phaseProgress = thread.progress() - maxProgress;
 
-                return Padding(
-                  padding: EdgeInsets.only(left: index.isEven ? 0 : 8),
-                  child: _ProgressPhaseView(phase, phaseProgress),
-                );
-              });
-
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: phaseViews.sublist(0, 2),
-                  ),
-                  if (phaseViews.length > 2)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Row(
-                        children: phaseViews.sublist(2),
-                      ),
-                    ),
-                ],
+              return Padding(
+                padding: EdgeInsets.only(left: index.isEven ? 0 : 8),
+                child: _ProgressPhaseView(phase, phaseProgress),
               );
-            },
-          ),
+            });
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: phaseViews.sublist(0, 2),
+                ),
+                if (phaseViews.length > 2)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Row(
+                      children: phaseViews.sublist(2),
+                    ),
+                  ),
+              ],
+            );
+          }),
 
           // buttons
           Expanded(child: buttonRow),
