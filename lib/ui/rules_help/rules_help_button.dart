@@ -26,7 +26,7 @@ class RulesHelpButton extends StatelessWidget {
         icon: const Icon(Icons.help_outline),
         color: iconColor.withAlpha(100),
         padding: EdgeInsets.zero,
-        onPressed: showRulesHelp,
+        onPressed: () => showRulesHelp(helpEntry),
       ),
     );
   }
@@ -76,9 +76,9 @@ class RulesHelpWrapper extends StatelessWidget {
   }
 }
 
-Future<void> showRulesHelp() {
+Future<void> showRulesHelp([RulesHelpEntry? helpEntry]) {
   return Get.dialog<void>(
-    const RulesHelpView(),
+    RulesHelpView(initialEntry: helpEntry),
     barrierDismissible: true,
   );
 }
