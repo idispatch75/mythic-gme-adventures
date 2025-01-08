@@ -6,6 +6,7 @@ import '../../helpers/input_validators.dart';
 import '../../helpers/string_extensions.dart';
 import '../widgets/boolean_setting.dart';
 import '../widgets/edit_dialog.dart';
+import '../widgets/rich_text_editor.dart';
 import 'listable_item.dart';
 
 abstract class ListableItemEditView<TItem extends ListableItem>
@@ -24,7 +25,7 @@ abstract class ListableItemEditView<TItem extends ListableItem>
   });
 
   Widget? getComplement({
-    required TextEditingController notesController,
+    required RichTextEditorController notesController,
   }) =>
       null;
 
@@ -32,7 +33,7 @@ abstract class ListableItemEditView<TItem extends ListableItem>
   Widget build(BuildContext context) {
     final nameController = useTextEditingController(text: item.name);
     final summaryController = useTextEditingController(text: item.summary);
-    final notesController = useTextEditingController(text: item.notes);
+    final notesController = useRichTextEditorController(item.notes);
 
     final isArchived = item.isArchived.obs;
 
@@ -65,12 +66,9 @@ abstract class ListableItemEditView<TItem extends ListableItem>
 
           Flexible(
             fit: FlexFit.loose,
-            child: TextFormField(
+            child: RichTextEditor(
               controller: notesController,
-              maxLines: null,
-              minLines: 3,
-              decoration: const InputDecoration(labelText: 'Notes'),
-              textCapitalization: TextCapitalization.sentences,
+              title: 'Notes',
             ),
           ),
 
@@ -99,7 +97,7 @@ abstract class ListableItemEditView<TItem extends ListableItem>
       onSave: () {
         item.name = nameController.text;
         item.summary = summaryController.text.nullIfEmpty();
-        item.notes = notesController.text.nullIfEmpty();
+        item.notes = notesController.text;
         _controller.archive(item, isArchived());
 
         _controller.requestSave();

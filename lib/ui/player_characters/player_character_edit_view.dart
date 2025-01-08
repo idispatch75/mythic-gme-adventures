@@ -3,8 +3,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
 
 import '../../helpers/input_validators.dart';
-import '../../helpers/string_extensions.dart';
 import '../widgets/edit_dialog.dart';
+import '../widgets/rich_text_editor.dart';
 import 'player_character.dart';
 
 class PlayerCharacterEditView extends HookWidget {
@@ -16,7 +16,7 @@ class PlayerCharacterEditView extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final nameController = useTextEditingController(text: _player.name);
-    final notesController = useTextEditingController(text: _player.notes);
+    final notesController = useRichTextEditorController(_player.notes);
 
     final saveTrigger = false.obs;
 
@@ -25,7 +25,7 @@ class PlayerCharacterEditView extends HookWidget {
       canDelete: _canDelete,
       onSave: () {
         _player.name = nameController.text;
-        _player.notes = notesController.text.nullIfEmpty();
+        _player.notes = notesController.text;
 
         return Future.value(true);
       },
@@ -49,12 +49,9 @@ class PlayerCharacterEditView extends HookWidget {
           const SizedBox(height: 16),
           Flexible(
             fit: FlexFit.loose,
-            child: TextFormField(
+            child: RichTextEditor(
               controller: notesController,
-              maxLines: null,
-              minLines: 3,
-              decoration: const InputDecoration(labelText: 'Notes'),
-              textCapitalization: TextCapitalization.sentences,
+              title: 'Notes',
             ),
           ),
         ],

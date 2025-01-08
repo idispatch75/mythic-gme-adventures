@@ -92,6 +92,11 @@ class _Version {
 
 // add the new version before the previous versions
 const _versions = [
+  _Version('1.9.0', [
+    _Entry(_Platform.all,
+        'Added text formatting options to notes in Scenes, Notes, etc.'),
+  ]),
+  _Version('1.8.1', []),
   _Version('1.8.0', [
     _Entry(
         _Platform.all,
