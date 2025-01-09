@@ -23,6 +23,7 @@ import '../player_characters/player_character.dart';
 import '../preferences/preferences.dart';
 import '../scenes/scene.dart';
 import '../threads/thread.dart';
+import '../widgets/rich_text_editor.dart';
 import 'adventure.dart';
 import 'adventure_edit_view.dart';
 
@@ -138,6 +139,14 @@ class AdventureInfoController extends GetxController {
   }
 
   Future<void> export() async {
+    String? richTextToPlainText(String? richText) {
+      return RichTextEditorController(richText)
+          .quill
+          .document
+          .toPlainText()
+          .trimRight();
+    }
+
     // adventure name
     final adventure = Get.find<AdventureService>();
     String text = adventure.name();
@@ -161,7 +170,7 @@ class AdventureInfoController extends GetxController {
     if (scenes.isNotEmpty) {
       addTitle('Scenes');
       for (var item in scenes.map((e) => e())) {
-        addItem(item.summary, null, item.notes);
+        addItem(item.summary, null, richTextToPlainText(item.notes));
       }
     }
 
@@ -179,7 +188,7 @@ class AdventureInfoController extends GetxController {
     if (threads.isNotEmpty) {
       addTitle('Threads');
       for (var item in threads.map((e) => e()).sorted((a, b) => a.id - b.id)) {
-        addItem(item.name, item.summary, item.notes);
+        addItem(item.name, item.summary, richTextToPlainText(item.notes));
       }
     }
 
@@ -189,7 +198,7 @@ class AdventureInfoController extends GetxController {
       addTitle('Characters');
       for (var item
           in characters.map((e) => e()).sorted((a, b) => a.id - b.id)) {
-        addItem(item.name, item.summary, item.notes);
+        addItem(item.name, item.summary, richTextToPlainText(item.notes));
       }
     }
 
@@ -198,7 +207,7 @@ class AdventureInfoController extends GetxController {
     if (features.isNotEmpty) {
       addTitle('Features');
       for (var item in features.map((e) => e()).sorted((a, b) => a.id - b.id)) {
-        addItem(item.name, null, item.notes);
+        addItem(item.name, null, richTextToPlainText(item.notes));
       }
     }
 
@@ -208,7 +217,7 @@ class AdventureInfoController extends GetxController {
     if (playerCharacters.isNotEmpty) {
       addTitle('Player Characters');
       for (var item in playerCharacters.map((e) => e())) {
-        addItem(item.name, null, item.notes);
+        addItem(item.name, null, richTextToPlainText(item.notes));
       }
     }
 
@@ -217,7 +226,7 @@ class AdventureInfoController extends GetxController {
     if (notes.isNotEmpty) {
       addTitle('Notes');
       for (var item in notes.map((e) => e())) {
-        addItem(item.title, null, item.content);
+        addItem(item.title, null, richTextToPlainText(item.content));
       }
     }
 

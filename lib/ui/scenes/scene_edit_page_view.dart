@@ -72,6 +72,7 @@ class SceneEditPageView extends HookWidget {
             child: RichTextEditor(
               controller: notesController,
               title: 'Notes',
+              expands: true,
             ),
           ),
 

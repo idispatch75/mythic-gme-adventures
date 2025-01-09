@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -76,12 +78,13 @@ class _CharacterComplementEditView extends StatelessWidget {
                 .join(', ');
       }).join('\n');
 
-      if (!_notesController.text.endsWith('\n') &&
-          _notesController.text.isNotEmpty) {
+      final plainText = _notesController.quill.document.toPlainText();
+      if (!plainText.endsWith('\n\n') && plainText.isNotEmpty) {
         traits = '\n$traits';
       }
 
-      _notesController.text += traits;
+      _notesController.quill.document
+          .insert(max(0, plainText.length - 1), traits);
     }
   }
 }

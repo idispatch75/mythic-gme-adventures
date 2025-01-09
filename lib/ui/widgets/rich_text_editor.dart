@@ -7,28 +7,28 @@ import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_quill/quill_delta.dart';
 
 class RichTextEditorController {
-  late final QuillController _controller;
+  late final QuillController quill;
 
   RichTextEditorController(String? initialText) {
-    _controller = QuillController.basic();
+    quill = QuillController.basic();
 
     try {
-      _controller.document = initialText != null
+      quill.document = initialText != null
           ? Document.fromJson(jsonDecode(initialText))
           : Document();
     } catch (_) {
-      _controller.document = Document.fromDelta(Delta()
+      quill.document = Document.fromDelta(Delta()
         ..insert(initialText)
         ..insert('\n'));
     }
   }
 
-  String? get text => _controller.document.isEmpty()
+  String? get text => quill.document.isEmpty()
       ? null
-      : jsonEncode(_controller.document.toDelta().toJson());
+      : jsonEncode(quill.document.toDelta().toJson());
 
   void dispose() {
-    _controller.dispose();
+    quill.dispose();
   }
 }
 
@@ -43,10 +43,12 @@ RichTextEditorController useRichTextEditorController(String? initialText) {
 class RichTextEditor extends StatelessWidget {
   final RichTextEditorController controller;
   final String title;
+  final bool expands;
 
   const RichTextEditor({
     required this.controller,
     required this.title,
+    this.expands = false,
     super.key,
   });
 
@@ -54,6 +56,60 @@ class RichTextEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
+
+    Widget editor = QuillEditor.basic(
+      controller: controller.quill,
+      configurations: QuillEditorConfigurations(
+        minHeight: 100,
+        scrollable: expands,
+        expands: expands,
+        customStyles: DefaultStyles(
+          h1: DefaultTextBlockStyle(
+            textTheme.bodyMedium!.copyWith(
+              fontSize: 24,
+              letterSpacing: -0.5,
+              height: 1.083,
+              fontWeight: FontWeight.bold,
+              decoration: TextDecoration.none,
+            ),
+            HorizontalSpacing.zero,
+            const VerticalSpacing(8, 0),
+            VerticalSpacing.zero,
+            null,
+          ),
+          h2: DefaultTextBlockStyle(
+            textTheme.bodyMedium!.copyWith(
+              fontSize: 20,
+              letterSpacing: -0.4,
+              height: 1.1,
+              fontWeight: FontWeight.bold,
+              decoration: TextDecoration.none,
+            ),
+            HorizontalSpacing.zero,
+            const VerticalSpacing(6, 0),
+            VerticalSpacing.zero,
+            null,
+          ),
+          h3: DefaultTextBlockStyle(
+            textTheme.bodyMedium!.copyWith(
+              fontSize: 18,
+              letterSpacing: -0.2,
+              height: 1.11,
+              fontWeight: FontWeight.bold,
+              decoration: TextDecoration.none,
+            ),
+            HorizontalSpacing.zero,
+            const VerticalSpacing(6, 0),
+            VerticalSpacing.zero,
+            null,
+          ),
+        ),
+      ),
+    );
+
+    if (expands) {
+      editor = Expanded(child: editor);
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,62 +122,21 @@ class RichTextEditor extends StatelessWidget {
           ),
         ),
 
-        // toolbar
-        _CustomToolbar(controller._controller),
         const SizedBox(height: 8),
 
         // editor
-        QuillEditor.basic(
-          controller: controller._controller,
-          configurations: QuillEditorConfigurations(
-            minHeight: 150,
-            customStyles: DefaultStyles(
-              h1: DefaultTextBlockStyle(
-                Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      fontSize: 24,
-                      letterSpacing: -0.5,
-                      height: 1.083,
-                      fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.none,
-                    ),
-                HorizontalSpacing.zero,
-                const VerticalSpacing(8, 0),
-                VerticalSpacing.zero,
-                null,
-              ),
-              h2: DefaultTextBlockStyle(
-                Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      fontSize: 20,
-                      letterSpacing: -0.4,
-                      height: 1.1,
-                      fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.none,
-                    ),
-                HorizontalSpacing.zero,
-                const VerticalSpacing(6, 0),
-                VerticalSpacing.zero,
-                null,
-              ),
-              h3: DefaultTextBlockStyle(
-                Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      fontSize: 18,
-                      letterSpacing: -0.2,
-                      height: 1.11,
-                      fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.none,
-                    ),
-                HorizontalSpacing.zero,
-                const VerticalSpacing(6, 0),
-                VerticalSpacing.zero,
-                null,
-              ),
-            ),
+        editor,
+
+        // toolbar
+        Padding(
+          padding: const EdgeInsets.only(top: 8, bottom: 4),
+          child: Divider(
+            color: theme.colorScheme.primary,
+            thickness: 1,
+            height: 1,
           ),
         ),
-        Divider(
-          color: Theme.of(context).colorScheme.primary,
-          thickness: 0,
-        ),
+        _CustomToolbar(controller.quill),
       ],
     );
   }
@@ -134,49 +149,70 @@ class _CustomToolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return QuillToolbar(
-      child: Container(
-        constraints: const BoxConstraints.tightFor(
-          height: 48,
+    final colors = Theme.of(context).colorScheme;
+    final toggleButtonOptions = QuillToolbarToggleStyleButtonOptions(
+      iconTheme: QuillIconTheme(
+        iconButtonSelectedData: IconButtonData(
+          style: IconButton.styleFrom(
+            backgroundColor: colors.surfaceTint,
+            foregroundColor: colors.onPrimary,
+          ),
         ),
-        child: _QuillToolbarArrowIndicatedButtonList(
-          axis: Axis.horizontal,
-          buttons: [
-            QuillToolbarHistoryButton(
-              isUndo: true,
-              controller: controller,
-            ),
-            QuillToolbarHistoryButton(
-              isUndo: false,
-              controller: controller,
-            ),
-            QuillToolbarToggleStyleButton(
-              controller: controller,
-              attribute: Attribute.bold,
-            ),
-            QuillToolbarToggleStyleButton(
-              controller: controller,
-              attribute: Attribute.italic,
-            ),
-            QuillToolbarToggleStyleButton(
-              controller: controller,
-              attribute: Attribute.underline,
-            ),
-            QuillToolbarToggleStyleButton(
-              controller: controller,
-              attribute: Attribute.strikeThrough,
-            ),
-            QuillToolbarSelectHeaderStyleDropdownButton(
-              controller: controller,
-            ),
-            QuillToolbarToggleStyleButton(
-              controller: controller,
-              attribute: Attribute.ul,
-            ),
-            QuillToolbarLinkStyleButton(
-              controller: controller,
-            )
-          ],
+      ),
+    );
+
+    return ExcludeFocus(
+      child: QuillToolbar(
+        child: SizedBox(
+          height: 40,
+          child: _QuillToolbarArrowIndicatedButtonList(
+            axis: Axis.horizontal,
+            buttons: [
+              QuillToolbarHistoryButton(
+                isUndo: true,
+                controller: controller,
+              ),
+              QuillToolbarHistoryButton(
+                isUndo: false,
+                controller: controller,
+              ),
+              QuillToolbarToggleStyleButton(
+                controller: controller,
+                attribute: Attribute.bold,
+                options: toggleButtonOptions,
+              ),
+              QuillToolbarToggleStyleButton(
+                controller: controller,
+                attribute: Attribute.italic,
+                options: toggleButtonOptions,
+              ),
+              QuillToolbarToggleStyleButton(
+                controller: controller,
+                attribute: Attribute.underline,
+                options: toggleButtonOptions,
+              ),
+              QuillToolbarToggleStyleButton(
+                controller: controller,
+                attribute: Attribute.strikeThrough,
+                options: toggleButtonOptions,
+              ),
+              QuillToolbarSelectHeaderStyleDropdownButton(
+                controller: controller,
+              ),
+              QuillToolbarToggleStyleButton(
+                controller: controller,
+                attribute: Attribute.ul,
+                options: toggleButtonOptions,
+              ),
+              QuillToolbarLinkStyleButton(
+                controller: controller,
+              ),
+              QuillToolbarColorButton(
+                controller: controller,
+                isBackground: false,
+              ),
+            ],
+          ),
         ),
       ),
     );
