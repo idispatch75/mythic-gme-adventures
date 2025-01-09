@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../../helpers/dialogs.dart';
 import '../../helpers/utils.dart';
 import '../fate_chart/fate_chart.dart';
 import '../meaning_tables/meaning_table.dart';
@@ -11,6 +12,7 @@ import '../preferences/preferences.dart';
 import '../random_events/random_event.dart';
 import '../styles.dart';
 import '../widgets/long_press_detector.dart';
+import 'clear_log_button.dart';
 import 'roll_log.dart';
 
 class RollLogView extends HookWidget {
@@ -41,19 +43,30 @@ class RollLogView extends HookWidget {
           );
         }
 
-        // animate new rolls
-        _animatedListKey.currentState?.insertAllItems(0, updates.length);
+        // handles additions
+        final additions = updates.whereType<RollLogAdd>().toList();
 
-        // animate removed rolls
-        final removedRolls = updates
-            .where((e) => e.removedRoll != null)
-            .map((e) => e.removedRoll)
-            .toList();
-        for (var i = 0; i < removedRolls.length; i++) {
-          _animatedListKey.currentState?.removeItem(
-            log.length - i,
-            (_, __) => const SizedBox(),
-          );
+        if (additions.isNotEmpty) {
+          // animate new rolls
+          _animatedListKey.currentState?.insertAllItems(0, additions.length);
+
+          // animate removed rolls
+          final removedRolls = additions
+              .where((e) => e.removedRoll != null)
+              .map((e) => e.removedRoll)
+              .toList();
+          for (var i = 0; i < removedRolls.length; i++) {
+            _animatedListKey.currentState?.removeItem(
+              log.length - i,
+              (_, __) => const SizedBox(),
+            );
+          }
+        }
+
+        // handle clear
+        if (updates.any((e) => e is RollLogClear)) {
+          _animatedListKey.currentState
+              ?.removeAllItems((_, __) => const SizedBox.shrink());
         }
       });
 
@@ -64,51 +77,75 @@ class RollLogView extends HookWidget {
 
     final isDarkMode = Get.find<LocalPreferencesService>().enableDarkMode();
 
-    return AnimatedList(
-      key: _animatedListKey,
-      initialItemCount: log.length,
-      itemBuilder: (_, index, animation) {
-        final entry = log[log.length - index - 1];
+    return Column(
+      children: [
+        Expanded(
+          child: AnimatedList(
+            key: _animatedListKey,
+            initialItemCount: log.length,
+            itemBuilder: (_, index, animation) {
+              final entry = log[log.length - index - 1];
 
-        String rollDateText;
-        final rollDate = DateTime.fromMillisecondsSinceEpoch(entry.timestamp);
-        final now = DateTime.now();
-        if (now.day == rollDate.day &&
-            now.month == rollDate.month &&
-            now.year == rollDate.year) {
-          rollDateText = _timeFormat.format(rollDate);
-        } else {
-          rollDateText = _dateFormat.format(rollDate);
-        }
+              String rollDateText;
+              final rollDate =
+                  DateTime.fromMillisecondsSinceEpoch(entry.timestamp);
+              final now = DateTime.now();
+              if (now.day == rollDate.day &&
+                  now.month == rollDate.month &&
+                  now.year == rollDate.year) {
+                rollDateText = _timeFormat.format(rollDate);
+              } else {
+                rollDateText = _dateFormat.format(rollDate);
+              }
 
-        final itemView = Padding(
-          padding: EdgeInsets.symmetric(horizontal: isDarkMode ? 12 : 0.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              getEntryView(entry),
-              Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, isDarkMode ? 0 : 4, 8),
-                child: Text(
-                  rollDateText,
-                  style: rollDateTextStyle,
-                  textAlign: TextAlign.right,
+              final itemView = Padding(
+                padding:
+                    EdgeInsets.symmetric(horizontal: isDarkMode ? 12 : 0.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    getEntryView(entry),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(0, 0, isDarkMode ? 0 : 4, 8),
+                      child: Text(
+                        rollDateText,
+                        style: rollDateTextStyle,
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-        );
+              );
 
-        return SizeTransition(
-          key: ValueKey(entry.timestamp),
-          sizeFactor: CurvedAnimation(
-            parent: animation,
-            curve: Curves.easeIn,
+              return SizeTransition(
+                key: ValueKey(entry.timestamp),
+                sizeFactor: CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeIn,
+                ),
+                child: itemView,
+              );
+            },
+            controller: scrollController,
           ),
-          child: itemView,
-        );
-      },
-      controller: scrollController,
+        ),
+
+        // clear
+        Obx(
+          () => ClearLogButton(
+            onPressed: log.isNotEmpty
+                ? () async {
+                    if (await Dialogs.showConfirmation(
+                      title: 'Clear the log?',
+                      message: 'The log entries will be permanently deleted.',
+                    )) {
+                      controller.clear();
+                    }
+                  }
+                : null,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -333,7 +370,10 @@ void setupRollIndicator(BuildContext context) {
       showAppModalBottomSheet<void>(
         context,
         ListView(
-          children: updates.map((e) => getEntryView(e.newRoll)).toList(),
+          children: updates
+              .whereType<RollLogAdd>()
+              .map((e) => getEntryView(e.newRoll))
+              .toList(),
         ),
       );
     });

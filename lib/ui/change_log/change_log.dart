@@ -95,6 +95,7 @@ const _versions = [
   _Version('1.9.0', [
     _Entry(_Platform.all,
         'Added text formatting options to notes in Scenes, Notes, etc.'),
+    _Entry(_Platform.all, 'Allow to clear the Roll Log.'),
   ]),
   _Version('1.8.1', []),
   _Version('1.8.0', [

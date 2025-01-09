@@ -78,7 +78,8 @@ class DiceRollerService extends GetxService with SavableMixin {
     const dummyRoll = DiceRoll(faces: 1, modifier: 0, dieRolls: []);
 
     rollUpdates = _rollUpdates.buffer(_rollUpdates
-        .startWith(DiceRollerLogUpdate(newRoll: dummyRoll, removedRoll: null))
+        .startWith(
+            const DiceRollerLogAdd(newRoll: dummyRoll, removedRoll: null))
         .debounceTime(const Duration(milliseconds: 200)));
   }
 
@@ -158,6 +159,14 @@ class DiceRollerService extends GetxService with SavableMixin {
     _roll(settings());
   }
 
+  void clear() {
+    rollLog.clear();
+
+    _rollUpdates.add(const DiceRollerLogClear());
+
+    requestSave();
+  }
+
   void rollExisting(DiceRoll roll) {
     _roll(DiceRollerSettings(
       diceCount: roll.dieRolls.length,
@@ -191,7 +200,7 @@ class DiceRollerService extends GetxService with SavableMixin {
       rollLog.add(roll);
     }
 
-    _rollUpdates.add(DiceRollerLogUpdate(
+    _rollUpdates.add(DiceRollerLogAdd(
       newRoll: roll,
       removedRoll: removedRoll,
     ));
@@ -221,12 +230,20 @@ class DiceRollerService extends GetxService with SavableMixin {
   }
 }
 
-class DiceRollerLogUpdate {
+sealed class DiceRollerLogUpdate {
+  const DiceRollerLogUpdate();
+}
+
+class DiceRollerLogAdd extends DiceRollerLogUpdate {
   final DiceRoll newRoll;
   final DiceRoll? removedRoll;
 
-  DiceRollerLogUpdate({
+  const DiceRollerLogAdd({
     required this.newRoll,
     required this.removedRoll,
   });
+}
+
+class DiceRollerLogClear extends DiceRollerLogUpdate {
+  const DiceRollerLogClear();
 }

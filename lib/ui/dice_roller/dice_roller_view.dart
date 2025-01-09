@@ -2,21 +2,22 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
-import '../../helpers/dialogs.dart';
 
+import '../../helpers/dialogs.dart';
+import '../roll_log/clear_log_button.dart';
 import '../roll_log/roll_log_view.dart';
 import '../styles.dart';
 import 'dice_roller.dart';
 
 class DiceRollerView extends HookWidget {
-  final _animatedLisKey = GlobalKey<AnimatedListState>();
+  final _animatedListKey = GlobalKey<AnimatedListState>();
 
   DiceRollerView({super.key});
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<DiceRollerService>();
-    final rollLog = controller.rollLog;
+    final log = controller.rollLog;
     final rollUpdates = controller.rollUpdates;
 
     final scrollController = useScrollController();
@@ -33,25 +34,35 @@ class DiceRollerView extends HookWidget {
           );
         }
 
-        // animate new rolls
-        _animatedLisKey.currentState?.insertAllItems(0, updates.length);
+        // handles additions
+        final additions = updates.whereType<DiceRollerLogAdd>().toList();
+        if (additions.isNotEmpty) {
+          // animate new rolls
+          _animatedListKey.currentState?.insertAllItems(0, additions.length);
 
-        // animate removed rolls
-        final removedRolls = updates
-            .where((e) => e.removedRoll != null)
-            .map((e) => e.removedRoll)
-            .toList();
-        for (var i = 0; i < removedRolls.length; i++) {
-          _animatedLisKey.currentState?.removeItem(
-            rollLog.length - i,
-            (_, animation) => FadeTransition(
-              opacity: CurvedAnimation(
-                parent: animation,
-                curve: Curves.easeIn,
+          // animate removed rolls
+          final removedRolls = additions
+              .where((e) => e.removedRoll != null)
+              .map((e) => e.removedRoll)
+              .toList();
+          for (var i = 0; i < removedRolls.length; i++) {
+            _animatedListKey.currentState?.removeItem(
+              log.length - i,
+              (_, animation) => FadeTransition(
+                opacity: CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeIn,
+                ),
+                child: _DiceRollView(removedRolls[i]!),
               ),
-              child: _DiceRollView(removedRolls[i]!),
-            ),
-          );
+            );
+          }
+        }
+
+        // handle clear
+        if (updates.any((e) => e is DiceRollerLogClear)) {
+          _animatedListKey.currentState
+              ?.removeAllItems((_, __) => const SizedBox.shrink());
         }
       });
 
@@ -64,10 +75,10 @@ class DiceRollerView extends HookWidget {
         // rolls
         Expanded(
           child: AnimatedList(
-            key: _animatedLisKey,
-            initialItemCount: rollLog.length,
+            key: _animatedListKey,
+            initialItemCount: log.length,
             itemBuilder: (_, index, animation) {
-              final roll = rollLog[rollLog.length - index - 1];
+              final roll = log[log.length - index - 1];
 
               return SizeTransition(
                 sizeFactor: CurvedAnimation(
@@ -81,9 +92,28 @@ class DiceRollerView extends HookWidget {
           ),
         ),
 
+        // clear
+        Obx(
+          () => ClearLogButton(
+            onPressed: log.isNotEmpty
+                ? () async {
+                    if (await Dialogs.showConfirmation(
+                      title: 'Clear the log?',
+                      message: 'The log entries will be permanently deleted.',
+                    )) {
+                      controller.clear();
+                    }
+                  }
+                : null,
+          ),
+        ),
+
         // roller
         Obx(
-          () => _RollerView(controller.settings()),
+          () => ColoredBox(
+            color: Theme.of(context).colorScheme.surfaceContainerLow,
+            child: _RollerView(controller.settings()),
+          ),
         ),
       ],
     );

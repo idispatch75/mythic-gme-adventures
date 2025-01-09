@@ -15,7 +15,7 @@ abstract class Dialogs {
   }) async {
     assert(
       message != null || child != null,
-      'message add child cannot both be null',
+      'message and child cannot both be null',
     );
 
     if (message != null) {
