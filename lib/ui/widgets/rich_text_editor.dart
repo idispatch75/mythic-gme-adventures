@@ -211,6 +211,9 @@ class _CustomToolbar extends StatelessWidget {
                 controller: controller,
                 isBackground: false,
               ),
+              QuillToolbarClearFormatButton(
+                controller: controller,
+              ),
             ],
           ),
         ),
