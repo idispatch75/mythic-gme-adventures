@@ -146,7 +146,6 @@ void _runApp() async {
   Get.put(MeaningTablesPersisterService());
   Get.put(AdventurePersisterService());
 
-  final appVersion = (await PackageInfo.fromPlatform()).version;
   var isNewInstall = false;
   try {
     final adventureIndex = await AdventurePersister(LocalStorage()).loadIndex();
@@ -154,8 +153,7 @@ void _runApp() async {
   } catch (e) {
     // ignore
   }
-  Get.put(ChangeLogService(sharedPreferences, appVersion,
-      isNewInstall: isNewInstall));
+  Get.put(ChangeLogService(sharedPreferences, isNewInstall: isNewInstall));
 
   // init locale
   final locale = PlatformDispatcher.instance.locale;

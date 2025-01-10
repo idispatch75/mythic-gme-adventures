@@ -16,12 +16,10 @@ class ChangeLogService extends GetxService {
   };
 
   final SharedPreferencesWithCache _preferences;
-  final String _currentVersion;
   final bool isNewInstall;
 
   ChangeLogService(
-    this._preferences,
-    this._currentVersion, {
+    this._preferences, {
     required this.isNewInstall,
   });
 
@@ -65,7 +63,7 @@ class ChangeLogService extends GetxService {
   }
 
   void markRead() {
-    _preferences.setString(_versionKey, _currentVersion);
+    _preferences.setString(_versionKey, _versions[0].version);
   }
 }
 
@@ -95,6 +93,7 @@ const _versions = [
   _Version('1.9.0', [
     _Entry(_Platform.all,
         'Added text formatting options to notes in Scenes, Notes, etc.'),
+    _Entry(_Platform.all, 'Allow to clear the Roll Log.'),
   ]),
   _Version('1.8.1', []),
   _Version('1.8.0', [

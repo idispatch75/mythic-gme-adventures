@@ -195,7 +195,7 @@ class RollLogService extends GetxService with SavableMixin {
     );
 
     rollUpdates = _rollUpdates.buffer(_rollUpdates
-        .startWith(RollLogUpdate(newRoll: dummyRoll, removedRoll: null))
+        .startWith(const RollLogAdd(newRoll: dummyRoll, removedRoll: null))
         .debounceTime(const Duration(milliseconds: 200)));
   }
 
@@ -275,10 +275,18 @@ class RollLogService extends GetxService with SavableMixin {
       rollLog.add(entry);
     }
 
-    _rollUpdates.add(RollLogUpdate(
+    _rollUpdates.add(RollLogAdd(
       newRoll: entry,
       removedRoll: removedEntry,
     ));
+
+    requestSave();
+  }
+
+  void clear() {
+    rollLog.clear();
+
+    _rollUpdates.add(const RollLogClear());
 
     requestSave();
   }
@@ -296,12 +304,20 @@ class RollLogService extends GetxService with SavableMixin {
   }
 }
 
-class RollLogUpdate {
+sealed class RollLogUpdate {
+  const RollLogUpdate();
+}
+
+class RollLogAdd extends RollLogUpdate {
   final RollEntry newRoll;
   final RollEntry? removedRoll;
 
-  RollLogUpdate({
+  const RollLogAdd({
     required this.newRoll,
     required this.removedRoll,
   });
+}
+
+class RollLogClear extends RollLogUpdate {
+  const RollLogClear();
 }
