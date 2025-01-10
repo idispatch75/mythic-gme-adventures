@@ -16,12 +16,10 @@ class ChangeLogService extends GetxService {
   };
 
   final SharedPreferencesWithCache _preferences;
-  final String _currentVersion;
   final bool isNewInstall;
 
   ChangeLogService(
-    this._preferences,
-    this._currentVersion, {
+    this._preferences, {
     required this.isNewInstall,
   });
 
@@ -65,7 +63,7 @@ class ChangeLogService extends GetxService {
   }
 
   void markRead() {
-    _preferences.setString(_versionKey, _currentVersion);
+    _preferences.setString(_versionKey, _versions[0].version);
   }
 }
 
