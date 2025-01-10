@@ -3,8 +3,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
 
 import '../../helpers/input_validators.dart';
-import '../../helpers/string_extensions.dart';
 import '../widgets/edit_dialog.dart';
+import '../widgets/rich_text_editor.dart';
 import 'note.dart';
 
 class NoteEditView extends HookWidget {
@@ -16,7 +16,7 @@ class NoteEditView extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final titleController = useTextEditingController(text: _note.title);
-    final contentController = useTextEditingController(text: _note.content);
+    final contentController = useRichTextEditorController(_note.content);
 
     final saveTrigger = false.obs;
 
@@ -25,7 +25,7 @@ class NoteEditView extends HookWidget {
       canDelete: canDelete,
       onSave: () {
         _note.title = titleController.text;
-        _note.content = contentController.text.nullIfEmpty();
+        _note.content = contentController.text;
 
         return Future.value(true);
       },
@@ -49,12 +49,9 @@ class NoteEditView extends HookWidget {
           const SizedBox(height: 16),
           Flexible(
             fit: FlexFit.loose,
-            child: TextFormField(
+            child: RichTextEditor(
               controller: contentController,
-              maxLines: null,
-              minLines: 3,
-              decoration: const InputDecoration(labelText: 'Content'),
-              textCapitalization: TextCapitalization.sentences,
+              title: 'Content',
             ),
           ),
         ],

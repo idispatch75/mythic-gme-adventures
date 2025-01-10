@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../helpers/get_extensions.dart';
 import '../listable_items/listable_item_edit_view.dart';
 import '../widgets/boolean_setting.dart';
+import '../widgets/rich_text_editor.dart';
 import 'thread.dart';
 import 'thread_ctl.dart';
 
@@ -20,7 +21,7 @@ class ThreadEditView extends ListableItemEditView<Thread> {
 
   @override
   Widget? getComplement({
-    required TextEditingController notesController,
+    required RichTextEditorController notesController,
   }) =>
       _ThreadComplementEditView(item);
 }

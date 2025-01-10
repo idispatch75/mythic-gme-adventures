@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../layouts/layout.dart';
 
 class ResponsiveDialog extends StatelessWidget {
-  static const boxConstraints = BoxConstraints(maxHeight: 600, maxWidth: 500);
+  static const boxConstraints = BoxConstraints(maxHeight: 600, maxWidth: 520);
 
   final Widget Function(bool isFullscreen) childBuilder;
   final String? title;

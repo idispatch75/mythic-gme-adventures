@@ -3,9 +3,9 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
 
 import '../../helpers/input_validators.dart';
-import '../../helpers/string_extensions.dart';
 import '../widgets/boolean_setting.dart';
 import '../widgets/edit_dialog.dart';
+import '../widgets/rich_text_editor.dart';
 import 'feature.dart';
 
 class FeatureEditView extends HookWidget {
@@ -21,7 +21,7 @@ class FeatureEditView extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final nameController = useTextEditingController(text: _feature.name);
-    final notesController = useTextEditingController(text: _feature.notes);
+    final notesController = useRichTextEditorController(_feature.notes);
 
     final isArchived = _feature.isArchived.obs;
 
@@ -33,7 +33,7 @@ class FeatureEditView extends HookWidget {
       saveTrigger: saveTrigger,
       onSave: () {
         _feature.name = nameController.text;
-        _feature.notes = notesController.text.nullIfEmpty();
+        _feature.notes = notesController.text;
         Get.find<FeaturesService>().archive(_feature, isArchived());
 
         return Future.value(true);
@@ -59,12 +59,9 @@ class FeatureEditView extends HookWidget {
 
           Flexible(
             fit: FlexFit.loose,
-            child: TextFormField(
+            child: RichTextEditor(
               controller: notesController,
-              maxLines: null,
-              minLines: 3,
-              decoration: const InputDecoration(labelText: 'Notes'),
-              textCapitalization: TextCapitalization.sentences,
+              title: 'Notes',
             ),
           ),
 

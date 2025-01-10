@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,6 +10,7 @@ import '../global_settings/global_settings.dart';
 import '../listable_items/listable_item_edit_view.dart';
 import '../meaning_tables/meaning_table.dart';
 import '../meaning_tables/meaning_tables_ctl.dart';
+import '../widgets/rich_text_editor.dart';
 import 'character.dart';
 
 class CharacterEditView extends ListableItemEditView<Character> {
@@ -21,13 +24,13 @@ class CharacterEditView extends ListableItemEditView<Character> {
 
   @override
   Widget? getComplement({
-    required TextEditingController notesController,
+    required RichTextEditorController notesController,
   }) =>
       _CharacterComplementEditView(notesController);
 }
 
 class _CharacterComplementEditView extends StatelessWidget {
-  final TextEditingController _notesController;
+  final RichTextEditorController _notesController;
 
   const _CharacterComplementEditView(
     this._notesController,
@@ -75,12 +78,13 @@ class _CharacterComplementEditView extends StatelessWidget {
                 .join(', ');
       }).join('\n');
 
-      if (!_notesController.text.endsWith('\n') &&
-          _notesController.text.isNotEmpty) {
+      final plainText = _notesController.quill.document.toPlainText();
+      if (!plainText.endsWith('\n\n') && plainText.isNotEmpty) {
         traits = '\n$traits';
       }
 
-      _notesController.text += traits;
+      _notesController.quill.document
+          .insert(max(0, plainText.length - 1), traits);
     }
   }
 }

@@ -4,15 +4,15 @@ import 'package:get/get.dart';
 
 import '../../helpers/dialogs.dart';
 import '../../helpers/input_validators.dart';
-import '../../helpers/string_extensions.dart';
 import '../layouts/layout.dart';
+import '../widgets/rich_text_editor.dart';
 import 'scene.dart';
 
 class SceneEditPageService extends GetxService {
   final Scene scene;
   final Scene temporaryData;
   final TextEditingController summaryController;
-  final TextEditingController notesController;
+  final RichTextEditorController notesController;
   bool isNew;
 
   Scene get editedData => isNew ? temporaryData : scene;
@@ -22,7 +22,7 @@ class SceneEditPageService extends GetxService {
     required this.temporaryData,
     required this.isNew,
   })  : summaryController = TextEditingController(text: temporaryData.summary),
-        notesController = TextEditingController(text: temporaryData.notes);
+        notesController = RichTextEditorController(temporaryData.notes);
 
   void save(String summary, String? notes) {
     scene.summary = summary;
@@ -69,12 +69,10 @@ class SceneEditPageView extends HookWidget {
           ),
           const SizedBox(height: 16),
           Expanded(
-            child: TextFormField(
+            child: RichTextEditor(
               controller: notesController,
-              maxLines: null,
-              minLines: 3,
-              decoration: const InputDecoration(labelText: 'Notes'),
-              textCapitalization: TextCapitalization.sentences,
+              title: 'Notes',
+              expands: true,
             ),
           ),
 
@@ -91,7 +89,7 @@ class SceneEditPageView extends HookWidget {
                 TextButton(
                   onPressed: () async {
                     final summary = summaryController.text;
-                    final notes = notesController.text.nullIfEmpty();
+                    final notes = notesController.text;
                     if (summary != controller.editedData.summary ||
                         notes != controller.editedData.notes) {
                       if (!await Dialogs.showConfirmation(
@@ -115,7 +113,7 @@ class SceneEditPageView extends HookWidget {
                     if (_formKey.currentState?.validate() ?? false) {
                       controller.save(
                         summaryController.text,
-                        notesController.text.nullIfEmpty(),
+                        notesController.text,
                       );
                     }
                   },
