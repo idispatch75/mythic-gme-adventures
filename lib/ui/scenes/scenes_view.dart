@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../helpers/dialogs.dart';
+import '../../helpers/get_extensions.dart';
 import '../../helpers/list_view_utils.dart';
 import '../../helpers/utils.dart';
 import '../adventure/adventure.dart';
 import '../chaos_factor/chaos_factor.dart';
 import '../keyed_scenes/keyed_scene.dart';
 import '../keyed_scenes/keyed_scenes_view.dart';
+import '../layouts/layout.dart';
 import '../preferences/preferences.dart';
 import '../random_events/random_event.dart';
 import '../roll_log/roll_log.dart';
@@ -20,6 +22,7 @@ import '../widgets/responsive_dialog.dart';
 import '../widgets/round_badge.dart';
 import 'scene.dart';
 import 'scene_adjustment_lookup_view.dart';
+import 'scene_edit_page_view.dart';
 import 'scene_edit_view.dart';
 import 'scene_test_lookup_view.dart';
 
@@ -280,6 +283,7 @@ class _SceneView extends GetView<ScenesService> {
   Widget build(BuildContext context) {
     return Obx(
       () => ListTile(
+        contentPadding: AppStyles.listTileTitlePadding,
         leading: RoundBadge(
           backgroundColor: AppStyles.sceneBadgeBackground,
           color: AppStyles.sceneBadgeOnBackground,
@@ -291,6 +295,13 @@ class _SceneView extends GetView<ScenesService> {
           overflow: TextOverflow.ellipsis,
         ),
         onTap: !isDeleted ? _edit : null,
+        trailing: !isDeleted
+            ? IconButton(
+                onPressed: _editFullscreen,
+                icon: const Icon(Icons.fullscreen),
+                tooltip: 'Full screen edition',
+              )
+            : null,
       ),
     );
   }
@@ -306,5 +317,18 @@ class _SceneView extends GetView<ScenesService> {
 
       controller.requestSave();
     }
+  }
+
+  void _editFullscreen() {
+    final temporaryData = Scene(
+      summary: _scene.value.summary,
+      notes: _scene.value.notes,
+    );
+    Get.replaceForced(SceneEditPageService(
+      _scene.value,
+      temporaryData: temporaryData,
+      isNew: false,
+    ));
+    Get.find<LayoutController>().hasEditScenePage.value = true;
   }
 }

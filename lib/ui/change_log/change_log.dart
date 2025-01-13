@@ -93,6 +93,8 @@ const _versions = [
   _Version('1.9.1', [
     _Entry(_Platform.all,
         'Restored the default line height in the Rich text editor for notes.'),
+    _Entry(
+        _Platform.all, 'Made full screen editing for Scenes more accessible.'),
   ]),
   _Version('1.9.0', [
     _Entry(_Platform.all,
