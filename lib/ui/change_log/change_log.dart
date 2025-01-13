@@ -90,6 +90,10 @@ class _Version {
 
 // add the new version before the previous versions
 const _versions = [
+  _Version('1.9.1', [
+    _Entry(_Platform.all,
+        'Restored the default line height in the Rich text editor for notes.'),
+  ]),
   _Version('1.9.0', [
     _Entry(_Platform.all,
         'Added text formatting options to notes in Scenes, Notes, etc.'),
