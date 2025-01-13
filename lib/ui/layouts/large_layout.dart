@@ -133,7 +133,7 @@ class _LargeLayoutOracles extends GetView<LayoutController> {
 }
 
 class _LargeLayoutTables extends StatelessWidget {
-  static const _columnWidth = 260.0;
+  static const _columnWidth = 264.0;
 
   const _LargeLayoutTables();
 

@@ -57,6 +57,8 @@ class RichTextEditor extends StatelessWidget {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
 
+    final defaultTextStyle = DefaultTextStyle.of(context).style;
+
     Widget editor = QuillEditor.basic(
       controller: controller.quill,
       configurations: QuillEditorConfigurations(
@@ -64,43 +66,59 @@ class RichTextEditor extends StatelessWidget {
         scrollable: expands,
         expands: expands,
         customStyles: DefaultStyles(
+          paragraph: DefaultTextBlockStyle(
+            defaultTextStyle.copyWith(
+              fontSize: 16,
+            ),
+            HorizontalSpacing.zero,
+            VerticalSpacing.zero,
+            VerticalSpacing.zero,
+            null,
+          ),
           h1: DefaultTextBlockStyle(
-            textTheme.bodyMedium!.copyWith(
-              fontSize: 24,
-              letterSpacing: -0.5,
-              height: 1.083,
+            defaultTextStyle.copyWith(
+              fontSize: 22,
+              height: 1.35,
               fontWeight: FontWeight.bold,
               decoration: TextDecoration.none,
             ),
             HorizontalSpacing.zero,
-            const VerticalSpacing(8, 0),
+            const VerticalSpacing(8, 2),
             VerticalSpacing.zero,
             null,
           ),
           h2: DefaultTextBlockStyle(
-            textTheme.bodyMedium!.copyWith(
-              fontSize: 20,
-              letterSpacing: -0.4,
-              height: 1.1,
+            defaultTextStyle.copyWith(
+              fontSize: 18,
+              height: 1.35,
               fontWeight: FontWeight.bold,
               decoration: TextDecoration.none,
             ),
             HorizontalSpacing.zero,
-            const VerticalSpacing(6, 0),
+            const VerticalSpacing(6, 2),
             VerticalSpacing.zero,
             null,
           ),
           h3: DefaultTextBlockStyle(
-            textTheme.bodyMedium!.copyWith(
-              fontSize: 18,
-              letterSpacing: -0.2,
-              height: 1.11,
+            defaultTextStyle.copyWith(
+              fontSize: 16,
+              height: 1.35,
               fontWeight: FontWeight.bold,
               decoration: TextDecoration.none,
             ),
             HorizontalSpacing.zero,
-            const VerticalSpacing(6, 0),
+            const VerticalSpacing(6, 2),
             VerticalSpacing.zero,
+            null,
+          ),
+          lists: DefaultListBlockStyle(
+            defaultTextStyle.copyWith(
+              fontSize: 16,
+            ),
+            HorizontalSpacing.zero,
+            VerticalSpacing.zero,
+            VerticalSpacing.zero,
+            null,
             null,
           ),
         ),
