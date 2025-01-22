@@ -47,71 +47,99 @@ sealed class Probability {
 
   const Probability(this.text);
 
-  String toJson() => runtimeType.toString();
+  String toJson() => switch (this) {
+        Certain() => Certain._id,
+        NearlyCertain() => NearlyCertain._id,
+        VeryLikely() => VeryLikely._id,
+        Likely() => Likely._id,
+        FiftyFifty() => FiftyFifty._id,
+        Unlikely() => Unlikely._id,
+        VeryUnlikely() => VeryUnlikely._id,
+        NearlyImpossible() => NearlyImpossible._id,
+        Impossible() => Impossible._id,
+      };
 
   factory Probability.fromJson(String json) => switch (json) {
-        'Certain' => Certain.instance,
-        'NearlyCertain' => NearlyCertain.instance,
-        'VeryLikely' => VeryLikely.instance,
-        'Likely' => Likely.instance,
-        'FiftyFifty' => FiftyFifty.instance,
-        'Unlikely' => Unlikely.instance,
-        'VeryUnlikely' => VeryUnlikely.instance,
-        'NearlyImpossible' => NearlyImpossible.instance,
-        'Impossible' => Impossible.instance,
+        Certain._id => Certain.instance,
+        NearlyCertain._id => NearlyCertain.instance,
+        VeryLikely._id => VeryLikely.instance,
+        Likely._id => Likely.instance,
+        FiftyFifty._id => FiftyFifty.instance,
+        Unlikely._id => Unlikely.instance,
+        VeryUnlikely._id => VeryUnlikely.instance,
+        NearlyImpossible._id => NearlyImpossible.instance,
+        Impossible._id => Impossible.instance,
         _ => FiftyFifty.instance,
       };
 }
 
 class Certain extends Probability {
+  static const String _id = 'Certain';
+
   static const instance = Certain._();
 
   const Certain._() : super('Certain');
 }
 
 class NearlyCertain extends Probability {
+  static const String _id = 'NearlyCertain';
+
   static const instance = NearlyCertain._();
 
   const NearlyCertain._() : super('Nearly Certain');
 }
 
 class VeryLikely extends Probability {
+  static const String _id = 'VeryLikely';
+
   static const instance = VeryLikely._();
 
   const VeryLikely._() : super('Very Likely');
 }
 
 class Likely extends Probability {
+  static const String _id = 'Likely';
+
   static const instance = Likely._();
 
   const Likely._() : super('Likely');
 }
 
 class FiftyFifty extends Probability {
+  static const String _id = 'FiftyFifty';
+
   static const instance = FiftyFifty._();
 
   const FiftyFifty._() : super('50 / 50');
 }
 
 class Unlikely extends Probability {
+  static const String _id = 'Unlikely';
+
   static const instance = Unlikely._();
 
   const Unlikely._() : super('Unlikely');
 }
 
 class VeryUnlikely extends Probability {
+  static const String _id = 'VeryUnlikely';
+
   static const instance = VeryUnlikely._();
 
   const VeryUnlikely._() : super('Very Unlikely');
 }
 
 class NearlyImpossible extends Probability {
+  static const String _id = 'NearlyImpossible';
+
   static const instance = NearlyImpossible._();
 
   const NearlyImpossible._() : super('Nearly Impossible');
 }
 
 class Impossible extends Probability {
+  static const String _id = 'Impossible';
+
   static const instance = Impossible._();
 
   const Impossible._() : super('Impossible');

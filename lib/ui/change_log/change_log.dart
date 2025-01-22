@@ -16,22 +16,13 @@ class ChangeLogService extends GetxService {
   };
 
   final SharedPreferencesWithCache _preferences;
-  final bool isNewInstall;
 
-  ChangeLogService(
-    this._preferences, {
-    required this.isNewInstall,
-  });
+  ChangeLogService(this._preferences);
 
   List<ChangeLogVersion> getVersions() {
     final versions = <ChangeLogVersion>[];
 
-    var lastViewedVersion = _preferences.getString(_versionKey);
-
-    // TODO remove hack
-    if (lastViewedVersion == null && !isNewInstall) {
-      lastViewedVersion = '1.4.0';
-    }
+    final lastViewedVersion = _preferences.getString(_versionKey);
 
     if (lastViewedVersion != null) {
       final _Platform platform;
@@ -50,8 +41,13 @@ class ChangeLogService extends GetxService {
           final entries = version.entries
               .where(
                   (e) => e.platform == _Platform.all || e.platform == platform)
-              .map((e) => e.text)
-              .toList();
+              .map((e) {
+            if (e.platform == _Platform.all) {
+              return e.text;
+            } else {
+              return '[${platform.name.capitalize}] ${e.text}';
+            }
+          }).toList();
           if (entries.isNotEmpty) {
             versions.add(ChangeLogVersion(version.version, entries));
           }
@@ -90,6 +86,15 @@ class _Version {
 
 // add the new version before the previous versions
 const _versions = [
+  _Version('1.9.2', [
+    _Entry(
+        _Platform.web,
+        'Fixed the roll log not being saved properly, resulting in "unknown" entries on other platform.'
+        ' Unfortunately, the previous roll log entries will be lost.'
+        ' Sorry for the inconvenience.'),
+    _Entry(_Platform.all,
+        'Fixed Random Events with Thread focus being interpreted as Current Context in the roll log when loading an Adventure.'),
+  ]),
   _Version('1.9.1', [
     _Entry(_Platform.all,
         'Restored the default line height in the Rich text editor for notes.'),

@@ -24,25 +24,39 @@ sealed class RandomEventFocus {
   RandomEventFocus();
 
   JsonObj toJson() => {
-        'runtimeType': runtimeType.toString(),
+        'runtimeType': switch (this) {
+          RemoteEvent() => RemoteEvent._id,
+          AdventureFeature() => AdventureFeature._id,
+          AmbiguousEvent() => AmbiguousEvent._id,
+          NewNpc() => NewNpc._id,
+          NpcEvent() => NpcEvent._id,
+          ThreadEvent() => ThreadEvent._id,
+          PcEvent() => PcEvent._id,
+          CurrentContext() => CurrentContext._id,
+        },
         'name': name,
         if (target != null) 'target': target,
       };
 
   factory RandomEventFocus.fromJson(JsonObj json) =>
       switch (json['runtimeType']) {
-        'RemoteEvent' => RemoteEvent(),
-        'AdventureFeature' => AdventureFeature(target: json['target']),
-        'AmbiguousEvent' => AmbiguousEvent(),
-        'NewNpc' => NewNpc(),
-        'NpcEvent' => NpcEvent(eventName: json['name'], target: json['target']),
-        'PcEvent' => PcEvent(eventName: json['name'], target: json['target']),
-        'CurrentContext' => CurrentContext(),
+        RemoteEvent._id => RemoteEvent(),
+        AdventureFeature._id => AdventureFeature(target: json['target']),
+        AmbiguousEvent._id => AmbiguousEvent(),
+        NewNpc._id => NewNpc(),
+        NpcEvent._id =>
+          NpcEvent(eventName: json['name'], target: json['target']),
+        ThreadEvent._id =>
+          ThreadEvent(eventName: json['name'], target: json['target']),
+        PcEvent._id => PcEvent(eventName: json['name'], target: json['target']),
+        CurrentContext._id => CurrentContext(),
         _ => CurrentContext(),
       };
 }
 
 class RemoteEvent extends RandomEventFocus {
+  static const String _id = 'RemoteEvent';
+
   static const String eventName = 'Remote Event';
   static const int rollThreshold = 5;
 
@@ -51,6 +65,8 @@ class RemoteEvent extends RandomEventFocus {
 }
 
 class AmbiguousEvent extends RandomEventFocus {
+  static const String _id = 'AmbiguousEvent';
+
   static const String eventName = 'Ambiguous Event';
   static const int rollThreshold = 10;
 
@@ -59,6 +75,8 @@ class AmbiguousEvent extends RandomEventFocus {
 }
 
 class NewNpc extends RandomEventFocus {
+  static const String _id = 'NewNpc';
+
   static const String eventName = 'New NPC';
   static const int rollThreshold = 20;
 
@@ -67,6 +85,8 @@ class NewNpc extends RandomEventFocus {
 }
 
 class AdventureFeature extends RandomEventFocus {
+  static const String _id = 'AdventureFeature';
+
   static const String eventName = 'Adventure Feature';
   static const int rollThreshold = 20;
 
@@ -82,6 +102,8 @@ class AdventureFeature extends RandomEventFocus {
 }
 
 class NpcEvent extends RandomEventFocus {
+  static const String _id = 'NpcEvent';
+
   static const String actionEventName = 'NPC Action';
   static const String negativeEventName = 'NPC Negative';
   static const String positiveEventName = 'NPC Positive';
@@ -106,6 +128,8 @@ class NpcEvent extends RandomEventFocus {
 }
 
 class ThreadEvent extends RandomEventFocus {
+  static const String _id = 'ThreadEvent';
+
   static const String towardEventName = 'Move toward a Thread';
   static const String awayEventName = 'Move away from a Thread';
   static const String closeEventName = 'Close a Thread';
@@ -128,6 +152,8 @@ class ThreadEvent extends RandomEventFocus {
 }
 
 class PcEvent extends RandomEventFocus {
+  static const String _id = 'PcEvent';
+
   static const String negativeEventName = 'PC Negative';
   static const String positiveEventName = 'PC Positive';
   static int negativeRollThreshold({required bool isPreparedAdventure}) =>
@@ -150,6 +176,8 @@ class PcEvent extends RandomEventFocus {
 }
 
 class CurrentContext extends RandomEventFocus {
+  static const String _id = 'CurrentContext';
+
   static const String eventName = 'Current Context';
   static const int rollThreshold = 100;
 

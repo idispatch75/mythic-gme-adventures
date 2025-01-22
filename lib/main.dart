@@ -23,7 +23,6 @@ import 'persisters/global_settings_persister.dart';
 import 'persisters/meaning_tables_persister.dart';
 import 'storages/google_auth_oauth2.dart';
 import 'storages/google_auth_service.dart';
-import 'storages/local_storage.dart';
 import 'ui/adventure_index/adventure_index_view.dart';
 import 'ui/change_log/change_log.dart';
 import 'ui/change_log/change_log_view.dart';
@@ -113,7 +112,7 @@ void _runApp() async {
       center: position == null,
       skipTaskbar: false,
       windowButtonVisibility: true,
-      minimumSize: const Size(360, 500),
+      minimumSize: const Size(15 + 360, 500),
       titleBarStyle: TitleBarStyle.normal,
       title: (await PackageInfo.fromPlatform()).appName,
     );
@@ -145,15 +144,7 @@ void _runApp() async {
   Get.put(GlobalSettingsPersisterService());
   Get.put(MeaningTablesPersisterService());
   Get.put(AdventurePersisterService());
-
-  var isNewInstall = false;
-  try {
-    final adventureIndex = await AdventurePersister(LocalStorage()).loadIndex();
-    isNewInstall = adventureIndex.adventures.isEmpty;
-  } catch (e) {
-    // ignore
-  }
-  Get.put(ChangeLogService(sharedPreferences, isNewInstall: isNewInstall));
+  Get.put(ChangeLogService(sharedPreferences));
 
   // init locale
   final locale = PlatformDispatcher.instance.locale;

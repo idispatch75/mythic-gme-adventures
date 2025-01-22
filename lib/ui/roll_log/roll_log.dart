@@ -15,15 +15,20 @@ sealed class RollEntry {
   });
 
   JsonObj toJson() => {
-        'runtimeType': runtimeType.toString(),
+        'runtimeType': switch (this) {
+          FateChartRoll() => FateChartRoll._id,
+          RandomEventRoll() => RandomEventRoll._id,
+          MeaningTableRoll() => MeaningTableRoll._id,
+          GenericRoll() => GenericRoll._id,
+        },
         'timestamp': timestamp,
       };
 
   factory RollEntry.fromJson(JsonObj json) => switch (json['runtimeType']) {
-        'FateChartRoll' => FateChartRoll.fromJson(json),
-        'RandomEventRoll' => RandomEventRoll.fromJson(json),
-        'MeaningTableRoll' => MeaningTableRoll.fromJson(json),
-        'GenericRoll' => GenericRoll.fromJson(json),
+        FateChartRoll._id => FateChartRoll.fromJson(json),
+        RandomEventRoll._id => RandomEventRoll.fromJson(json),
+        MeaningTableRoll._id => MeaningTableRoll.fromJson(json),
+        GenericRoll._id => GenericRoll.fromJson(json),
         _ => GenericRoll(
             title: 'unknown',
             value: 'unknown',
@@ -34,6 +39,8 @@ sealed class RollEntry {
 }
 
 class FateChartRoll extends RollEntry {
+  static const String _id = 'FateChartRoll';
+
   final Probability probability;
   final int chaosFactor;
   final int dieRoll;
@@ -77,6 +84,8 @@ class FateChartRoll extends RollEntry {
 }
 
 class RandomEventRoll extends RollEntry {
+  static const String _id = 'RandomEventRoll';
+
   final RandomEventFocus focus;
   final int dieRoll;
 
@@ -102,6 +111,8 @@ class RandomEventRoll extends RollEntry {
 }
 
 class MeaningTableRoll extends RollEntry {
+  static const String _id = 'MeaningTableRoll';
+
   final String tableId;
   final List<MeaningTableSubRoll> results;
 
@@ -148,6 +159,8 @@ class MeaningTableSubRoll {
 }
 
 class GenericRoll extends RollEntry {
+  static const String _id = 'GenericRoll';
+
   final String title;
   final String value;
   final int dieRoll;
