@@ -86,6 +86,12 @@ class _Version {
 
 // add the new version before the previous versions
 const _versions = [
+  _Version('1.10.0', [
+    _Entry(
+        _Platform.all,
+        'Allow to backup Adventures individually for an easier manual synchronization.'
+        ' Available in the Adventure menu.'),
+  ]),
   _Version('1.9.2', [
     _Entry(
         _Platform.web,

@@ -38,7 +38,9 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
   }
 
   /// Saves the adventures index and the current adventure if there is one.
-  Future<void> saveCurrentAdventure() {
+  ///
+  /// Returns the adventure's file content.
+  Future<String?> saveCurrentAdventure() {
     if (!Get.isRegistered<AdventureService>()) {
       return Future.value();
     }
@@ -64,7 +66,7 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
       IndexAdventure(id: adventure.id, name: adventure.name()),
     );
 
-    return _saveAdventure(
+    await _saveAdventure(
       adventure,
       ChaosFactorService(),
       CharactersService(),
@@ -79,7 +81,7 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
     );
   }
 
-  Future<void> _saveAdventure(
+  Future<String?> _saveAdventure(
     AdventureService adventure,
     ChaosFactorService chaosFactorService,
     CharactersService charactersService,
@@ -111,10 +113,10 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
         indexAdventure.remoteSaveTimestamp = saveTimestamp;
       }
 
-      Future<void> persist(AdventurePersister? persister) async {
+      Future<String?> persist(AdventurePersister? persister) async {
         if (persister != null) {
           // save the adventure
-          await persister.saveAdventure(
+          final fileContent = await persister.saveAdventure(
             adventure,
             chaosFactorService,
             charactersService,
@@ -134,13 +136,19 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
           indexAdventure.saveTimestamp = adventure.saveTimestamp();
 
           await persister.saveIndex();
+
+          return fileContent;
         }
+
+        return null;
       }
 
-      await persist(localPersister);
-      await persist(remotePersister);
+      final localFileContent = await persist(localPersister);
+      final remoteFileContent = await persist(remotePersister);
 
       _saveResults.add(SaveResult.success());
+
+      return localFileContent ?? remoteFileContent;
     } catch (e) {
       _saveResults.add(SaveResult.error(e));
       rethrow;
@@ -409,7 +417,7 @@ class AdventurePersister {
     }
   }
 
-  Future<void> saveAdventure(
+  Future<String> saveAdventure(
     AdventureService adventure,
     ChaosFactorService chaosFactorService,
     CharactersService charactersService,
@@ -437,13 +445,17 @@ class AdventurePersister {
     json.addAll(rollLogService.toJson());
     json.addAll(diceRollerService.toJson());
 
+    final content = jsonEncode(json);
+
     await saveAdventureContent(
       adventure.id,
-      jsonEncode(json),
+      content,
     );
 
     // update the timestamp in memory only if the adventure was saved successfully
     adventure.saveTimestamp(saveTimestamp);
+
+    return content;
   }
 
   Future<void> saveAdventureContent(int adventureId, String content) {

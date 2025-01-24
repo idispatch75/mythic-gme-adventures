@@ -182,11 +182,18 @@ class _AdventureActionsButton extends GetView<AdventureInfoController> {
           child: const Text('Save'),
         ),
 
+        // backup
+        MenuItemButton(
+          onPressed: controller.backup,
+          leadingIcon: const Icon(Icons.save_alt_outlined),
+          child: const Text('Backup'),
+        ),
+
         // export
         MenuItemButton(
-          onPressed: controller.export,
+          onPressed: controller.exportAsText,
           leadingIcon: const Icon(Icons.archive_outlined),
-          child: const Text('Export'),
+          child: const Text('Export as text'),
         ),
 
         // rules help

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:rxdart/rxdart.dart' as rxdart;
 
 import '../../helpers/datetime_extensions.dart';
@@ -128,17 +129,37 @@ class AdventureInfoController extends GetxController {
         .enablePhysicalDiceMode(!preferences.enablePhysicalDiceMode.value);
   }
 
-  Future<void> save() async {
+  Future<String?> save() async {
+    String? fileContent;
+
     saving(true);
     try {
-      await Get.find<AdventurePersisterService>().saveCurrentAdventure();
+      fileContent =
+          await Get.find<AdventurePersisterService>().saveCurrentAdventure();
     } catch (e) {
       // ignore, let the icon show the error
     }
     saving(false);
+
+    return fileContent;
   }
 
-  Future<void> export() async {
+  Future<void> backup() async {
+    final fileContent = await save();
+    if (fileContent == null) return;
+
+    final adventure = Get.find<AdventureService>();
+    final fileName =
+        '${adventure.name()}-${DateFormat('y-MM-dd_HH-mm').format(DateTime.now())}.json';
+
+    await saveTextFile(
+      fileContent,
+      fileName: fileName,
+      dialogTitle: 'Backup Adventure',
+    );
+  }
+
+  Future<void> exportAsText() async {
     String? richTextToPlainText(String? richText) {
       return RichTextEditorController(richText)
           .quill
