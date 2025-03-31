@@ -49,3 +49,4 @@ app.*.map.json
 /tools/meaning-tables-import/table.js
 node_modules
 /.vscode
+/android/app/.cxx
