@@ -1,16 +1,16 @@
 // - launch from a directory containing ./meaning_tables/en and ./meaning_tables/<language>
 // - run node ./export.js <language>
-// - the output will be ./meaning-tables_<language>.csv
+// - the output will be ./meaning-tables_<language>.txt
 
 const fs = require('fs').promises;
 
 // get command line arguments
 if (process.argv.length < 3) {
-  console.log('Missing arguments. Usage: node ./export.js <language> [<CSV delimiter>]');
+  console.log('Missing arguments. Usage: node ./export.js <language>');
   process.exit();
 }
 const language = process.argv[2];
-const csvDelimiter = process.argv.length > 3 ? process.argv[3] : ';';
+const csvDelimiter = '\t';
 
 // export the tables
 exportTables(language);
@@ -22,7 +22,7 @@ exportTables(language);
  * @param {string} language
  */
 async function exportTables(language) {
-  const file = await fs.open(`./meaning-tables_${language}.csv`, 'w');
+  const file = await fs.open(`./meaning-tables_${language}.txt`, 'w');
   const bomMarker = '\ufeff'
   await appendRow(file, bomMarker + 'table', 'index', 'english', 'translation');
 

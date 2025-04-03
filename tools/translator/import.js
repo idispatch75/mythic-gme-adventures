@@ -1,4 +1,4 @@
-// - launch from a directory containing ./meaning_tables/<language> and ./meaning-tables_<language>.csv
+// - launch from a directory containing ./meaning_tables/<language> and ./meaning-tables_<language>.txt
 // - run node ./import.js <language>
 // - the existing tables in ./meaning_tables/<language> are updated
 
@@ -7,11 +7,11 @@ const { parse } = require("csv-parse");
 
 // get command line arguments
 if (process.argv.length < 3) {
-  console.log('Missing arguments. Usage: node ./import.js <language> [<CSV delimiter>]');
+  console.log('Missing arguments. Usage: node ./import.js <language>');
   process.exit();
 }
 const language = process.argv[2];
-const csvDelimiter = process.argv.length > 3 ? process.argv[3] : ';';
+const csvDelimiter = '\t';
 
 // import the tables
 importTables(language);
@@ -19,7 +19,7 @@ importTables(language);
 async function importTables(language) {
   const rows = [];
 
-  fs.createReadStream(`./meaning-tables_${language}.csv`)
+  fs.createReadStream(`./meaning-tables_${language}.txt`)
     .pipe(parse({ delimiter: csvDelimiter, from_line: 2, bom: true, encoding: 'utf8', trim: true }))
     .on('data', function (row) {
       rows.push(row);
