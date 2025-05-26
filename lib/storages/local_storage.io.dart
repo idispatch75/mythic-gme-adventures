@@ -83,14 +83,28 @@ class LocalStorage extends DataStorage {
     if (await startDirectory.exists()) {
       final entities = startDirectory.list(recursive: true);
 
+      // collect content requests
+      final getContentRequests = <(List<String>, Future<String>)>[];
       await for (var entity in entities) {
         if (entity is File && entity.path.endsWith('.json')) {
-          final content = await entity.readAsString();
-
           final path = entity.path
               .substring(startDirectory.path.length + 1)
               .split(Platform.pathSeparator);
-          await process(path, content);
+
+          getContentRequests.add((path, entity.readAsString()));
+        }
+      }
+
+      if (getContentRequests.isNotEmpty) {
+        // read all contents at once
+        final contents = await Future.wait(
+          getContentRequests.map((e) => e.$2),
+        );
+
+        // process all contents
+        for (var i = 0; i < getContentRequests.length; i++) {
+          final content = contents[i];
+          await process(getContentRequests[i].$1, content);
         }
       }
     }

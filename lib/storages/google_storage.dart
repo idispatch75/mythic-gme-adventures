@@ -185,6 +185,8 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
     }, _getAppFilePath(parentPath.join('/'), ''));
 
     if (files != null) {
+      // collect content requests
+      final getContentRequests = <(List<String>, Future<String>)>[];
       for (drive.File file in files) {
         if (file.name != null && file.id != null) {
           final path = List<String>.from(parentPath)..add(file.name!);
@@ -192,13 +194,25 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
           if (file.mimeType == _MimeTypes.folder) {
             await _loadJsonFiles(file.id!, path, process);
           } else if (file.name!.endsWith('.json')) {
-            final content = await _performRequest(
+            final request = _performRequest(
               (api) => _getFileContent(api, file.id!),
               _getAppFilePath(parentPath.join('/'), file.name!),
             );
-
-            await process(path, content);
+            getContentRequests.add((path, request));
           }
+        }
+      }
+
+      if (getContentRequests.isNotEmpty) {
+        // read all contents at once
+        final contents = await Future.wait(
+          getContentRequests.map((e) => e.$2),
+        );
+
+        // process all contents
+        for (var i = 0; i < getContentRequests.length; i++) {
+          final content = contents[i];
+          await process(getContentRequests[i].$1, content);
         }
       }
     }

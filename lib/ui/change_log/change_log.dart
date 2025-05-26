@@ -88,6 +88,13 @@ class _Version {
 
 // add the new version before the previous versions
 const _versions = [
+  _Version('1.12.0', [
+    _Entry(
+      _Platform.all,
+      'Improved the loading time of an Adventure when using Custom Meaning Tables in Google Drive.',
+    ),
+    _Entry(_Platform.all, 'Disabled rich-text paste in rich-text editor.'),
+  ]),
   _Version('1.11.0', [
     _Entry(_Platform.all, 'Added some missing Meaning tables.'),
   ]),

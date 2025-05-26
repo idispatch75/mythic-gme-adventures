@@ -243,13 +243,13 @@ The language folder must contain one JSON file per table, with this format:
 		"Abandon",
 		"Accompany",
 		"Activate",
-		"Agree",
+		"Agree"
 	],
 	"entries2": [
 		"Advantage",
 		"Adversity",
 		"Agreement",
-		"Animal",
+		"Animal"
 	]
 }
 ```
@@ -258,8 +258,9 @@ The language folder must contain one JSON file per table, with this format:
 	Mandatory if you create a new table, optional if you customize or translate.
 - `order`: the display order in the list. It overrides the alphabetical order.
 	It is optional and can be customized.
-  It defaults to 1000.
+  It defaults to 1000 if not set.
 - `characterTrait`: the label of the trait when rolling the traits in the Notes of a Character, e.g. `"Motivation"`.
+	It is optional.
 	If not null, the table is displayed in the available traits to roll for a Character.
 	It can be an empty string.
 	If it is null in a customization of a stock table, it removes the table from the traits list.
@@ -284,7 +285,7 @@ Examples:
 	"name": "Custom table",
 	"entries": [
 		"Entry 1",
-		"Entry 2"
+		"Entry 2",
 		...
 	]
 }
@@ -321,6 +322,9 @@ Examples:
 Here are the IDs of the tables shipped with the application:
 ```
 actions
+adventure_tone
+alien_species_descriptors
+animal_actions
 army_descriptors
 cavern_descriptors
 character_actions_combat
@@ -337,6 +341,7 @@ character_traits_flaws
 characters
 city_descriptors
 civilization_descriptors
+creature_abilities
 creature_descriptors
 cryptic_message
 curses
