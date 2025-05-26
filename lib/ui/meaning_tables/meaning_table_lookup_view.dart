@@ -35,7 +35,9 @@ class _MeaningTableLookupViewState extends State<MeaningTableLookupView> {
       return List.generate(entryCount, (index) {
         final roll = index + 1;
         final text = meaningTables.getMeaningTableEntry(
-            '${widget.table.id}_$tableIndex', roll);
+          '${widget.table.id}_$tableIndex',
+          roll,
+        );
 
         return _Entry(text, roll);
       });
@@ -78,11 +80,13 @@ class _MeaningTableLookupViewState extends State<MeaningTableLookupView> {
         itemCount: entries.length,
         itemBuilder: (_, index) {
           return Container(
-              color: index.isEven
-                  ? AppStyles.meaningTableColors.background
-                  : AppStyles.meaningTableColors.background
-                      .withValues(alpha: 0.5),
-              child: _EntryView(entries[index]));
+            color: index.isEven
+                ? AppStyles.meaningTableColors.background
+                : AppStyles.meaningTableColors.background.withValues(
+                    alpha: 0.5,
+                  ),
+            child: _EntryView(entries[index]),
+          );
         },
       ),
     );

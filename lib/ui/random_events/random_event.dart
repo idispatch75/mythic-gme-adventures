@@ -24,19 +24,19 @@ sealed class RandomEventFocus {
   RandomEventFocus();
 
   JsonObj toJson() => {
-        'runtimeType': switch (this) {
-          RemoteEvent() => RemoteEvent._id,
-          AdventureFeature() => AdventureFeature._id,
-          AmbiguousEvent() => AmbiguousEvent._id,
-          NewNpc() => NewNpc._id,
-          NpcEvent() => NpcEvent._id,
-          ThreadEvent() => ThreadEvent._id,
-          PcEvent() => PcEvent._id,
-          CurrentContext() => CurrentContext._id,
-        },
-        'name': name,
-        if (target != null) 'target': target,
-      };
+    'runtimeType': switch (this) {
+      RemoteEvent() => RemoteEvent._id,
+      AdventureFeature() => AdventureFeature._id,
+      AmbiguousEvent() => AmbiguousEvent._id,
+      NewNpc() => NewNpc._id,
+      NpcEvent() => NpcEvent._id,
+      ThreadEvent() => ThreadEvent._id,
+      PcEvent() => PcEvent._id,
+      CurrentContext() => CurrentContext._id,
+    },
+    'name': name,
+    if (target != null) 'target': target,
+  };
 
   factory RandomEventFocus.fromJson(JsonObj json) =>
       switch (json['runtimeType']) {
@@ -44,10 +44,14 @@ sealed class RandomEventFocus {
         AdventureFeature._id => AdventureFeature(target: json['target']),
         AmbiguousEvent._id => AmbiguousEvent(),
         NewNpc._id => NewNpc(),
-        NpcEvent._id =>
-          NpcEvent(eventName: json['name'], target: json['target']),
-        ThreadEvent._id =>
-          ThreadEvent(eventName: json['name'], target: json['target']),
+        NpcEvent._id => NpcEvent(
+          eventName: json['name'],
+          target: json['target'],
+        ),
+        ThreadEvent._id => ThreadEvent(
+          eventName: json['name'],
+          target: json['target'],
+        ),
         PcEvent._id => PcEvent(eventName: json['name'], target: json['target']),
         CurrentContext._id => CurrentContext(),
         _ => CurrentContext(),
@@ -117,8 +121,8 @@ class NpcEvent extends RandomEventFocus {
   final String _target;
 
   NpcEvent({required String eventName, required String target})
-      : _eventName = eventName,
-        _target = target;
+    : _eventName = eventName,
+      _target = target;
 
   @override
   String get name => _eventName;
@@ -141,8 +145,8 @@ class ThreadEvent extends RandomEventFocus {
   final String _target;
 
   ThreadEvent({required String eventName, required String target})
-      : _eventName = eventName,
-        _target = target;
+    : _eventName = eventName,
+      _target = target;
 
   @override
   String get name => _eventName;
@@ -165,8 +169,8 @@ class PcEvent extends RandomEventFocus {
   final String _target;
 
   PcEvent({required String eventName, required String target})
-      : _eventName = eventName,
-        _target = target;
+    : _eventName = eventName,
+      _target = target;
 
   @override
   String get name => _eventName;
@@ -188,8 +192,8 @@ class CurrentContext extends RandomEventFocus {
 void rollRandomEvent() {
   final dieRoll = roll100Die();
 
-  final isPreparedAdventure =
-      Get.find<AdventureService>().isPreparedAdventure();
+  final isPreparedAdventure = Get.find<AdventureService>()
+      .isPreparedAdventure();
 
   RandomEventFocus? focus;
   if (dieRoll <= RemoteEvent.rollThreshold && !isPreparedAdventure) {
@@ -197,13 +201,15 @@ void rollRandomEvent() {
   }
   //
   else if (dieRoll <= AdventureFeature.rollThreshold && isPreparedAdventure) {
-    final result = rollListItem(Get.find<FeaturesService>()
-        .features
-        .where((e) => !e().isArchived)
-        .toList());
+    final result = rollListItem(
+      Get.find<FeaturesService>().features
+          .where((e) => !e().isArchived)
+          .toList(),
+    );
     if (result != null) {
       focus = AdventureFeature(
-          target: result.choose ? 'Choose' : result.item!.value.name);
+        target: result.choose ? 'Choose' : result.item!.value.name,
+      );
     }
   }
   //
@@ -220,30 +226,35 @@ void rollRandomEvent() {
     final result = rollListItem(Get.find<CharactersService>().itemsList);
     if (result != null) {
       focus = NpcEvent(
-          eventName: NpcEvent.actionEventName,
-          target: result.choose ? 'Choose' : result.item!.value.name);
+        eventName: NpcEvent.actionEventName,
+        target: result.choose ? 'Choose' : result.item!.value.name,
+      );
     }
   }
   //
   else if (dieRoll <=
       NpcEvent.negativeRollThreshold(
-          isPreparedAdventure: isPreparedAdventure)) {
+        isPreparedAdventure: isPreparedAdventure,
+      )) {
     final result = rollListItem(Get.find<CharactersService>().itemsList);
     if (result != null) {
       focus = NpcEvent(
-          eventName: NpcEvent.negativeEventName,
-          target: result.choose ? 'Choose' : result.item!.value.name);
+        eventName: NpcEvent.negativeEventName,
+        target: result.choose ? 'Choose' : result.item!.value.name,
+      );
     }
   }
   //
   else if (dieRoll <=
       NpcEvent.positiveRollThreshold(
-          isPreparedAdventure: isPreparedAdventure)) {
+        isPreparedAdventure: isPreparedAdventure,
+      )) {
     final result = rollListItem(Get.find<CharactersService>().itemsList);
     if (result != null) {
       focus = NpcEvent(
-          eventName: NpcEvent.positiveEventName,
-          target: result.choose ? 'Choose' : result.item!.value.name);
+        eventName: NpcEvent.positiveEventName,
+        target: result.choose ? 'Choose' : result.item!.value.name,
+      );
     }
   }
   //
@@ -251,8 +262,9 @@ void rollRandomEvent() {
     final result = rollListItem(Get.find<ThreadsService>().itemsList);
     if (result != null) {
       focus = ThreadEvent(
-          eventName: ThreadEvent.towardEventName,
-          target: result.choose ? 'Choose' : result.item!.value.name);
+        eventName: ThreadEvent.towardEventName,
+        target: result.choose ? 'Choose' : result.item!.value.name,
+      );
     }
   }
   //
@@ -260,8 +272,9 @@ void rollRandomEvent() {
     final result = rollListItem(Get.find<ThreadsService>().itemsList);
     if (result != null) {
       focus = ThreadEvent(
-          eventName: ThreadEvent.awayEventName,
-          target: result.choose ? 'Choose' : result.item!.value.name);
+        eventName: ThreadEvent.awayEventName,
+        target: result.choose ? 'Choose' : result.item!.value.name,
+      );
     }
   }
   //
@@ -269,35 +282,42 @@ void rollRandomEvent() {
     final result = rollListItem(Get.find<ThreadsService>().itemsList);
     if (result != null) {
       focus = ThreadEvent(
-          eventName: ThreadEvent.closeEventName,
-          target: result.choose ? 'Choose' : result.item!.value.name);
+        eventName: ThreadEvent.closeEventName,
+        target: result.choose ? 'Choose' : result.item!.value.name,
+      );
     }
   }
   //
   else if (dieRoll <=
       PcEvent.negativeRollThreshold(isPreparedAdventure: isPreparedAdventure)) {
-    final result =
-        rollListItem(Get.find<PlayerCharactersService>().playerCharacters);
+    final result = rollListItem(
+      Get.find<PlayerCharactersService>().playerCharacters,
+    );
     focus = result != null
         ? PcEvent(
             eventName: PcEvent.negativeEventName,
-            target: result.choose ? 'Choose' : result.item!.value.name)
+            target: result.choose ? 'Choose' : result.item!.value.name,
+          )
         : PcEvent(eventName: PcEvent.negativeEventName, target: '');
   }
   //
   else if (dieRoll <=
       PcEvent.positiveRollThreshold(isPreparedAdventure: isPreparedAdventure)) {
-    final result =
-        rollListItem(Get.find<PlayerCharactersService>().playerCharacters);
+    final result = rollListItem(
+      Get.find<PlayerCharactersService>().playerCharacters,
+    );
     focus = result != null
         ? PcEvent(
             eventName: PcEvent.positiveEventName,
-            target: result.choose ? 'Choose' : result.item!.value.name)
+            target: result.choose ? 'Choose' : result.item!.value.name,
+          )
         : PcEvent(eventName: PcEvent.positiveEventName, target: '');
   }
 
-  Get.find<RollLogService>()
-      .addRandomEventRoll(focus: focus ?? CurrentContext(), dieRoll: dieRoll);
+  Get.find<RollLogService>().addRandomEventRoll(
+    focus: focus ?? CurrentContext(),
+    dieRoll: dieRoll,
+  );
 }
 
 void showRandomEventLookup(BuildContext context) {
@@ -322,8 +342,8 @@ ListRollResult<T>? rollListItem<T>(List<T> sourceItems) {
 
     final nbSlots = allowChooseInLists
         ? sourceItems.length % 5 == 0
-            ? sourceItems.length
-            : (sourceItems.length ~/ 5 + 1) * 5
+              ? sourceItems.length
+              : (sourceItems.length ~/ 5 + 1) * 5
         : sourceItems.length;
 
     final index = Random().nextInt(nbSlots);
@@ -338,7 +358,10 @@ ListRollResult<T>? rollListItem<T>(List<T> sourceItems) {
 }
 
 void showListItemsLookup<T extends ListableItem>(
-    BuildContext context, String listLabel, List<T> sourceItems) {
+  BuildContext context,
+  String listLabel,
+  List<T> sourceItems,
+) {
   final itemNames = sourceItems
       .sorted((a, b) => a.name.compareTo(b.name))
       .map<String?>((e) => e.name)

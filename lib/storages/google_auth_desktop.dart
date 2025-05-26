@@ -19,9 +19,12 @@ class DesktopGoogleAuthManager extends OAuth2GoogleAuthManager {
     _redirectServer = await HttpServer.bind('localhost', port);
 
     // start the login process in the browser
-    await _redirect(Uri.parse(
+    await _redirect(
+      Uri.parse(
         '${OAuth2GoogleAuthManager.baseUrl}/login?scope=$googleDriveScope&forceConsent=true'
-        '&client_redirect_uri=${Uri.encodeComponent('http://localhost:$port')}'));
+        '&client_redirect_uri=${Uri.encodeComponent('http://localhost:$port')}',
+      ),
+    );
 
     // wait for the process to finish
     final response = await _listen();
@@ -54,8 +57,9 @@ class DesktopGoogleAuthManager extends OAuth2GoogleAuthManager {
     if (params['access_token'] != null) {
       request.response.writeln('Authenticated! You can close this tab.');
     } else {
-      request.response
-          .writeln('Authentication failed! You can close this tab.');
+      request.response.writeln(
+        'Authentication failed! You can close this tab.',
+      );
     }
 
     // close the server

@@ -102,9 +102,10 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
     try {
       final saveTimestamp = DateTime.timestamp().millisecondsSinceEpoch;
 
-      final indexAdventure = Get.find<AdventureIndexService>()
-              .adventures
-              .firstWhereOrNull((e) => e.id == adventure.id) ??
+      final indexAdventure =
+          Get.find<AdventureIndexService>().adventures.firstWhereOrNull(
+            (e) => e.id == adventure.id,
+          ) ??
           IndexAdventure(id: adventure.id, name: adventure.name());
       if (localPersister != null) {
         indexAdventure.localSaveTimestamp = saveTimestamp;
@@ -173,8 +174,9 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
         for (final remoteAdventure in remote.adventures) {
           // if the remote adventure is newer than an existing local,
           // replace the local adventure with the remote one
-          final localAdventure =
-              adventures.firstWhereOrNull((e) => e.id == remoteAdventure.id);
+          final localAdventure = adventures.firstWhereOrNull(
+            (e) => e.id == remoteAdventure.id,
+          );
           if (localAdventure != null) {
             if (remoteAdventure.remoteSaveTimestamp >
                 localAdventure.localSaveTimestamp) {
@@ -227,26 +229,27 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
     // save the current adventure when a save is requested by an adventure service
     await _saveRequestsSubscription?.cancel();
 
-    _saveRequestsSubscription = MergeStream([
-      Get.find<AdventureService>().saveRequests,
-      Get.find<ChaosFactorService>().saveRequests,
-      Get.find<CharactersService>().saveRequests,
-      Get.find<ThreadsService>().saveRequests,
-      Get.find<PlayerCharactersService>().saveRequests,
-      Get.find<ScenesService>().saveRequests,
-      Get.find<KeyedScenesService>().saveRequests,
-      Get.find<FeaturesService>().saveRequests,
-      Get.find<NotesService>().saveRequests,
-      Get.find<RollLogService>().saveRequests,
-      Get.find<DiceRollerService>().saveRequests,
-    ]).debounceTime(const Duration(seconds: 5)).listen((value) async {
-      try {
-        await saveCurrentAdventure();
-      } catch (e) {
-        // ignore
-        logDebug('Failed to save Adventure $id', e);
-      }
-    });
+    _saveRequestsSubscription =
+        MergeStream([
+          Get.find<AdventureService>().saveRequests,
+          Get.find<ChaosFactorService>().saveRequests,
+          Get.find<CharactersService>().saveRequests,
+          Get.find<ThreadsService>().saveRequests,
+          Get.find<PlayerCharactersService>().saveRequests,
+          Get.find<ScenesService>().saveRequests,
+          Get.find<KeyedScenesService>().saveRequests,
+          Get.find<FeaturesService>().saveRequests,
+          Get.find<NotesService>().saveRequests,
+          Get.find<RollLogService>().saveRequests,
+          Get.find<DiceRollerService>().saveRequests,
+        ]).debounceTime(const Duration(seconds: 5)).listen((value) async {
+          try {
+            await saveCurrentAdventure();
+          } catch (e) {
+            // ignore
+            logDebug('Failed to save Adventure $id', e);
+          }
+        });
   }
 
   /// Deletes an adventure.
@@ -260,9 +263,10 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
 
     final saveTimestamp = DateTime.timestamp().millisecondsSinceEpoch;
 
-    final indexAdventure = Get.find<AdventureIndexService>()
-            .adventures
-            .firstWhereOrNull((e) => e.id == id) ??
+    final indexAdventure =
+        Get.find<AdventureIndexService>().adventures.firstWhereOrNull(
+          (e) => e.id == id,
+        ) ??
         IndexAdventure(id: id, name: 'deleted');
 
     Future<void> persist(AdventurePersister? persister) async {
@@ -299,19 +303,22 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
             synchronizations.add(localPersister!.deleteAdventure(adventure.id));
           }
         } else {
-          synchronizations
-              .add(remotePersister!.pushTo(adventure.id, localPersister!));
+          synchronizations.add(
+            remotePersister!.pushTo(adventure.id, localPersister!),
+          );
         }
         // if the local version is newer, update the remote version
       } else if (adventure.remoteSaveTimestamp < adventure.localSaveTimestamp) {
         if (adventure.isDeleted) {
           if (adventure.remoteSaveTimestamp > 0) {
-            synchronizations
-                .add(remotePersister!.deleteAdventure(adventure.id));
+            synchronizations.add(
+              remotePersister!.deleteAdventure(adventure.id),
+            );
           }
         } else {
-          synchronizations
-              .add(localPersister!.pushTo(adventure.id, remotePersister!));
+          synchronizations.add(
+            localPersister!.pushTo(adventure.id, remotePersister!),
+          );
         }
       }
     }
@@ -320,11 +327,14 @@ class AdventurePersisterService extends PersisterService<AdventurePersister> {
       await Future.wait(synchronizations);
 
       // save indexes
-      final cleanedUpAdventures =
-          adventures.where((e) => !e.isDeleted).toList();
+      final cleanedUpAdventures = adventures
+          .where((e) => !e.isDeleted)
+          .toList();
       for (final adventure in cleanedUpAdventures) {
-        adventure.saveTimestamp =
-            max(adventure.remoteSaveTimestamp, adventure.localSaveTimestamp);
+        adventure.saveTimestamp = max(
+          adventure.remoteSaveTimestamp,
+          adventure.localSaveTimestamp,
+        );
         adventure.localSaveTimestamp = adventure.saveTimestamp!;
         adventure.remoteSaveTimestamp = adventure.localSaveTimestamp;
       }
@@ -467,7 +477,8 @@ class AdventurePersister {
   }
 
   Future<({int saveTimestamp, void Function() publisher})?> loadAdventure(
-      int id) async {
+    int id,
+  ) async {
     final fileName = _adventureFileName(id);
     final content = await _storage.load([directory], fileName);
 
@@ -476,7 +487,8 @@ class AdventurePersister {
       final adventure = AdventureService.fromJson(json);
       if (adventure.schemaVersion > AdventureService.supportedSchemaVersion) {
         throw UnsupportedSchemaVersionException(
-            fileName: '$directory/$fileName');
+          fileName: '$directory/$fileName',
+        );
       }
 
       return (

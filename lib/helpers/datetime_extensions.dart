@@ -6,8 +6,9 @@ extension DateTimeExtensions on DateTime {
   }
 
   static final DateFormat _timeFormat = DateFormat.jms();
-  static final DateFormat _dateFormat =
-      DateFormat.yMEd().addPattern("'at'").add_jms();
+  static final DateFormat _dateFormat = DateFormat.yMEd()
+      .addPattern("'at'")
+      .add_jms();
 
   String elapsedFromNow() {
     final elapsed = DateTime.now().difference(this);

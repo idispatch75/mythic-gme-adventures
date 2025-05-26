@@ -17,8 +17,9 @@ class ListableItemsLookupView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mainRows =
-        _itemNames.splitAfterIndexed((index, element) => (index + 1) % 5 == 0);
+    final mainRows = _itemNames.splitAfterIndexed(
+      (index, element) => (index + 1) % 5 == 0,
+    );
 
     var header = _itemTypeLabel;
     if (mainRows.length > 1) {
@@ -80,8 +81,10 @@ class _MainRow extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
 
     final baseColor = AppStyles.genericColors.background;
-    final alternateColor =
-        Color.alphaBlend(baseColor.withValues(alpha: 0.5), colors.surface);
+    final alternateColor = Color.alphaBlend(
+      baseColor.withValues(alpha: 0.5),
+      colors.surface,
+    );
 
     return Container(
       color: AppStyles.headerColor,

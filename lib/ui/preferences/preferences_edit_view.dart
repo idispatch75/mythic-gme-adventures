@@ -40,15 +40,16 @@ class PreferencesEditView extends HookWidget {
         text: preferences.localDataDirectoryOverride(),
       );
 
-      final defaultLocalDataDirectoryFuture =
-          useMemoized(() => LocalStorage.getDefaultRootDirectoryPath());
+      final defaultLocalDataDirectoryFuture = useMemoized(
+        () => LocalStorage.getDefaultRootDirectoryPath(),
+      );
       defaultLocalDataDirectory = useFuture(defaultLocalDataDirectoryFuture);
 
       onSave = () async {
         // copy the files to the new directory?
         final currentDataDirectory = preferences.localDataDirectoryOverride();
-        final newDataDirectory =
-            localDataDirectoryController.text.nullIfEmpty();
+        final newDataDirectory = localDataDirectoryController.text
+            .nullIfEmpty();
 
         if (currentDataDirectory != newDataDirectory) {
           final doCopy = await _showConfirmationDialog(context);
@@ -99,8 +100,9 @@ class PreferencesEditView extends HookWidget {
                 Expanded(
                   child: TextFormField(
                     controller: localDataDirectoryController,
-                    decoration:
-                        const InputDecoration(labelText: 'Local data folder'),
+                    decoration: const InputDecoration(
+                      labelText: 'Local data folder',
+                    ),
                     textCapitalization: TextCapitalization.sentences,
                     readOnly: true,
                   ),
@@ -111,7 +113,7 @@ class PreferencesEditView extends HookWidget {
                   onPressed: () async {
                     final initialDirectory =
                         localDataDirectoryController.text.nullIfEmpty() ??
-                            defaultLocalDataDirectory.data;
+                        defaultLocalDataDirectory.data;
                     final path = await FilePicker.platform.getDirectoryPath(
                       dialogTitle: 'Local data folder',
                       initialDirectory: initialDirectory,
@@ -211,11 +213,13 @@ class PreferencesEditView extends HookWidget {
     return Get.dialog<bool>(
       AlertDialog.adaptive(
         title: const Text('Copy or not copy?'),
-        content: const Text('The data folder has changed.\n\n'
-            'You can copy the content of the previous folder'
-            ' to the new folder and overwrite its content.\n\n'
-            'Or you can just set the folder and add some content to it manually\n'
-            '(in which case you should do this now to load the new content when you exit the dialog).'),
+        content: const Text(
+          'The data folder has changed.\n\n'
+          'You can copy the content of the previous folder'
+          ' to the new folder and overwrite its content.\n\n'
+          'Or you can just set the folder and add some content to it manually\n'
+          '(in which case you should do this now to load the new content when you exit the dialog).',
+        ),
         actions: actions,
       ),
       barrierDismissible: false,

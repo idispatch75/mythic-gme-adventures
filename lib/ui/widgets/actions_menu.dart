@@ -8,21 +8,21 @@ class ActionsMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MenuAnchor(
-      builder: (
-        BuildContext context,
-        MenuController controller,
-        Widget? child,
-      ) =>
-          IconButton(
-        onPressed: () {
-          if (controller.isOpen) {
-            controller.close();
-          } else {
-            controller.open();
-          }
-        },
-        icon: Icon(Icons.adaptive.more),
-      ),
+      builder:
+          (
+            BuildContext context,
+            MenuController controller,
+            Widget? child,
+          ) => IconButton(
+            onPressed: () {
+              if (controller.isOpen) {
+                controller.close();
+              } else {
+                controller.open();
+              }
+            },
+            icon: Icon(Icons.adaptive.more),
+          ),
       menuChildren: _menuChildren,
     );
   }

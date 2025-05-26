@@ -56,12 +56,16 @@ class FateChartLookupView extends StatelessWidget {
           ),
         RollLookupEntry(
           value: _getValueLabel(
-              outcomeProbability.extremeYes + 1, outcomeProbability.threshold),
+            outcomeProbability.extremeYes + 1,
+            outcomeProbability.threshold,
+          ),
           label: 'Yes',
         ),
         RollLookupEntry(
-          value: _getValueLabel(outcomeProbability.threshold + 1,
-              outcomeProbability.extremeNo - 1),
+          value: _getValueLabel(
+            outcomeProbability.threshold + 1,
+            outcomeProbability.extremeNo - 1,
+          ),
           label: 'No',
         ),
         if (outcomeProbability.extremeNo <= 100)

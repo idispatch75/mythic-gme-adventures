@@ -18,17 +18,17 @@ class DiceRollerSettings {
   });
 
   JsonObj toJson() => {
-        'diceCount': diceCount,
-        'faces': faces,
-        'modifier': modifier,
-      };
+    'diceCount': diceCount,
+    'faces': faces,
+    'modifier': modifier,
+  };
 
   DiceRollerSettings.fromJson(JsonObj json)
-      : this(
-          diceCount: json['diceCount'],
-          faces: json['faces'],
-          modifier: json['modifier'],
-        );
+    : this(
+        diceCount: json['diceCount'],
+        faces: json['faces'],
+        modifier: json['modifier'],
+      );
 }
 
 class DiceRoll {
@@ -43,17 +43,17 @@ class DiceRoll {
   });
 
   JsonObj toJson() => {
-        'faces': faces,
-        'modifier': modifier,
-        'dieRolls': dieRolls,
-      };
+    'faces': faces,
+    'modifier': modifier,
+    'dieRolls': dieRolls,
+  };
 
   DiceRoll.fromJson(JsonObj json)
-      : this(
-          faces: json['faces'],
-          modifier: json['modifier'],
-          dieRolls: fromJsonValueList(json['dieRolls']),
-        );
+    : this(
+        faces: json['faces'],
+        modifier: json['modifier'],
+        dieRolls: fromJsonValueList(json['dieRolls']),
+      );
 }
 
 class DiceRollerService extends GetxService with SavableMixin {
@@ -77,10 +77,13 @@ class DiceRollerService extends GetxService with SavableMixin {
   void _init() {
     const dummyRoll = DiceRoll(faces: 1, modifier: 0, dieRolls: []);
 
-    rollUpdates = _rollUpdates.buffer(_rollUpdates
-        .startWith(
-            const DiceRollerLogAdd(newRoll: dummyRoll, removedRoll: null))
-        .debounceTime(const Duration(milliseconds: 200)));
+    rollUpdates = _rollUpdates.buffer(
+      _rollUpdates
+          .startWith(
+            const DiceRollerLogAdd(newRoll: dummyRoll, removedRoll: null),
+          )
+          .debounceTime(const Duration(milliseconds: 200)),
+    );
   }
 
   void incrementDiceCount() {
@@ -93,11 +96,13 @@ class DiceRollerService extends GetxService with SavableMixin {
 
   void setDiceCount(int count) {
     if (count > 0) {
-      settings(DiceRollerSettings(
-        diceCount: count,
-        faces: settings().faces,
-        modifier: settings().modifier,
-      ));
+      settings(
+        DiceRollerSettings(
+          diceCount: count,
+          faces: settings().faces,
+          modifier: settings().modifier,
+        ),
+      );
 
       requestSave();
     }
@@ -127,11 +132,13 @@ class DiceRollerService extends GetxService with SavableMixin {
 
   void setFaces(int faces) {
     if (faces > 0) {
-      settings(DiceRollerSettings(
-        diceCount: settings().diceCount,
-        faces: faces,
-        modifier: settings().modifier,
-      ));
+      settings(
+        DiceRollerSettings(
+          diceCount: settings().diceCount,
+          faces: faces,
+          modifier: settings().modifier,
+        ),
+      );
 
       requestSave();
     }
@@ -146,11 +153,13 @@ class DiceRollerService extends GetxService with SavableMixin {
   }
 
   void setModifier(int modifier) {
-    settings(DiceRollerSettings(
-      diceCount: settings().diceCount,
-      faces: settings().faces,
-      modifier: modifier,
-    ));
+    settings(
+      DiceRollerSettings(
+        diceCount: settings().diceCount,
+        faces: settings().faces,
+        modifier: modifier,
+      ),
+    );
 
     requestSave();
   }
@@ -168,22 +177,28 @@ class DiceRollerService extends GetxService with SavableMixin {
   }
 
   void rollExisting(DiceRoll roll) {
-    _roll(DiceRollerSettings(
-      diceCount: roll.dieRolls.length,
-      faces: roll.faces,
-      modifier: roll.modifier,
-    ));
+    _roll(
+      DiceRollerSettings(
+        diceCount: roll.dieRolls.length,
+        faces: roll.faces,
+        modifier: roll.modifier,
+      ),
+    );
   }
 
   void _roll(DiceRollerSettings settings) {
-    final dieRolls =
-        List.generate(settings.diceCount, (_) => rollDie(settings.faces));
+    final dieRolls = List.generate(
+      settings.diceCount,
+      (_) => rollDie(settings.faces),
+    );
 
-    _addRoll(DiceRoll(
-      faces: settings.faces,
-      modifier: settings.modifier,
-      dieRolls: dieRolls,
-    ));
+    _addRoll(
+      DiceRoll(
+        faces: settings.faces,
+        modifier: settings.modifier,
+        dieRolls: dieRolls,
+      ),
+    );
   }
 
   void _addRoll(DiceRoll roll) {
@@ -200,20 +215,22 @@ class DiceRollerService extends GetxService with SavableMixin {
       rollLog.add(roll);
     }
 
-    _rollUpdates.add(DiceRollerLogAdd(
-      newRoll: roll,
-      removedRoll: removedRoll,
-    ));
+    _rollUpdates.add(
+      DiceRollerLogAdd(
+        newRoll: roll,
+        removedRoll: removedRoll,
+      ),
+    );
 
     requestSave();
   }
 
   JsonObj toJson() => {
-        'diceRoller': {
-          'settings': settings.toJson(),
-          'rollLog': rollLog.toJson(),
-        },
-      };
+    'diceRoller': {
+      'settings': settings.toJson(),
+      'rollLog': rollLog.toJson(),
+    },
+  };
 
   DiceRollerService.fromJson(JsonObj json) {
     final JsonObj? diceRoller = json['diceRoller'];

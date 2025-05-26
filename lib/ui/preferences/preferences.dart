@@ -29,20 +29,25 @@ class LocalPreferencesService extends GetxService {
   final RxBool physicalDiceModeExplained;
 
   LocalPreferencesService(this._preferences)
-      : enableGoogleStorage =
-            (_preferences.getBool(_enableGoogleStorageKey) ?? false).obs,
-        enableLocalStorage =
-            (_preferences.getBool(_enableLocalStorageKey) ?? true).obs,
-        localDataDirectoryOverride =
-            _preferences.getString(_localDataDirectoryOverrideKey).obs,
-        enableDarkMode = (_preferences.getBool(_enableDarkModeKey) ??
-                WidgetsBinding.instance.platformDispatcher.platformBrightness ==
-                    Brightness.dark)
-            .obs,
-        enablePhysicalDiceMode =
-            (_preferences.getBool(_enablePhysicalDiceModeKey) ?? false).obs,
-        physicalDiceModeExplained =
-            (_preferences.getBool(_physicalDiceModeExplainedKey) ?? false).obs;
+    : enableGoogleStorage =
+          (_preferences.getBool(_enableGoogleStorageKey) ?? false).obs,
+      enableLocalStorage =
+          (_preferences.getBool(_enableLocalStorageKey) ?? true).obs,
+      localDataDirectoryOverride = _preferences
+          .getString(_localDataDirectoryOverrideKey)
+          .obs,
+      enableDarkMode =
+          (_preferences.getBool(_enableDarkModeKey) ??
+                  WidgetsBinding
+                          .instance
+                          .platformDispatcher
+                          .platformBrightness ==
+                      Brightness.dark)
+              .obs,
+      enablePhysicalDiceMode =
+          (_preferences.getBool(_enablePhysicalDiceModeKey) ?? false).obs,
+      physicalDiceModeExplained =
+          (_preferences.getBool(_physicalDiceModeExplainedKey) ?? false).obs;
 
   @override
   void onInit() {

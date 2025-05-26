@@ -12,8 +12,8 @@ import '../styles.dart';
 /// left to right for the other platforms
 TextDirection dialogButtonDirection =
     !GetPlatform.isWeb && GetPlatform.isWindows
-        ? TextDirection.rtl
-        : TextDirection.ltr;
+    ? TextDirection.rtl
+    : TextDirection.ltr;
 
 enum DeviceType { phone, tablet, desktop }
 
@@ -154,5 +154,5 @@ const bottomNavigationDestinations = [
     icon: Icon(Icons.more_horiz_outlined),
     label: 'More',
     tooltip: '',
-  )
+  ),
 ];

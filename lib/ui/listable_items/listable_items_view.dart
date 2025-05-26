@@ -81,8 +81,9 @@ abstract class ListableItemsView<TItem extends ListableItem>
   }
 
   void _roll() {
-    final validItems =
-        _controller.items.where((e) => !e.value.isArchived).toList();
+    final validItems = _controller.items
+        .where((e) => !e.value.isArchived)
+        .toList();
     final dieRoll = rollDie(validItems.length);
 
     Get.find<RollLogService>().addGenericRoll(
@@ -137,7 +138,8 @@ abstract class ListableItemView<TItem extends ListableItem>
           addToListButton = IconButton(
             onPressed: !isDeleted ? () => _addToList(context) : null,
             icon: const Icon(Icons.playlist_add),
-            tooltip: 'Add this $_itemTypeLabel'
+            tooltip:
+                'Add this $_itemTypeLabel'
                 ' to the ${_itemTypeLabel}s List',
           );
         }

@@ -25,12 +25,12 @@ enum FateChartType {
 String fateChartTypeToJson(FateChartType fateChartType) => fateChartType.name;
 
 FateChartType fateChartTypeFromJson(String name) => switch (name) {
-      'standard' => FateChartType.standard,
-      'mid' => FateChartType.mid,
-      'low' => FateChartType.low,
-      'none' => FateChartType.none,
-      _ => FateChartType.standard,
-    };
+  'standard' => FateChartType.standard,
+  'mid' => FateChartType.mid,
+  'low' => FateChartType.low,
+  'none' => FateChartType.none,
+  _ => FateChartType.standard,
+};
 
 sealed class Probability {
   final String text;
@@ -48,29 +48,29 @@ sealed class Probability {
   const Probability(this.text);
 
   String toJson() => switch (this) {
-        Certain() => Certain._id,
-        NearlyCertain() => NearlyCertain._id,
-        VeryLikely() => VeryLikely._id,
-        Likely() => Likely._id,
-        FiftyFifty() => FiftyFifty._id,
-        Unlikely() => Unlikely._id,
-        VeryUnlikely() => VeryUnlikely._id,
-        NearlyImpossible() => NearlyImpossible._id,
-        Impossible() => Impossible._id,
-      };
+    Certain() => Certain._id,
+    NearlyCertain() => NearlyCertain._id,
+    VeryLikely() => VeryLikely._id,
+    Likely() => Likely._id,
+    FiftyFifty() => FiftyFifty._id,
+    Unlikely() => Unlikely._id,
+    VeryUnlikely() => VeryUnlikely._id,
+    NearlyImpossible() => NearlyImpossible._id,
+    Impossible() => Impossible._id,
+  };
 
   factory Probability.fromJson(String json) => switch (json) {
-        Certain._id => Certain.instance,
-        NearlyCertain._id => NearlyCertain.instance,
-        VeryLikely._id => VeryLikely.instance,
-        Likely._id => Likely.instance,
-        FiftyFifty._id => FiftyFifty.instance,
-        Unlikely._id => Unlikely.instance,
-        VeryUnlikely._id => VeryUnlikely.instance,
-        NearlyImpossible._id => NearlyImpossible.instance,
-        Impossible._id => Impossible.instance,
-        _ => FiftyFifty.instance,
-      };
+    Certain._id => Certain.instance,
+    NearlyCertain._id => NearlyCertain.instance,
+    VeryLikely._id => VeryLikely.instance,
+    Likely._id => Likely.instance,
+    FiftyFifty._id => FiftyFifty.instance,
+    Unlikely._id => Unlikely.instance,
+    VeryUnlikely._id => VeryUnlikely.instance,
+    NearlyImpossible._id => NearlyImpossible.instance,
+    Impossible._id => Impossible.instance,
+    _ => FiftyFifty.instance,
+  };
 }
 
 class Certain extends Probability {
@@ -162,8 +162,11 @@ final probabilityVMs = [
   const ProbabilityVM(Probability.nearlyCertain, hasRightBorder: true),
   const ProbabilityVM(Probability.veryLikely),
   const ProbabilityVM(Probability.likely, hasRightBorder: true),
-  const ProbabilityVM(Probability.fiftyFifty,
-      hasRightBorder: true, hasFullWidth: true),
+  const ProbabilityVM(
+    Probability.fiftyFifty,
+    hasRightBorder: true,
+    hasFullWidth: true,
+  ),
   const ProbabilityVM(Probability.unlikely),
   const ProbabilityVM(Probability.veryUnlikely, hasRightBorder: true),
   const ProbabilityVM(Probability.nearlyImpossible),
@@ -262,11 +265,13 @@ class FateChartService extends GetxService {
       FateChartType.none => _noneFateChart,
     };
 
-    final probabilityIndex =
-        probabilityVMs.indexWhere((e) => e.probability == probability);
+    final probabilityIndex = probabilityVMs.indexWhere(
+      (e) => e.probability == probability,
+    );
 
     return (chart.firstWhereOrNull(
-                (e) => e.min <= chaosFactor && chaosFactor <= e.max) ??
+              (e) => e.min <= chaosFactor && chaosFactor <= e.max,
+            ) ??
             _fallbackChaosFactorOutcomeProbabilities)
         .outcomeProbabilities[probabilityIndex];
   }
@@ -281,39 +286,66 @@ class FateChartService extends GetxService {
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _getProbabilityButton(context, Probability.certain,
-              isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled),
-          _getProbabilityButton(context, Probability.nearlyCertain,
-              isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled),
+          _getProbabilityButton(
+            context,
+            Probability.certain,
+            isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled,
+          ),
+          _getProbabilityButton(
+            context,
+            Probability.nearlyCertain,
+            isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled,
+          ),
         ],
       ),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _getProbabilityButton(context, Probability.veryLikely,
-              isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled),
-          _getProbabilityButton(context, Probability.likely,
-              isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled),
+          _getProbabilityButton(
+            context,
+            Probability.veryLikely,
+            isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled,
+          ),
+          _getProbabilityButton(
+            context,
+            Probability.likely,
+            isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled,
+          ),
         ],
       ),
-      _getProbabilityButton(context, Probability.fiftyFifty,
-          isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled),
+      _getProbabilityButton(
+        context,
+        Probability.fiftyFifty,
+        isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled,
+      ),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _getProbabilityButton(context, Probability.unlikely,
-              isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled),
-          _getProbabilityButton(context, Probability.veryUnlikely,
-              isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled),
+          _getProbabilityButton(
+            context,
+            Probability.unlikely,
+            isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled,
+          ),
+          _getProbabilityButton(
+            context,
+            Probability.veryUnlikely,
+            isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled,
+          ),
         ],
       ),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _getProbabilityButton(context, Probability.nearlyImpossible,
-              isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled),
-          _getProbabilityButton(context, Probability.impossible,
-              isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled),
+          _getProbabilityButton(
+            context,
+            Probability.nearlyImpossible,
+            isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled,
+          ),
+          _getProbabilityButton(
+            context,
+            Probability.impossible,
+            isPhysicalDiceModeEnabled: isPhysicalDiceModeEnabled,
+          ),
         ],
       ),
       RulesHelpWrapper(
@@ -362,12 +394,15 @@ class FateChartService extends GetxService {
 typedef _FateChart = List<_ChaosFactorOutcomeProbabilities>;
 
 final _FateChart _standardFateChart = List.generate(9, (index) => index + 1)
-    .map((chaosFactor) => _ChaosFactorOutcomeProbabilities(
+    .map(
+      (chaosFactor) => _ChaosFactorOutcomeProbabilities(
         chaosFactor,
         chaosFactor,
         _outcomeProbabilitiesByThreshold
             .getRange(9 - chaosFactor, 9 - chaosFactor + 9)
-            .toList()))
+            .toList(),
+      ),
+    )
     .toList();
 
 final _FateChart _midFateChart = [
@@ -390,10 +425,10 @@ final _FateChart _noneFateChart = [
 
 final _fallbackChaosFactorOutcomeProbabilities =
     _ChaosFactorOutcomeProbabilities(
-  1,
-  9,
-  _outcomeProbabilitiesByThreshold.getRange(4, 13).toList(),
-);
+      1,
+      9,
+      _outcomeProbabilitiesByThreshold.getRange(4, 13).toList(),
+    );
 
 final _outcomeProbabilitiesByThreshold = [
   _getOutcomeProbabilityForThreshold(99),
@@ -416,15 +451,19 @@ final _outcomeProbabilitiesByThreshold = [
 ];
 
 final _availableOutcomeProbabilities = {
-  for (var e in [5, 10, 15, 25, 35, 50, 65, 75, 85, 90, 95]
-      .map((threshold) => (threshold, _computeOutcomeProbability(threshold)))
-      .toList())
+  for (var e
+      in [5, 10, 15, 25, 35, 50, 65, 75, 85, 90, 95]
+          .map(
+            (threshold) => (threshold, _computeOutcomeProbability(threshold)),
+          )
+          .toList())
     e.$1: e.$2,
   1: FateChartOutcomeProbability(0, 1, 81),
-  99: FateChartOutcomeProbability(20, 99, 101)
+  99: FateChartOutcomeProbability(20, 99, 101),
 };
 
-final _fallbackOutcomeProbability = _availableOutcomeProbabilities[50] ??
+final _fallbackOutcomeProbability =
+    _availableOutcomeProbabilities[50] ??
     FateChartOutcomeProbability(10, 50, 91);
 
 FateChartOutcomeProbability _computeOutcomeProbability(int threshold) {

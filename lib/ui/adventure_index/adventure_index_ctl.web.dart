@@ -10,7 +10,8 @@ extension AdventureIndexControllerX on AdventureIndexController {
     // ask confirmation
     if (!await Dialogs.showConfirmation(
       title: 'Upload Custom Meaning Tables?',
-      message: 'This will delete the Custom Meaning Tables'
+      message:
+          'This will delete the Custom Meaning Tables'
           ' in your online storage and upload the meaning tables in the selected file.\n\n'
           'You may need to restart the application for the changes to take effect.',
       userManualAnchor: 'custom-meaning-tables',
@@ -34,7 +35,9 @@ extension AdventureIndexControllerX on AdventureIndexController {
 
       final meaningTables = Get.find<MeaningTablesPersisterService>();
       await meaningTables.importZipToRemote(
-          zipContent, meaningTableTransferProgress);
+        zipContent,
+        meaningTableTransferProgress,
+      );
     } catch (e) {
       handleError('upload', e);
     }

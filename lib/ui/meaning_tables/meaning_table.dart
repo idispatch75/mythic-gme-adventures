@@ -42,9 +42,9 @@ class MeaningTablesService extends GetxService {
   Future<void> loadFromAssets() async {
     final assetManifest = await AssetManifest.loadFromAssetBundle(rootBundle);
 
-    for (var asset in assetManifest
-        .listAssets()
-        .where((string) => string.startsWith('assets/meaning_tables/'))) {
+    for (var asset in assetManifest.listAssets().where(
+      (string) => string.startsWith('assets/meaning_tables/'),
+    )) {
       // parse the asset
       final json = await rootBundle.loadString(asset);
 

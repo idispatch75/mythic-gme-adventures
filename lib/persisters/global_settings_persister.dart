@@ -63,13 +63,13 @@ class GlobalSettingsPersisterService
     _saveRequestsSubscription = service.saveRequests
         .debounceTime(const Duration(seconds: 5))
         .listen((value) async {
-      try {
-        await saveSettings();
-      } catch (e) {
-        // ignore
-        logDebug('Failed to save global settings', e);
-      }
-    });
+          try {
+            await saveSettings();
+          } catch (e) {
+            // ignore
+            logDebug('Failed to save global settings', e);
+          }
+        });
   }
 }
 

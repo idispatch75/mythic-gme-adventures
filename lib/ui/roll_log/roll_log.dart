@@ -15,27 +15,27 @@ sealed class RollEntry {
   });
 
   JsonObj toJson() => {
-        'runtimeType': switch (this) {
-          FateChartRoll() => FateChartRoll._id,
-          RandomEventRoll() => RandomEventRoll._id,
-          MeaningTableRoll() => MeaningTableRoll._id,
-          GenericRoll() => GenericRoll._id,
-        },
-        'timestamp': timestamp,
-      };
+    'runtimeType': switch (this) {
+      FateChartRoll() => FateChartRoll._id,
+      RandomEventRoll() => RandomEventRoll._id,
+      MeaningTableRoll() => MeaningTableRoll._id,
+      GenericRoll() => GenericRoll._id,
+    },
+    'timestamp': timestamp,
+  };
 
   factory RollEntry.fromJson(JsonObj json) => switch (json['runtimeType']) {
-        FateChartRoll._id => FateChartRoll.fromJson(json),
-        RandomEventRoll._id => RandomEventRoll.fromJson(json),
-        MeaningTableRoll._id => MeaningTableRoll.fromJson(json),
-        GenericRoll._id => GenericRoll.fromJson(json),
-        _ => GenericRoll(
-            title: 'unknown',
-            value: 'unknown',
-            dieRoll: 0,
-            timestamp: json['timestamp'],
-          ),
-      };
+    FateChartRoll._id => FateChartRoll.fromJson(json),
+    RandomEventRoll._id => RandomEventRoll.fromJson(json),
+    MeaningTableRoll._id => MeaningTableRoll.fromJson(json),
+    GenericRoll._id => GenericRoll.fromJson(json),
+    _ => GenericRoll(
+      title: 'unknown',
+      value: 'unknown',
+      dieRoll: 0,
+      timestamp: json['timestamp'],
+    ),
+  };
 }
 
 class FateChartRoll extends RollEntry {
@@ -67,20 +67,20 @@ class FateChartRoll extends RollEntry {
     });
 
   FateChartRoll.fromJson(JsonObj json)
-      : this(
-          probability: Probability.fromJson(json['probability']),
-          chaosFactor: json['chaosFactor'],
-          dieRoll: json['dieRoll'],
-          outcome: switch (json['outcome']) {
-            'yes' => FateChartRollOutcome.yes,
-            'extremeYes' => FateChartRollOutcome.extremeYes,
-            'no' => FateChartRollOutcome.no,
-            'extremeNo' => FateChartRollOutcome.extremeNo,
-            _ => FateChartRollOutcome.yes,
-          },
-          hasEvent: json['hasEvent'],
-          timestamp: json['timestamp'],
-        );
+    : this(
+        probability: Probability.fromJson(json['probability']),
+        chaosFactor: json['chaosFactor'],
+        dieRoll: json['dieRoll'],
+        outcome: switch (json['outcome']) {
+          'yes' => FateChartRollOutcome.yes,
+          'extremeYes' => FateChartRollOutcome.extremeYes,
+          'no' => FateChartRollOutcome.no,
+          'extremeNo' => FateChartRollOutcome.extremeNo,
+          _ => FateChartRollOutcome.yes,
+        },
+        hasEvent: json['hasEvent'],
+        timestamp: json['timestamp'],
+      );
 }
 
 class RandomEventRoll extends RollEntry {
@@ -103,11 +103,11 @@ class RandomEventRoll extends RollEntry {
     });
 
   RandomEventRoll.fromJson(JsonObj json)
-      : this(
-          focus: RandomEventFocus.fromJson(json['focus']),
-          dieRoll: json['dieRoll'],
-          timestamp: json['timestamp'],
-        );
+    : this(
+        focus: RandomEventFocus.fromJson(json['focus']),
+        dieRoll: json['dieRoll'],
+        timestamp: json['timestamp'],
+      );
 }
 
 class MeaningTableRoll extends RollEntry {
@@ -130,11 +130,11 @@ class MeaningTableRoll extends RollEntry {
     });
 
   MeaningTableRoll.fromJson(JsonObj json)
-      : this(
-          tableId: json['tableId'],
-          results: fromJsonList(json['results'], MeaningTableSubRoll.fromJson),
-          timestamp: json['timestamp'],
-        );
+    : this(
+        tableId: json['tableId'],
+        results: fromJsonList(json['results'], MeaningTableSubRoll.fromJson),
+        timestamp: json['timestamp'],
+      );
 }
 
 class MeaningTableSubRoll {
@@ -147,15 +147,15 @@ class MeaningTableSubRoll {
   });
 
   JsonObj toJson() => {
-        'entryId': entryId,
-        'dieRoll': dieRoll,
-      };
+    'entryId': entryId,
+    'dieRoll': dieRoll,
+  };
 
   MeaningTableSubRoll.fromJson(JsonObj json)
-      : this(
-          entryId: json['entryId'],
-          dieRoll: json['dieRoll'],
-        );
+    : this(
+        entryId: json['entryId'],
+        dieRoll: json['dieRoll'],
+      );
 }
 
 class GenericRoll extends RollEntry {
@@ -181,12 +181,12 @@ class GenericRoll extends RollEntry {
     });
 
   GenericRoll.fromJson(JsonObj json)
-      : this(
-          title: json['title'],
-          value: json['value'],
-          dieRoll: json['dieRoll'],
-          timestamp: json['timestamp'],
-        );
+    : this(
+        title: json['title'],
+        value: json['value'],
+        dieRoll: json['dieRoll'],
+        timestamp: json['timestamp'],
+      );
 }
 
 class RollLogService extends GetxService with SavableMixin {
@@ -207,9 +207,11 @@ class RollLogService extends GetxService with SavableMixin {
       timestamp: 0,
     );
 
-    rollUpdates = _rollUpdates.buffer(_rollUpdates
-        .startWith(const RollLogAdd(newRoll: dummyRoll, removedRoll: null))
-        .debounceTime(const Duration(milliseconds: 200)));
+    rollUpdates = _rollUpdates.buffer(
+      _rollUpdates
+          .startWith(const RollLogAdd(newRoll: dummyRoll, removedRoll: null))
+          .debounceTime(const Duration(milliseconds: 200)),
+    );
   }
 
   FateChartRoll addFateChartRoll({
@@ -244,22 +246,26 @@ class RollLogService extends GetxService with SavableMixin {
     required RandomEventFocus focus,
     required int dieRoll,
   }) {
-    _addRollLogEntry(RandomEventRoll(
-      focus: focus,
-      dieRoll: dieRoll,
-      timestamp: DateTime.timestamp().millisecondsSinceEpoch,
-    ));
+    _addRollLogEntry(
+      RandomEventRoll(
+        focus: focus,
+        dieRoll: dieRoll,
+        timestamp: DateTime.timestamp().millisecondsSinceEpoch,
+      ),
+    );
   }
 
   void addMeaningTableRoll({
     required String tableId,
     required List<MeaningTableSubRoll> results,
   }) {
-    _addRollLogEntry(MeaningTableRoll(
-      tableId: tableId,
-      results: results,
-      timestamp: DateTime.timestamp().millisecondsSinceEpoch,
-    ));
+    _addRollLogEntry(
+      MeaningTableRoll(
+        tableId: tableId,
+        results: results,
+        timestamp: DateTime.timestamp().millisecondsSinceEpoch,
+      ),
+    );
   }
 
   void addGenericRoll({
@@ -267,12 +273,14 @@ class RollLogService extends GetxService with SavableMixin {
     required String value,
     required int dieRoll,
   }) {
-    _addRollLogEntry(GenericRoll(
-      title: title,
-      value: value,
-      dieRoll: dieRoll,
-      timestamp: DateTime.timestamp().millisecondsSinceEpoch,
-    ));
+    _addRollLogEntry(
+      GenericRoll(
+        title: title,
+        value: value,
+        dieRoll: dieRoll,
+        timestamp: DateTime.timestamp().millisecondsSinceEpoch,
+      ),
+    );
   }
 
   void _addRollLogEntry(RollEntry entry) {
@@ -288,10 +296,12 @@ class RollLogService extends GetxService with SavableMixin {
       rollLog.add(entry);
     }
 
-    _rollUpdates.add(RollLogAdd(
-      newRoll: entry,
-      removedRoll: removedEntry,
-    ));
+    _rollUpdates.add(
+      RollLogAdd(
+        newRoll: entry,
+        removedRoll: removedEntry,
+      ),
+    );
 
     requestSave();
   }
@@ -305,8 +315,8 @@ class RollLogService extends GetxService with SavableMixin {
   }
 
   JsonObj toJson() => {
-        'rollLog': rollLog,
-      };
+    'rollLog': rollLog,
+  };
 
   RollLogService.fromJson(JsonObj json) {
     for (var item in fromJsonList(json['rollLog'], RollEntry.fromJson)) {

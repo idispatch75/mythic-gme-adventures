@@ -5,13 +5,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SecureStorage extends GetxService {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
-      aOptions: AndroidOptions(
-        encryptedSharedPreferences: true,
-        resetOnError: true,
-      ),
-      iOptions: IOSOptions(
-        accessibility: KeychainAccessibility.first_unlock_this_device,
-      ));
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+      resetOnError: true,
+    ),
+    iOptions: IOSOptions(
+      accessibility: KeychainAccessibility.first_unlock_this_device,
+    ),
+  );
 
   final SharedPreferencesWithCache _sharedPreferences;
 

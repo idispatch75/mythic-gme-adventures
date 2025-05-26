@@ -13,10 +13,10 @@ class CharactersView extends ListableItemsView<Character> {
     bool showAddToListNotification = false,
     Key? key,
   }) : super(
-          _service,
-          showAddToListNotification: showAddToListNotification,
-          key: key,
-        );
+         _service,
+         showAddToListNotification: showAddToListNotification,
+         key: key,
+       );
 
   @override
   void createItem() => createCharacter();
@@ -60,7 +60,8 @@ Future<Rx<Character>?> createCharacter() async {
   final character = Character(newId, '');
   final controller = _service;
 
-  final result = await Get.dialog<bool>(
+  final result =
+      await Get.dialog<bool>(
         CharacterEditView(
           controller,
           character,

@@ -10,12 +10,12 @@ class PlayerCharacter {
   PlayerCharacter(this.name, {this.notes});
 
   JsonObj toJson() => {
-        'name': name,
-        if (notes != null) 'notes': notes,
-      };
+    'name': name,
+    if (notes != null) 'notes': notes,
+  };
 
   PlayerCharacter.fromJson(JsonObj json)
-      : this(json['name'], notes: json['notes']);
+    : this(json['name'], notes: json['notes']);
 }
 
 class PlayerCharactersService extends GetxService with SavableMixin {
@@ -36,12 +36,14 @@ class PlayerCharactersService extends GetxService with SavableMixin {
   }
 
   JsonObj toJson() => {
-        'playerCharacters': playerCharacters,
-      };
+    'playerCharacters': playerCharacters,
+  };
 
   PlayerCharactersService.fromJson(JsonObj json) {
-    for (var item
-        in fromJsonList(json['playerCharacters'], PlayerCharacter.fromJson)) {
+    for (var item in fromJsonList(
+      json['playerCharacters'],
+      PlayerCharacter.fromJson,
+    )) {
       add(item);
     }
   }

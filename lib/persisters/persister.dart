@@ -28,26 +28,26 @@ abstract class PersisterService<TPersister> extends GetxService {
     super.onInit();
 
     final preferences = Get.find<LocalPreferencesService>();
-    _enableLocalStorageSubscription =
-        preferences.enableLocalStorage.listenAndPump((enable) {
-      if (enable) {
-        localPersister = createPersister(LocalStorage());
-      } else {
-        localPersister = null;
-      }
-    });
+    _enableLocalStorageSubscription = preferences.enableLocalStorage
+        .listenAndPump((enable) {
+          if (enable) {
+            localPersister = createPersister(LocalStorage());
+          } else {
+            localPersister = null;
+          }
+        });
 
-    _enableGoogleStorageSubscription =
-        preferences.enableGoogleStorage.listenAndPump((enable) {
-      if (enable) {
-        final authManager = Get.find<GoogleAuthService>().authManager;
-        remotePersister = createPersister(GoogleStorage(authManager));
-      } else {
-        preferences.enableLocalStorage(true);
+    _enableGoogleStorageSubscription = preferences.enableGoogleStorage
+        .listenAndPump((enable) {
+          if (enable) {
+            final authManager = Get.find<GoogleAuthService>().authManager;
+            remotePersister = createPersister(GoogleStorage(authManager));
+          } else {
+            preferences.enableLocalStorage(true);
 
-        remotePersister = null;
-      }
-    });
+            remotePersister = null;
+          }
+        });
   }
 
   @override
@@ -73,9 +73,7 @@ class SaveResult {
   final bool isSuccess;
   final Object? error;
 
-  SaveResult.success()
-      : isSuccess = true,
-        error = null;
+  SaveResult.success() : isSuccess = true, error = null;
 
   SaveResult.error(this.error) : isSuccess = false;
 }

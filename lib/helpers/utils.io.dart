@@ -9,8 +9,10 @@ import 'package:get/get.dart';
 import 'json_utils.dart';
 
 Future<JsonObj?> pickFileAsJson({required String dialogTitle}) async {
-  final filePath =
-      await _pickFilePath(dialogTitle: dialogTitle, extension: 'json');
+  final filePath = await _pickFilePath(
+    dialogTitle: dialogTitle,
+    extension: 'json',
+  );
   if (filePath == null) {
     return null;
   }
@@ -24,8 +26,10 @@ Future<Uint8List?> pickFileAsBytes({
   required String dialogTitle,
   required String extension,
 }) async {
-  final filePath =
-      await _pickFilePath(dialogTitle: dialogTitle, extension: extension);
+  final filePath = await _pickFilePath(
+    dialogTitle: dialogTitle,
+    extension: extension,
+  );
   if (filePath == null) {
     return null;
   }

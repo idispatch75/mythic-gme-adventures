@@ -22,8 +22,7 @@ class ThreadEditView extends ListableItemEditView<Thread> {
   @override
   Widget? getComplement({
     required RichTextEditorController notesController,
-  }) =>
-      _ThreadComplementEditView(item);
+  }) => _ThreadComplementEditView(item);
 }
 
 class ThreadComplementController extends GetxController {
@@ -32,8 +31,8 @@ class ThreadComplementController extends GetxController {
   final Rx<int> nbPhases;
 
   ThreadComplementController(this._thread)
-      : isTracked = _thread.isTracked().obs,
-        nbPhases = (_thread.phases.isEmpty ? 3 : _thread.phases.length).obs;
+    : isTracked = _thread.isTracked().obs,
+      nbPhases = (_thread.phases.isEmpty ? 3 : _thread.phases.length).obs;
 
   void save() {
     final controller = Get.find<ThreadController>(tag: _thread.toTag());
@@ -56,8 +55,9 @@ class _ThreadComplementEditView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller =
-        Get.find<ThreadComplementController>(tag: _thread.toTag());
+    final controller = Get.find<ThreadComplementController>(
+      tag: _thread.toTag(),
+    );
 
     return Obx(
       () => Column(

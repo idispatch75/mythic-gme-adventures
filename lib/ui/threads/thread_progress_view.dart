@@ -66,15 +66,15 @@ class ThreadProgressView extends GetView<ThreadController> {
             ),
             buttonWrapper(
               child: IconButton.outlined(
-                onPressed:
-                    !isDeleted ? () => controller.addFlashpoint(2) : null,
+                onPressed: !isDeleted
+                    ? () => controller.addFlashpoint(2)
+                    : null,
                 tooltip: 'Mark a Flashpoint and +2 progress',
                 icon: const _MarkFlashpointIcon(add: true),
               ),
-            )
+            ),
           ];
         }
-
         // buttons + menu entries for small layout
         else {
           additionalMenuEntries = [
@@ -102,8 +102,8 @@ class ThreadProgressView extends GetView<ThreadController> {
           children: [
             // help button
             Obx(() {
-              final hideButton =
-                  Get.find<GlobalSettingsService>().hideHelpButtons();
+              final hideButton = Get.find<GlobalSettingsService>()
+                  .hideHelpButtons();
               if (hideButton) {
                 return const SizedBox.shrink();
               }
@@ -151,16 +151,18 @@ class ThreadProgressView extends GetView<ThreadController> {
               // Remove 2 progress
               MenuItemButton(
                 leadingIcon: const Icon(Icons.exposure_minus_2),
-                onPressed:
-                    !isDeleted ? () => controller.removeProgress(2) : null,
+                onPressed: !isDeleted
+                    ? () => controller.removeProgress(2)
+                    : null,
                 child: const Text('Remove 2 progress'),
               ),
 
               // Remove 1 progress
               MenuItemButton(
                 leadingIcon: const Icon(Icons.exposure_minus_1),
-                onPressed:
-                    !isDeleted ? () => controller.removeProgress(1) : null,
+                onPressed: !isDeleted
+                    ? () => controller.removeProgress(1)
+                    : null,
                 child: const Text('Remove 1 progress'),
               ),
             ]),
@@ -279,18 +281,20 @@ class _MarkFlashpointIcon extends StatelessWidget {
         maxWidth: 24,
         maxHeight: 24,
       ),
-      child: Stack(children: [
-        const Positioned(
-          top: 2,
-          right: -6,
-          child: Icon(Icons.flash_on, size: 20),
-        ),
-        Positioned(
-          top: 3,
-          left: -3,
-          child: Icon(add ? Icons.exposure_plus_2 : Icons.remove, size: 18),
-        ),
-      ]),
+      child: Stack(
+        children: [
+          const Positioned(
+            top: 2,
+            right: -6,
+            child: Icon(Icons.flash_on, size: 20),
+          ),
+          Positioned(
+            top: 3,
+            left: -3,
+            child: Icon(add ? Icons.exposure_plus_2 : Icons.remove, size: 18),
+          ),
+        ],
+      ),
     );
   }
 }

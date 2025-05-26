@@ -11,7 +11,7 @@ class ResponsiveDialog extends StatelessWidget {
   /// A dialog that displays in full screen on phones,
   /// and with a reasonable size otherwise.
   const ResponsiveDialog({required this.childBuilder, super.key})
-      : title = null;
+    : title = null;
 
   const ResponsiveDialog.withAppBar({
     required this.childBuilder,

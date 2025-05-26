@@ -21,8 +21,8 @@ class SceneEditPageService extends GetxService {
     this.scene, {
     required this.temporaryData,
     required this.isNew,
-  })  : summaryController = TextEditingController(text: temporaryData.summary),
-        notesController = RichTextEditorController(temporaryData.notes);
+  }) : summaryController = TextEditingController(text: temporaryData.summary),
+       notesController = RichTextEditorController(temporaryData.notes);
 
   void save(String summary, String? notes) {
     scene.summary = summary;

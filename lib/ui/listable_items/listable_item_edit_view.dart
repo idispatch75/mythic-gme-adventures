@@ -26,8 +26,7 @@ abstract class ListableItemEditView<TItem extends ListableItem>
 
   Widget? getComplement({
     required RichTextEditorController notesController,
-  }) =>
-      null;
+  }) => null;
 
   @override
   Widget build(BuildContext context) {

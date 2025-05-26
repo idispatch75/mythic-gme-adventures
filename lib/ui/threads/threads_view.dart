@@ -14,10 +14,10 @@ class ThreadsView extends ListableItemsView<Thread> {
     bool showAddToListNotification = false,
     Key? key,
   }) : super(
-          _service,
-          showAddToListNotification: showAddToListNotification,
-          key: key,
-        );
+         _service,
+         showAddToListNotification: showAddToListNotification,
+         key: key,
+       );
 
   @override
   void createItem() => createThread();
@@ -75,7 +75,8 @@ Future<Rx<Thread>?> createThread() async {
   final thread = Thread(newId, '');
   final controller = _service;
 
-  final result = await Get.dialog<bool>(
+  final result =
+      await Get.dialog<bool>(
         ThreadEditView(
           controller,
           thread,

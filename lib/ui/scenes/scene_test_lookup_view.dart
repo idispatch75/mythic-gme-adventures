@@ -15,28 +15,34 @@ class SceneTestLookupView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final chaosFactor = Get.find<ChaosFactorService>().chaosFactor();
-    final isPreparedAdventure =
-        Get.find<AdventureService>().isPreparedAdventure();
+    final isPreparedAdventure = Get.find<AdventureService>()
+        .isPreparedAdventure();
 
     final entries = <RollLookupEntry>[];
     if (isPreparedAdventure) {
-      entries.add(RollLookupEntry(
-        value: '1 - $chaosFactor',
-        label: 'Random Event',
-      ));
+      entries.add(
+        RollLookupEntry(
+          value: '1 - $chaosFactor',
+          label: 'Random Event',
+        ),
+      );
     } else {
       for (var i = 0; i < chaosFactor; i++) {
-        entries.add(RollLookupEntry(
-          value: (i + 1).toString(),
-          label: i.isEven ? 'Altered Scene' : 'Interrupt Scene',
-        ));
+        entries.add(
+          RollLookupEntry(
+            value: (i + 1).toString(),
+            label: i.isEven ? 'Altered Scene' : 'Interrupt Scene',
+          ),
+        );
       }
     }
 
-    entries.add(RollLookupEntry(
-      value: chaosFactor == 9 ? '10' : '${chaosFactor + 1} - 10',
-      label: 'Expected Scene',
-    ));
+    entries.add(
+      RollLookupEntry(
+        value: chaosFactor == 9 ? '10' : '${chaosFactor + 1} - 10',
+        label: 'Expected Scene',
+      ),
+    );
 
     return RollLookupView(
       header: 'Test Expected Scene - 1d10',

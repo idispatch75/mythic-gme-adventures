@@ -47,10 +47,11 @@ abstract class ListableItemsListController<TItem extends ListableItem>
     super.onInit();
 
     _subscription = sourceItemsList.listenAndPump((items) {
-      this.items.replaceAll(groupBy(items, (e) => e.value)
-          .entries
-          .map((e) => ListItem(item: e.key, count: e.value.length))
-          .sorted((a, b) => a.item.displayOrder - b.item.displayOrder));
+      this.items.replaceAll(
+        groupBy(items, (e) => e.value).entries
+            .map((e) => ListItem(item: e.key, count: e.value.length))
+            .sorted((a, b) => a.item.displayOrder - b.item.displayOrder),
+      );
     });
   }
 
@@ -74,8 +75,11 @@ abstract class ListableItemsListView<TItem extends ListableItem>
 
   Future<void> createItem();
 
-  Widget createItemView(ListItem<TItem> item, String itemLabel,
-      {bool isDeleted = false});
+  Widget createItemView(
+    ListItem<TItem> item,
+    String itemLabel, {
+    bool isDeleted = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -132,8 +136,11 @@ abstract class ListableItemsListView<TItem extends ListableItem>
 
   void _roll(BuildContext context) {
     if (getPhysicalDiceModeEnabled) {
-      showListItemsLookup<TItem>(context, listLabel,
-          controller.sourceItemsList.map((e) => e.value).toList());
+      showListItemsLookup<TItem>(
+        context,
+        listLabel,
+        controller.sourceItemsList.map((e) => e.value).toList(),
+      );
       return;
     }
 
@@ -170,27 +177,33 @@ abstract class ListableItemListItemView<TItem extends ListableItem>
 
   @override
   Widget build(BuildContext context) {
-    final item = _controller.items
-            .firstWhereOrNull((e) => e.value.id == _listItem.item.id) ??
+    final item =
+        _controller.items.firstWhereOrNull(
+          (e) => e.value.id == _listItem.item.id,
+        ) ??
         _listItem.item.obs;
 
-    final title = LayoutBuilder(builder: (_, constraints) {
-      Widget text = Obx(() => Text(
+    final title = LayoutBuilder(
+      builder: (_, constraints) {
+        Widget text = Obx(
+          () => Text(
             item().name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-          ));
-
-      if (constraints.maxWidth < 400) {
-        text = Tooltip(
-          message: item().name,
-          waitDuration: const Duration(seconds: 1),
-          child: text,
+          ),
         );
-      }
 
-      return text;
-    });
+        if (constraints.maxWidth < 400) {
+          text = Tooltip(
+            message: item().name,
+            waitDuration: const Duration(seconds: 1),
+            child: text,
+          );
+        }
+
+        return text;
+      },
+    );
 
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -223,8 +236,9 @@ abstract class ListableItemListItemView<TItem extends ListableItem>
 
             // add item
             IconButton(
-              onPressed:
-                  !isDeleted ? () => _controller.addToItemsList(item) : null,
+              onPressed: !isDeleted
+                  ? () => _controller.addToItemsList(item)
+                  : null,
               icon: const Icon(Icons.add),
               tooltip: 'Add this $_itemTypeLabel to the List again',
             ),

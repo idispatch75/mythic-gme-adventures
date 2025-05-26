@@ -59,8 +59,9 @@ class GlobalSettingsEditView extends HookWidget {
     final allowUnlimitedListCount = _settings.allowUnlimitedListCount.obs;
     final hideHelpButtons = _settings.hideHelpButtons().obs;
     final meaningTablesLanguage = _settings.meaningTablesLanguage.obs;
-    if (!controller.meaningTableLanguages
-        .containsKey(meaningTablesLanguage())) {
+    if (!controller.meaningTableLanguages.containsKey(
+      meaningTablesLanguage(),
+    )) {
       meaningTablesLanguage.value = 'en';
     }
 
@@ -96,7 +97,8 @@ class GlobalSettingsEditView extends HookWidget {
               withTopPadding: true,
               setting: allowUnlimitedListCount,
               text: 'Allow unlimited counter in Characters/Threads Lists',
-              subtext: 'The rules recommend not having more than'
+              subtext:
+                  'The rules recommend not having more than'
                   ' ${GlobalSettingsService.maxNumberOfItemsInList} identical items in a List.'
                   ' This is enforced unless you check this option.',
             ),
@@ -106,7 +108,8 @@ class GlobalSettingsEditView extends HookWidget {
               withTopPadding: true,
               setting: hideHelpButtons,
               text: 'Hide Help buttons',
-              subtext: 'Hides the Help buttons in the application.'
+              subtext:
+                  'Hides the Help buttons in the application.'
                   ' You can still access the Help in the Adventure menu.',
             ),
 

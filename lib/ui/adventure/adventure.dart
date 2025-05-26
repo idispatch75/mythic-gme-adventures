@@ -24,11 +24,11 @@ class AdventureService extends GetxService with SavableMixin {
     Set<String>? favoriteMeaningTables,
     bool isPreparedAdventure = false,
     int? saveTimestamp,
-  })  : id = id ?? newId,
-        name = name.obs,
-        favoriteMeaningTables = favoriteMeaningTables ?? {},
-        isPreparedAdventure = isPreparedAdventure.obs,
-        saveTimestamp = saveTimestamp.obs;
+  }) : id = id ?? newId,
+       name = name.obs,
+       favoriteMeaningTables = favoriteMeaningTables ?? {},
+       isPreparedAdventure = isPreparedAdventure.obs,
+       saveTimestamp = saveTimestamp.obs;
 
   bool addMeaningTableFavorite(String id) {
     if (favoriteMeaningTables.add(id)) {
@@ -51,24 +51,25 @@ class AdventureService extends GetxService with SavableMixin {
   String toTag() => id.toString();
 
   JsonObj toJson() => {
-        'schemaVersion': supportedSchemaVersion,
-        'id': id,
-        'name': name(),
-        'fateChartType': fateChartTypeToJson(fateChartType),
-        'favoriteMeaningTables': favoriteMeaningTables.toList(),
-        'isPreparedAdventure': isPreparedAdventure(),
-        if (saveTimestamp() != null) 'saveTimestamp': saveTimestamp(),
-      };
+    'schemaVersion': supportedSchemaVersion,
+    'id': id,
+    'name': name(),
+    'fateChartType': fateChartTypeToJson(fateChartType),
+    'favoriteMeaningTables': favoriteMeaningTables.toList(),
+    'isPreparedAdventure': isPreparedAdventure(),
+    if (saveTimestamp() != null) 'saveTimestamp': saveTimestamp(),
+  };
 
   AdventureService.fromJson(JsonObj json)
-      : this(
-          schemaVersion: json['schemaVersion'] ?? 1,
-          id: json['id'],
-          name: json['name'],
-          fateChartType: fateChartTypeFromJson(json['fateChartType']),
-          favoriteMeaningTables:
-              fromJsonValueList<String>(json['favoriteMeaningTables']).toSet(),
-          isPreparedAdventure: json['isPreparedAdventure'] ?? false,
-          saveTimestamp: json['saveTimestamp'],
-        );
+    : this(
+        schemaVersion: json['schemaVersion'] ?? 1,
+        id: json['id'],
+        name: json['name'],
+        fateChartType: fateChartTypeFromJson(json['fateChartType']),
+        favoriteMeaningTables: fromJsonValueList<String>(
+          json['favoriteMeaningTables'],
+        ).toSet(),
+        isPreparedAdventure: json['isPreparedAdventure'] ?? false,
+        saveTimestamp: json['saveTimestamp'],
+      );
 }

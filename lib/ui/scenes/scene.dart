@@ -10,12 +10,12 @@ class Scene {
   Scene({required this.summary, this.notes});
 
   JsonObj toJson() => {
-        'summary': summary,
-        if (notes != null) 'notes': notes,
-      };
+    'summary': summary,
+    if (notes != null) 'notes': notes,
+  };
 
   Scene.fromJson(JsonObj json)
-      : this(summary: json['summary'], notes: json['notes']);
+    : this(summary: json['summary'], notes: json['notes']);
 }
 
 class ScenesService extends GetxService with SavableMixin {
@@ -36,8 +36,8 @@ class ScenesService extends GetxService with SavableMixin {
   }
 
   JsonObj toJson() => {
-        'scenes': scenes,
-      };
+    'scenes': scenes,
+  };
 
   ScenesService.fromJson(JsonObj json) {
     for (var item in fromJsonList(json['scenes'], Scene.fromJson)) {

@@ -74,17 +74,19 @@ class SceneEditView extends HookWidget {
                     summary: summaryController.text,
                     notes: notesController.text,
                   );
-                  Get.replaceForced(SceneEditPageService(
-                    _scene,
-                    temporaryData: temporaryData,
-                    isNew: isNew,
-                  ));
+                  Get.replaceForced(
+                    SceneEditPageService(
+                      _scene,
+                      temporaryData: temporaryData,
+                      isNew: isNew,
+                    ),
+                  );
                   Get.find<LayoutController>().hasEditScenePage.value = true;
                   Get.back<void>();
                 },
               ),
             ),
-          )
+          ),
         ],
       ),
     );

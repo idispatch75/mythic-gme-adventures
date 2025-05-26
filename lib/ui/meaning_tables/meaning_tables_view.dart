@@ -27,7 +27,7 @@ class MeaningTablesView extends GetView<MeaningTablesController> {
               itemBuilder: (_, index) => buttons[index],
             );
           }),
-        )
+        ),
       ],
     );
   }
@@ -50,8 +50,9 @@ class MeaningTableButton extends GetView<MeaningTablesController> {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints:
-          const BoxConstraints(maxHeight: AppStyles.oraclesButtonMaxHeight),
+      constraints: const BoxConstraints(
+        maxHeight: AppStyles.oraclesButtonMaxHeight,
+      ),
       child: DecoratedBox(
         decoration: BoxDecoration(
           border: Border(
@@ -101,7 +102,7 @@ class MeaningTableButton extends GetView<MeaningTablesController> {
                   iconSize: 16,
                   icon: Icon(isFavorite ? Icons.star : Icons.star_outline),
                 ),
-              )
+              ),
             ],
           ),
         ),

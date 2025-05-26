@@ -14,13 +14,15 @@ class NotesView extends GetView<NotesService> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        ButtonRow(children: [
-          IconButton.filled(
-            onPressed: _create,
-            icon: const Icon(Icons.add),
-            tooltip: 'Create a Note',
-          ),
-        ]),
+        ButtonRow(
+          children: [
+            IconButton.filled(
+              onPressed: _create,
+              icon: const Icon(Icons.add),
+              tooltip: 'Create a Note',
+            ),
+          ],
+        ),
         Expanded(
           child: Obx(
             () => defaultReorderableListView(

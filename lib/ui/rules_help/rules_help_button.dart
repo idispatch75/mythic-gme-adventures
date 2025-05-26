@@ -50,8 +50,8 @@ class RulesHelpWrapper extends StatelessWidget {
     required this.helpEntry,
     required this.child,
     super.key,
-  })  : iconColor = AppStyles.onHeaderColor,
-        alignment = AlignmentDirectional.centerEnd;
+  }) : iconColor = AppStyles.onHeaderColor,
+       alignment = AlignmentDirectional.centerEnd;
 
   @override
   Widget build(BuildContext context) {

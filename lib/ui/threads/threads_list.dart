@@ -42,7 +42,7 @@ class ThreadsListView extends ListableItemsListView<Thread> {
   }) {
     final thread =
         _service.items.firstWhereOrNull((e) => e.value.id == item.item.id) ??
-            item.item.obs;
+        item.item.obs;
 
     return Column(
       mainAxisSize: MainAxisSize.min,

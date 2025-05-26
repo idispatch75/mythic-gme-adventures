@@ -46,17 +46,18 @@ class AdventureInfoController extends GetxController {
     // listen to save errors
     final globalSettingsPersister = Get.find<GlobalSettingsPersisterService>();
     final adventurePersister = Get.find<AdventurePersisterService>();
-    _saveResultsSubscription = rxdart.MergeStream([
-      globalSettingsPersister.saveResults,
-      adventurePersister.saveResults,
-    ]).listen((result) {
-      if (result.isSuccess) {
-        hasError(false);
-      } else {
-        error = result.error;
-        hasError(true);
-      }
-    });
+    _saveResultsSubscription =
+        rxdart.MergeStream([
+          globalSettingsPersister.saveResults,
+          adventurePersister.saveResults,
+        ]).listen((result) {
+          if (result.isSuccess) {
+            hasError(false);
+          } else {
+            error = result.error;
+            hasError(true);
+          }
+        });
 
     // compute save date periodically
     saveDate.value = _getSaveDate();
@@ -117,7 +118,8 @@ class AdventureInfoController extends GetxController {
     if (!preferences.physicalDiceModeExplained.value) {
       Dialogs.showAlert(
         title: 'Physical Dice Mode',
-        message: 'When Physical Dice Mode is enabled,'
+        message:
+            'When Physical Dice Mode is enabled,'
             ' rolling in the App will not roll dice for you but open the lookup table for the roll.'
             ' You can then roll physical dice and lookup the result there.',
       );
@@ -125,8 +127,9 @@ class AdventureInfoController extends GetxController {
       preferences.physicalDiceModeExplained(true);
     }
 
-    preferences
-        .enablePhysicalDiceMode(!preferences.enablePhysicalDiceMode.value);
+    preferences.enablePhysicalDiceMode(
+      !preferences.enablePhysicalDiceMode.value,
+    );
   }
 
   Future<String?> save() async {
@@ -134,8 +137,8 @@ class AdventureInfoController extends GetxController {
 
     saving(true);
     try {
-      fileContent =
-          await Get.find<AdventurePersisterService>().saveCurrentAdventure();
+      fileContent = await Get.find<AdventurePersisterService>()
+          .saveCurrentAdventure();
     } catch (e) {
       // ignore, let the icon show the error
     }
@@ -161,11 +164,9 @@ class AdventureInfoController extends GetxController {
 
   Future<void> exportAsText() async {
     String? richTextToPlainText(String? richText) {
-      return RichTextEditorController(richText)
-          .quill
-          .document
-          .toPlainText()
-          .trimRight();
+      return RichTextEditorController(
+        richText,
+      ).quill.document.toPlainText().trimRight();
     }
 
     // adventure name
@@ -233,8 +234,8 @@ class AdventureInfoController extends GetxController {
     }
 
     // player characters
-    final playerCharacters =
-        Get.find<PlayerCharactersService>().playerCharacters();
+    final playerCharacters = Get.find<PlayerCharactersService>()
+        .playerCharacters();
     if (playerCharacters.isNotEmpty) {
       addTitle('Player Characters');
       for (var item in playerCharacters.map((e) => e())) {
@@ -272,9 +273,9 @@ class AdventureInfoController extends GetxController {
 
     final saveTimestamp =
         ((adventureSaveTimestamp ?? 0) > (globalSettingsSaveTimestamp ?? 0)
-                ? adventureSaveTimestamp
-                : globalSettingsSaveTimestamp) ??
-            0;
+            ? adventureSaveTimestamp
+            : globalSettingsSaveTimestamp) ??
+        0;
 
     final saveDate = DateTime.fromMillisecondsSinceEpoch(saveTimestamp);
 

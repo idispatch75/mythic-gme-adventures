@@ -93,48 +93,51 @@ class _SmallLayoutTables extends HookWidget {
   Widget build(BuildContext context) {
     setupRollIndicator(context);
 
-    return LayoutBuilder(builder: (_, constraints) {
-      if (constraints.maxHeight > 600) {
-        return const Column(
-          children: [
-            FateChartView(),
-            Expanded(
-              child: MeaningTablesView(isSmallLayout: true),
-            ),
-          ],
-        );
-      } else {
-        // for smaller screens we need to have the whole view scrolling
-        // and for faster drawing we need ListView.builder
-        final fateCharts = Get.find<FateChartService>();
-        final meaningTables = Get.find<MeaningTablesController>();
-
-        return Obx(() {
-          final fateChartRows = fateCharts.getRows(context);
-          final meaningTableButtons =
-              meaningTables.getButtons(isSmallLayout: true);
-
-          return ListView.builder(
-            itemCount:
-                1 + fateChartRows.length + 1 + meaningTableButtons.length,
-            itemBuilder: (_, index) {
-              if (index == 0) {
-                return RulesHelpWrapper.header(
-                  helpEntry: fateChartHelp,
-                  child: fateCharts.getHeader(),
-                );
-              } else if (index < 1 + fateChartRows.length) {
-                return fateChartRows[index - 1];
-              } else if (index == 1 + fateChartRows.length) {
-                return meaningTables.getHeader();
-              } else {
-                return meaningTableButtons[index - 2 - fateChartRows.length];
-              }
-            },
+    return LayoutBuilder(
+      builder: (_, constraints) {
+        if (constraints.maxHeight > 600) {
+          return const Column(
+            children: [
+              FateChartView(),
+              Expanded(
+                child: MeaningTablesView(isSmallLayout: true),
+              ),
+            ],
           );
-        });
-      }
-    });
+        } else {
+          // for smaller screens we need to have the whole view scrolling
+          // and for faster drawing we need ListView.builder
+          final fateCharts = Get.find<FateChartService>();
+          final meaningTables = Get.find<MeaningTablesController>();
+
+          return Obx(() {
+            final fateChartRows = fateCharts.getRows(context);
+            final meaningTableButtons = meaningTables.getButtons(
+              isSmallLayout: true,
+            );
+
+            return ListView.builder(
+              itemCount:
+                  1 + fateChartRows.length + 1 + meaningTableButtons.length,
+              itemBuilder: (_, index) {
+                if (index == 0) {
+                  return RulesHelpWrapper.header(
+                    helpEntry: fateChartHelp,
+                    child: fateCharts.getHeader(),
+                  );
+                } else if (index < 1 + fateChartRows.length) {
+                  return fateChartRows[index - 1];
+                } else if (index == 1 + fateChartRows.length) {
+                  return meaningTables.getHeader();
+                } else {
+                  return meaningTableButtons[index - 2 - fateChartRows.length];
+                }
+              },
+            );
+          });
+        }
+      },
+    );
   }
 }
 

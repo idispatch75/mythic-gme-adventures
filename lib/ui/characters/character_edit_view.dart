@@ -25,8 +25,7 @@ class CharacterEditView extends ListableItemEditView<Character> {
   @override
   Widget? getComplement({
     required RichTextEditorController notesController,
-  }) =>
-      _CharacterComplementEditView(notesController);
+  }) => _CharacterComplementEditView(notesController);
 }
 
 class _CharacterComplementEditView extends StatelessWidget {
@@ -59,32 +58,41 @@ class _CharacterComplementEditView extends StatelessWidget {
       // store selected tables
       final globalSettings = Get.find<GlobalSettingsService>();
       globalSettings.setCharacterTraitMeaningTables(
-          selectedTables.map((e) => e.id).toList());
+        selectedTables.map((e) => e.id).toList(),
+      );
 
       // append rolls
       final tablesService = Get.find<MeaningTablesService>();
       final tablesController = Get.find<MeaningTablesController>();
-      var traits = selectedTables.map((table) {
-        var trait = '';
-        if (table.characterTrait!.isNotEmpty) {
-          trait = '${table.characterTrait}: ';
-        }
+      var traits = selectedTables
+          .map((table) {
+            var trait = '';
+            if (table.characterTrait!.isNotEmpty) {
+              trait = '${table.characterTrait}: ';
+            }
 
-        final rolls = tablesController.roll(table.id, addToLog: false);
-        return trait +
-            rolls
-                .map((e) =>
-                    tablesService.getMeaningTableEntry(e.entryId, e.dieRoll))
-                .join(', ');
-      }).join('\n');
+            final rolls = tablesController.roll(table.id, addToLog: false);
+            return trait +
+                rolls
+                    .map(
+                      (e) => tablesService.getMeaningTableEntry(
+                        e.entryId,
+                        e.dieRoll,
+                      ),
+                    )
+                    .join(', ');
+          })
+          .join('\n');
 
       final plainText = _notesController.quill.document.toPlainText();
       if (!plainText.endsWith('\n\n') && plainText.isNotEmpty) {
         traits = '\n$traits';
       }
 
-      _notesController.quill.document
-          .insert(max(0, plainText.length - 1), traits);
+      _notesController.quill.document.insert(
+        max(0, plainText.length - 1),
+        traits,
+      );
     }
   }
 }
@@ -102,19 +110,18 @@ class _TablesPickerState extends State<_TablesPicker> {
   final List<MeaningTable> _characterTraitTables;
 
   _TablesPickerState()
-      : _characterTraitTables = Get.find<MeaningTablesService>()
-            .meaningTables
-            .where((e) => e.characterTrait != null)
-            .sorted((a, b) {
-          final orderA = a.order ?? 1000;
-          final orderB = b.order ?? 1000;
+    : _characterTraitTables = Get.find<MeaningTablesService>().meaningTables
+          .where((e) => e.characterTrait != null)
+          .sorted((a, b) {
+            final orderA = a.order ?? 1000;
+            final orderB = b.order ?? 1000;
 
-          if (orderA == orderB) {
-            return a.name.compareUsingLocale(b.name);
-          } else {
-            return orderA - orderB;
-          }
-        });
+            if (orderA == orderB) {
+              return a.name.compareUsingLocale(b.name);
+            } else {
+              return orderA - orderB;
+            }
+          });
 
   @override
   void initState() {
@@ -122,8 +129,9 @@ class _TablesPickerState extends State<_TablesPicker> {
 
     final globalSettings = Get.find<GlobalSettingsService>();
     final previousSelectedTables = globalSettings.characterTraitMeaningTables;
-    widget._selectedTables.addAll(_characterTraitTables
-        .where((e) => previousSelectedTables.contains(e.id)));
+    widget._selectedTables.addAll(
+      _characterTraitTables.where((e) => previousSelectedTables.contains(e.id)),
+    );
   }
 
   @override
@@ -139,9 +147,11 @@ class _TablesPickerState extends State<_TablesPicker> {
             final table = _characterTraitTables[index];
 
             return CheckboxListTile(
-              title: Text(table.characterTrait!.isEmpty
-                  ? table.name
-                  : table.characterTrait!),
+              title: Text(
+                table.characterTrait!.isEmpty
+                    ? table.name
+                    : table.characterTrait!,
+              ),
               value: widget._selectedTables.contains(table),
               onChanged: (value) {
                 setState(() {

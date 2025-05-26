@@ -32,8 +32,9 @@ class KeyedSceneEditView extends HookWidget {
       onSave: () {
         _scene.trigger = triggerController.text;
         _scene.event = eventController.text;
-        _scene.counts =
-            counts.map((e) => KeyedSceneCount(count: e.value)).toList();
+        _scene.counts = counts
+            .map((e) => KeyedSceneCount(count: e.value))
+            .toList();
 
         return Future.value(true);
       },
@@ -94,7 +95,7 @@ class KeyedSceneEditView extends HookWidget {
               _RollButton(nbFaces: 10),
               _RollButton(nbFaces: 20),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -162,8 +163,9 @@ class _Count extends StatelessWidget {
           icon: Icon(
             Icons.restart_alt,
             size: 20,
-            color:
-                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.6),
           ),
           visualDensity: VisualDensity.compact,
           tooltip: 'Reset the count',

@@ -42,8 +42,8 @@ class LargeLayout extends HookWidget {
             // third column
             Expanded(
               child: Obx(() {
-                final hasFeatures =
-                    Get.find<AdventureService>().isPreparedAdventure();
+                final hasFeatures = Get.find<AdventureService>()
+                    .isPreparedAdventure();
 
                 final Widget widget;
                 if (layoutController.hasEditScenePage()) {
@@ -55,10 +55,12 @@ class LargeLayout extends HookWidget {
                       Row(
                         children: [
                           // chaos factor
-                          getZoneDecoration(const SizedBox(
-                            width: 140,
-                            child: ChaosFactorView(),
-                          )),
+                          getZoneDecoration(
+                            const SizedBox(
+                              width: 140,
+                              child: ChaosFactorView(),
+                            ),
+                          ),
 
                           // adventure info
                           const Expanded(
@@ -82,8 +84,9 @@ class LargeLayout extends HookWidget {
                             Layout.verticalSpacer,
                             Expanded(
                               flex: 4,
-                              child:
-                                  getZoneDecoration(const CharactersListView()),
+                              child: getZoneDecoration(
+                                const CharactersListView(),
+                              ),
                             ),
                           ],
                         ),
@@ -153,9 +156,11 @@ class _LargeLayoutTables extends StatelessWidget {
             Expanded(
               child: SizedBox(
                 width: _columnWidth,
-                child: getZoneDecoration(const MeaningTablesView(
-                  isSmallLayout: false,
-                )),
+                child: getZoneDecoration(
+                  const MeaningTablesView(
+                    isSmallLayout: false,
+                  ),
+                ),
               ),
             ),
           ],
@@ -217,7 +222,8 @@ class _LargeLayoutTabs extends HookWidget {
   }
 }
 
-final largeLayoutTablesWidth = _LargeLayoutTables._columnWidth +
+final largeLayoutTablesWidth =
+    _LargeLayoutTables._columnWidth +
     Layout.verticalSpacer.width! +
     _LargeLayoutTables._columnWidth +
     60;

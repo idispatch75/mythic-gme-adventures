@@ -13,5 +13,5 @@ class CharactersService extends ListableItemsService<Character> {
   JsonObj toJson() => toJsonGeneric('characters');
 
   CharactersService.fromJson(JsonObj json)
-      : super.fromJson(json, 'characters', Character.fromJson);
+    : super.fromJson(json, 'characters', Character.fromJson);
 }

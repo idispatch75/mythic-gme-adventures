@@ -11,9 +11,9 @@ class Note {
   Note(this.title, {this.content});
 
   JsonObj toJson() => {
-        'title': title,
-        if (content != null) 'content': content,
-      };
+    'title': title,
+    if (content != null) 'content': content,
+  };
 
   Note.fromJson(JsonObj json) : this(json['title'], content: json['content']);
 }
@@ -42,8 +42,8 @@ class NotesService extends GetxService with SavableMixin {
   }
 
   JsonObj toJson() => {
-        'notes': notes,
-      };
+    'notes': notes,
+  };
 
   NotesService.fromJson(JsonObj json) {
     for (var item in fromJsonList(json['notes'], Note.fromJson)) {

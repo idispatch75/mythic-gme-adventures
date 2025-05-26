@@ -47,8 +47,9 @@ class LocalStorage extends DataStorage {
     assert(directory.isNotEmpty);
 
     final parentHandle = await _getDirectoryHandle(
-        directory.sublist(0, directory.length - 1),
-        create: false);
+      directory.sublist(0, directory.length - 1),
+      create: false,
+    );
 
     if (parentHandle != null) {
       try {
@@ -123,8 +124,9 @@ class LocalStorage extends DataStorage {
   }) async {
     try {
       final root = await window.navigator.storage.getDirectory().toDart;
-      final createDirectoryOptions =
-          FileSystemGetDirectoryOptions(create: create);
+      final createDirectoryOptions = FileSystemGetDirectoryOptions(
+        create: create,
+      );
       var directoryHandle = root;
       for (final directoryPart in directory) {
         if (directoryPart.isNotEmpty) {
@@ -147,14 +149,16 @@ class LocalStorage extends DataStorage {
   }
 
   Future<({FileSystemDirectoryHandle directory, FileSystemFileHandle file})?>
-      _getFileHandle(
+  _getFileHandle(
     List<String> directory,
     String name, {
     required bool create,
   }) async {
     try {
-      final directoryHandle =
-          await _getDirectoryHandle(directory, create: create);
+      final directoryHandle = await _getDirectoryHandle(
+        directory,
+        create: create,
+      );
       if (directoryHandle == null) {
         return null;
       }

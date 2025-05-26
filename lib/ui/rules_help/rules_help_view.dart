@@ -46,15 +46,20 @@ class RulesHelpView extends HookWidget {
                   scrollController.jumpTo(0);
                 }
               },
-              dropdownMenuEntries: [
-                fateChartHelp,
-                randomEventHelp,
-                scenesHelp,
-                threadProgressTrackHelp,
-              ]
-                  .map((e) => DropdownMenuEntry<RulesHelpEntry>(
-                      value: e, label: e.label))
-                  .toList(),
+              dropdownMenuEntries:
+                  [
+                        fateChartHelp,
+                        randomEventHelp,
+                        scenesHelp,
+                        threadProgressTrackHelp,
+                      ]
+                      .map(
+                        (e) => DropdownMenuEntry<RulesHelpEntry>(
+                          value: e,
+                          label: e.label,
+                        ),
+                      )
+                      .toList(),
             ),
           ),
           const SizedBox(height: 16),
@@ -97,11 +102,13 @@ class RulesHelpView extends HookWidget {
 
     final fateChartService = Get.find<FateChartService>();
 
-    final probabilitiesBlock = probabilities.map((e) {
-      final outcome = fateChartService.getOutcomeProbability(e);
+    final probabilitiesBlock = probabilities
+        .map((e) {
+          final outcome = fateChartService.getOutcomeProbability(e);
 
-      return '- _${e.text}:_ ${outcome.threshold}%';
-    }).join('\n');
+          return '- _${e.text}:_ ${outcome.threshold}%';
+        })
+        .join('\n');
 
     return fateChartHelp.content
         .replaceFirst('{chaos_factor}', chaosFactor.toString())

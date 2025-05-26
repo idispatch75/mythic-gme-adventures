@@ -122,8 +122,9 @@ class AdventureIndexController extends GetxController {
       status.value = RxStatus.loading();
 
       try {
-        await Get.find<AdventurePersisterService>()
-            .deleteAdventure(adventure.source.id);
+        await Get.find<AdventurePersisterService>().deleteAdventure(
+          adventure.source.id,
+        );
       } catch (e) {
         handleError('delete', e);
 
@@ -137,7 +138,8 @@ class AdventureIndexController extends GetxController {
   Future<void> synchronizeAdventures() async {
     if (await Dialogs.showConfirmation(
       title: 'Synchronize storages?',
-      message: 'This updates the local and online storages'
+      message:
+          'This updates the local and online storages'
           ' with the most recent adventure versions.',
     )) {
       try {
@@ -162,7 +164,8 @@ class AdventureIndexController extends GetxController {
   ) async {
     if (!await Dialogs.showConfirmation(
       title: 'Restore Adventure?',
-      message: 'This will replace the content of this Adventure'
+      message:
+          'This will replace the content of this Adventure'
           ' with the selected file.',
     )) {
       return;
@@ -178,7 +181,8 @@ class AdventureIndexController extends GetxController {
       if (adventureId != adventure.source.id) {
         if (!await Dialogs.showConfirmation(
           title: 'Adventure mismatch',
-          message: 'The file you selected does not match the Adventure.'
+          message:
+              'The file you selected does not match the Adventure.'
               ' This may be normal if you restore into a newly created adventure.\n'
               'Continue?',
         )) {
@@ -213,7 +217,8 @@ class AdventureIndexController extends GetxController {
     // ask confirmation
     if (!await Dialogs.showConfirmation(
       title: 'Backup local Adventures?',
-      message: 'This will create a zip file containing all the Adventures'
+      message:
+          'This will create a zip file containing all the Adventures'
           ' in your local storage.\n'
           'You can pick Adventures to restore from there when needed.',
     )) {
@@ -240,8 +245,10 @@ class AdventureIndexController extends GetxController {
       },
     );
 
-    final zipContent =
-        ZipEncoder().encode(archive, level: DeflateLevel.bestCompression);
+    final zipContent = ZipEncoder().encode(
+      archive,
+      level: DeflateLevel.bestCompression,
+    );
 
     // save the archive
     return saveBinaryFile(
@@ -256,7 +263,8 @@ class AdventureIndexController extends GetxController {
     // ask confirmation
     if (!await Dialogs.showConfirmation(
       title: 'Import Custom Meaning Tables?',
-      message: 'This will delete the Custom Meaning Tables'
+      message:
+          'This will delete the Custom Meaning Tables'
           ' in your local storage and import the selected ones.\n\n'
           'You may need to restart the application for the changes to take effect.',
       userManualAnchor: 'custom-meaning-tables',
@@ -292,7 +300,8 @@ class AdventureIndexController extends GetxController {
     // ask confirmation
     if (!await Dialogs.showConfirmation(
       title: 'Delete Custom Meaning Tables?',
-      message: 'This will permanently delete the Custom Meaning Tables'
+      message:
+          'This will permanently delete the Custom Meaning Tables'
           ' in your local storage.\n\n'
           'You may need to restart the application for the changes to take effect.',
     )) {
@@ -318,7 +327,8 @@ class AdventureIndexController extends GetxController {
     // ask confirmation
     if (!await Dialogs.showConfirmation(
       title: 'Download Custom Meaning Tables?',
-      message: 'This will delete the Custom Meaning Tables'
+      message:
+          'This will delete the Custom Meaning Tables'
           ' in your local storage and download the meaning tables from the remote storage.\n'
           'You may need to restart the application for the changes to take effect.\n\n'
           'Note that only the files uploaded by the Application are visible by the Application.\n'
@@ -343,8 +353,9 @@ class AdventureIndexController extends GetxController {
     isMeaningTableDownloading.value = false;
   }
 
-  static final DateFormat _dateFormat =
-      DateFormat.yMMMEd().addPattern("'at'").add_jms();
+  static final DateFormat _dateFormat = DateFormat.yMMMEd()
+      .addPattern("'at'")
+      .add_jms();
   static final DateFormat _timeFormat = DateFormat.jms();
 
   Future<void> _loadAdventures() async {
@@ -370,47 +381,49 @@ class AdventureIndexController extends GetxController {
         preferences.enableGoogleStorage() && preferences.enableLocalStorage();
 
     final maxInt = double.maxFinite.toInt(); // works for web and io
-    adventures = Get.find<AdventureIndexService>()
-        .adventures
+    adventures = Get.find<AdventureIndexService>().adventures
         .where((e) => !e.isDeleted)
         .sorted(
-            (a, b) => (b.saveTimestamp ?? maxInt) - (a.saveTimestamp ?? maxInt))
+          (a, b) => (b.saveTimestamp ?? maxInt) - (a.saveTimestamp ?? maxInt),
+        )
         .map((adventure) {
-      // compute the save date text
-      String saveDateText;
-      if (adventure.saveTimestamp != null) {
-        final saveDate =
-            DateTime.fromMillisecondsSinceEpoch(adventure.saveTimestamp!);
-        final now = DateTime.now();
-        final yesterday = DateTime.now().subtract(const Duration(days: 1));
-        if (now.isSameDay(saveDate)) {
-          saveDateText = 'today at ${_timeFormat.format(saveDate)}';
-        } else if (yesterday.day == saveDate.day &&
-            yesterday.month == saveDate.month &&
-            yesterday.year == saveDate.year) {
-          saveDateText = 'yesterday at ${_timeFormat.format(saveDate)}';
-        } else {
-          saveDateText = _dateFormat.format(saveDate);
-        }
+          // compute the save date text
+          String saveDateText;
+          if (adventure.saveTimestamp != null) {
+            final saveDate = DateTime.fromMillisecondsSinceEpoch(
+              adventure.saveTimestamp!,
+            );
+            final now = DateTime.now();
+            final yesterday = DateTime.now().subtract(const Duration(days: 1));
+            if (now.isSameDay(saveDate)) {
+              saveDateText = 'today at ${_timeFormat.format(saveDate)}';
+            } else if (yesterday.day == saveDate.day &&
+                yesterday.month == saveDate.month &&
+                yesterday.year == saveDate.year) {
+              saveDateText = 'yesterday at ${_timeFormat.format(saveDate)}';
+            } else {
+              saveDateText = _dateFormat.format(saveDate);
+            }
 
-        String saveDateSource;
-        if (!hasBothStorages ||
-            adventure.localSaveTimestamp == adventure.remoteSaveTimestamp) {
-          saveDateSource = '';
-        } else if (adventure.localSaveTimestamp >
-            adventure.remoteSaveTimestamp) {
-          saveDateSource = 'locally ';
-        } else {
-          saveDateSource = 'online ';
-        }
+            String saveDateSource;
+            if (!hasBothStorages ||
+                adventure.localSaveTimestamp == adventure.remoteSaveTimestamp) {
+              saveDateSource = '';
+            } else if (adventure.localSaveTimestamp >
+                adventure.remoteSaveTimestamp) {
+              saveDateSource = 'locally ';
+            } else {
+              saveDateSource = 'online ';
+            }
 
-        saveDateText = 'Saved $saveDateSource$saveDateText';
-      } else {
-        saveDateText = 'Not saved yet';
-      }
+            saveDateText = 'Saved $saveDateSource$saveDateText';
+          } else {
+            saveDateText = 'Not saved yet';
+          }
 
-      return IndexAdventureVM(adventure, saveDateText);
-    }).toList();
+          return IndexAdventureVM(adventure, saveDateText);
+        })
+        .toList();
 
     status.value = adventures.isEmpty ? RxStatus.empty() : RxStatus.success();
   }
@@ -418,26 +431,30 @@ class AdventureIndexController extends GetxController {
   void handleError(String action, Object error) {
     String message;
     if (error is LocalStorageNotSupportedException) {
-      message = 'Local storage is not supported by your browser.\n\n'
+      message =
+          'Local storage is not supported by your browser.\n\n'
           'You must Use Google Drive and Disable local storage.';
     } else if (error is LocalStorageException) {
       message =
           'Failed to $action "${error.filePath}" locally: ${error.error}.\n\n';
       switch (action) {
         case 'load':
-          message += 'If you have an up to date online save,'
+          message +=
+              'If you have an up to date online save,'
               ' you may want to delete the file locally,'
               ' or you can disable local storage.';
           break;
 
         case 'save':
-          message += 'Check the access rights on the save directory,'
+          message +=
+              'Check the access rights on the save directory,'
               ' or, if you can save online,'
               ' you can disable local storage.';
           break;
 
         case 'delete':
-          message += 'Check the access rights on the save directory,'
+          message +=
+              'Check the access rights on the save directory,'
               ' or delete the file manually.';
           break;
 
@@ -455,24 +472,28 @@ class AdventureIndexController extends GetxController {
         'load' => '$action "${error.filePath}" from',
         'upload' => '$action "${error.filePath}" to',
         'download' => '$action "${error.filePath}" from',
-        _ => '$action "${error.filePath}" from'
+        _ => '$action "${error.filePath}" from',
       };
 
       message = 'Failed to $actionText ${error.provider}.\n\n';
 
       if (error is RemoteStorageAuthenticationException) {
-        message += 'The authentication is no more valid.\n'
+        message +=
+            'The authentication is no more valid.\n'
             'Please toggle ${error.provider} access to retry a silent authentication,'
             ' or sign out and enable ${error.provider} again.';
       } else if (error is RemoteStorageNetworkException) {
-        message += '${error.provider} could not be contacted.\n'
+        message +=
+            '${error.provider} could not be contacted.\n'
             'Please check your internet access.';
       } else if (error is RemoteStorageOperationException) {
-        message += '${error.provider} refused to perform the operation:'
+        message +=
+            '${error.provider} refused to perform the operation:'
             ' ${error.error}.';
       }
     } else {
-      message = 'Failed to $action data.\n\n'
+      message =
+          'Failed to $action data.\n\n'
           'An unexpected error occurred: $error.';
     }
 

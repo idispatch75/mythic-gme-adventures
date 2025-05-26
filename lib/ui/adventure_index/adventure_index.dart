@@ -18,18 +18,19 @@ class AdventureIndexService extends GetxService {
   }
 
   JsonObj toJson(bool isLocal) => {
-        'schemaVersion': supportedSchemaVersion,
-        'adventures': adventures
-            .where((e) =>
-                isLocal ? e.localSaveTimestamp > 0 : e.remoteSaveTimestamp > 0)
-            .toList(),
-      };
+    'schemaVersion': supportedSchemaVersion,
+    'adventures': adventures
+        .where(
+          (e) => isLocal ? e.localSaveTimestamp > 0 : e.remoteSaveTimestamp > 0,
+        )
+        .toList(),
+  };
 
   AdventureIndexService.fromJson(JsonObj json)
-      : this(
-          schemaVersion: json['schemaVersion'] ?? 1,
-          adventures: fromJsonList(json['adventures'], IndexAdventure.fromJson),
-        );
+    : this(
+        schemaVersion: json['schemaVersion'] ?? 1,
+        adventures: fromJsonList(json['adventures'], IndexAdventure.fromJson),
+      );
 }
 
 class IndexAdventure {
@@ -58,19 +59,19 @@ class IndexAdventure {
   });
 
   JsonObj toJson() => {
-        'id': id,
-        'name': name,
-        if (isDeleted) 'deleted': true,
-        if (saveTimestamp != null) 'saveTimestamp': saveTimestamp,
-      };
+    'id': id,
+    'name': name,
+    if (isDeleted) 'deleted': true,
+    if (saveTimestamp != null) 'saveTimestamp': saveTimestamp,
+  };
 
   IndexAdventure.fromJson(JsonObj json)
-      : this(
-          id: json['id'],
-          name: json['name'],
-          isDeleted: json['deleted'] ?? false,
-          saveTimestamp: json['saveTimestamp'],
-        );
+    : this(
+        id: json['id'],
+        name: json['name'],
+        isDeleted: json['deleted'] ?? false,
+        saveTimestamp: json['saveTimestamp'],
+      );
 
   @override
   int get hashCode => id;

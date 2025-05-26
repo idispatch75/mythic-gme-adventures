@@ -8,15 +8,16 @@ class LogPrinter extends LoggyPrinter {
   @override
   void onLog(LogRecord record) {
     final time = record.time.toIso8601String().split('T')[1];
-    final callerFrame =
-        record.callerFrame == null ? '-' : '(${record.callerFrame?.location})';
-    final logLevel = record.level
-        .toString()
-        .toUpperCase()
-        .padRight(LogLevel.warning.toString().length);
+    final callerFrame = record.callerFrame == null
+        ? '-'
+        : '(${record.callerFrame?.location})';
+    final logLevel = record.level.toString().toUpperCase().padRight(
+      LogLevel.warning.toString().length,
+    );
 
     print(
-        '$time $logLevel ${record.loggerName} $callerFrame ${record.message}');
+      '$time $logLevel ${record.loggerName} $callerFrame ${record.message}',
+    );
 
     if (record.error != null) {
       print(record.error);

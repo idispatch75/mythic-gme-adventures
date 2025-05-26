@@ -26,13 +26,20 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
     final directoryPath = directory.join('/');
 
     return _performRequest((api) async {
-      final folderId =
-          await _getFolderId(api, directoryPath, createIfMissing: false);
+      final folderId = await _getFolderId(
+        api,
+        directoryPath,
+        createIfMissing: false,
+      );
       final folderCacheKey = _getFolderCacheKey(directoryPath);
 
       if (folderId != null) {
-        final fileId = await _getFileInFolder(api,
-            folderId: folderId, fileName: name, folderCacheKey: folderCacheKey);
+        final fileId = await _getFileInFolder(
+          api,
+          folderId: folderId,
+          fileName: name,
+          folderCacheKey: folderCacheKey,
+        );
 
         if (fileId != null) {
           return _getFileContent(api, fileId);
@@ -48,16 +55,23 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
     final directoryPath = directory.join('/');
 
     return _performRequest((api) async {
-      final folderId =
-          (await _getFolderId(api, directoryPath, createIfMissing: true))!;
+      final folderId = (await _getFolderId(
+        api,
+        directoryPath,
+        createIfMissing: true,
+      ))!;
       final folderCacheKey = _getFolderCacheKey(directoryPath);
 
       final bytes = utf8.encoder.convert(content);
       final stream = Stream.value(List<int>.from(bytes));
       final media = drive.Media(stream, bytes.length);
 
-      final existingFileId = await _getFileInFolder(api,
-          folderId: folderId, fileName: name, folderCacheKey: folderCacheKey);
+      final existingFileId = await _getFileInFolder(
+        api,
+        folderId: folderId,
+        fileName: name,
+        folderCacheKey: folderCacheKey,
+      );
       if (existingFileId == null) {
         loggy.debug('Creating file "$directoryPath/$name"');
 
@@ -68,8 +82,7 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
             mimeType: name.endsWith('.json') ? 'application/json' : null,
           ),
           uploadMedia: media,
-        ))
-            .id!;
+        )).id!;
 
         _fileIdCache['$folderCacheKey/$name'] = newFileId;
       } else {
@@ -91,8 +104,11 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
     final folderCacheKey = _getFolderCacheKey(directoryPath);
 
     await _performRequest((api) async {
-      final folderId =
-          await _getFolderId(api, directoryPath, createIfMissing: false);
+      final folderId = await _getFolderId(
+        api,
+        directoryPath,
+        createIfMissing: false,
+      );
 
       if (folderId != null) {
         await api.files.delete(folderId);
@@ -115,12 +131,19 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
     _fileIdCache.remove(fileCacheKey);
 
     return _performRequest((api) async {
-      final folderId =
-          await _getFolderId(api, directoryPath, createIfMissing: false);
+      final folderId = await _getFolderId(
+        api,
+        directoryPath,
+        createIfMissing: false,
+      );
 
       if (folderId != null) {
-        final fileId = await _getFileInFolder(api,
-            folderId: folderId, fileName: name, folderCacheKey: folderCacheKey);
+        final fileId = await _getFileInFolder(
+          api,
+          folderId: folderId,
+          fileName: name,
+          folderCacheKey: folderCacheKey,
+        );
         if (fileId != null) {
           await api.files.delete(fileId);
         }
@@ -156,9 +179,9 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
     Future<void> Function(List<String> filePath, String json) process,
   ) async {
     final List<drive.File>? files = await _performRequest((api) async {
-      return (await api.files
-              .list(q: "trashed = false and '$parentId' in parents"))
-          .files;
+      return (await api.files.list(
+        q: "trashed = false and '$parentId' in parents",
+      )).files;
     }, _getAppFilePath(parentPath.join('/'), ''));
 
     if (files != null) {
@@ -170,8 +193,9 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
             await _loadJsonFiles(file.id!, path, process);
           } else if (file.name!.endsWith('.json')) {
             final content = await _performRequest(
-                (api) => _getFileContent(api, file.id!),
-                _getAppFilePath(parentPath.join('/'), file.name!));
+              (api) => _getFileContent(api, file.id!),
+              _getAppFilePath(parentPath.join('/'), file.name!),
+            );
 
             await process(path, content);
           }
@@ -218,10 +242,7 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
             mimeType: _MimeTypes.folder,
             parent: parentId,
           ),
-        ))
-            .files
-            ?.firstOrNull
-            ?.id;
+        )).files?.firstOrNull?.id;
       }
 
       // create if missing
@@ -234,8 +255,7 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
             mimeType: _MimeTypes.folder,
             parents: parentId == null ? [] : [parentId],
           ),
-        ))
-            .id;
+        )).id;
       }
 
       // continue if found, return null otherwise
@@ -264,17 +284,15 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
     // or query
     if (fileId == null) {
       loggy.debug(
-          'Querying file "$fileName" in folder $folderId ($folderCacheKey)');
+        'Querying file "$fileName" in folder $folderId ($folderCacheKey)',
+      );
 
       fileId = (await api.files.list(
         q: _QueryHelper.fileQuery(
           fileName,
           parent: folderId,
         ),
-      ))
-          .files
-          ?.firstOrNull
-          ?.id;
+      )).files?.firstOrNull?.id;
 
       if (fileId != null) {
         _fileIdCache[fileCacheKey] = fileId;
@@ -288,10 +306,12 @@ class GoogleStorage extends DataStorage with GoogleStorageLoggy {
     drive.DriveApi api,
     String fileId,
   ) async {
-    final media = await api.files.get(
-      fileId,
-      downloadOptions: drive.DownloadOptions.fullMedia,
-    ) as drive.Media;
+    final media =
+        await api.files.get(
+              fileId,
+              downloadOptions: drive.DownloadOptions.fullMedia,
+            )
+            as drive.Media;
 
     return media.stream.transform(utf8.decoder).join();
   }
@@ -376,6 +396,7 @@ class _QueryHelper {
   /// Creates a query that searches for a particular file, name, and mimetype.
   static String fileQuery(
     String name, {
+
     /// The mime type to search for.
     String? mimeType,
 

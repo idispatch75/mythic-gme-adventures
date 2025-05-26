@@ -56,7 +56,7 @@ Future<T?> showAppModalBottomSheet<T>(BuildContext context, Widget content) {
                 child: const Text('Dismiss'),
               ),
             ),
-          )
+          ),
         ],
       );
     },
@@ -101,7 +101,8 @@ Future<bool> showCloseAppConfirmation() {
       final saveDate = DateTime.fromMillisecondsSinceEpoch(saveTimestamp);
 
       // indicate the last save date
-      message = 'Data was last saved ${saveDate.elapsedFromNow()}.\n\n'
+      message =
+          'Data was last saved ${saveDate.elapsedFromNow()}.\n\n'
           '$message';
     }
   }
@@ -113,9 +114,11 @@ Future<bool> showCloseAppConfirmation() {
 }
 
 Future<void> handleUnsupportedSchemaVersion(
-    UnsupportedSchemaVersionException exception) async {
-  final actionMessage =
-      GetPlatform.isWeb ? 'please close this page.' : 'the App will be closed.';
+  UnsupportedSchemaVersionException exception,
+) async {
+  final actionMessage = GetPlatform.isWeb
+      ? 'please close this page.'
+      : 'the App will be closed.';
 
   await Dialogs.showAlert(
     title: 'Unsupported data format',

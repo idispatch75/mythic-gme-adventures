@@ -21,10 +21,11 @@ class RollLogOrLookupView extends StatelessWidget {
           widget = const Padding(
             padding: EdgeInsets.all(8.0),
             child: Center(
-                child: Text(
-              'Click on a Meaning Table to display its content here',
-              textAlign: TextAlign.center,
-            )),
+              child: Text(
+                'Click on a Meaning Table to display its content here',
+                textAlign: TextAlign.center,
+              ),
+            ),
           );
         } else {
           widget = MeaningTableLookupView(meaningTableDetails);

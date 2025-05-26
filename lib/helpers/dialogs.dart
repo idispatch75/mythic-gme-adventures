@@ -34,11 +34,12 @@ abstract class Dialogs {
               children: [
                 const TextSpan(text: 'See the '),
                 getUserManualLink(
-                    anchor: userManualAnchor.isEmpty ? null : userManualAnchor),
+                  anchor: userManualAnchor.isEmpty ? null : userManualAnchor,
+                ),
                 const TextSpan(text: ' for more info.'),
               ],
             ),
-          )
+          ),
         ],
       );
     }

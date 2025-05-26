@@ -51,8 +51,8 @@ abstract class AppStyles {
 
   static TextStyle? oraclesButtonTextStyle =
       GetPlatform.isWeb || GetPlatform.isDesktop
-          ? const TextStyle(fontSize: 12)
-          : null;
+      ? const TextStyle(fontSize: 12)
+      : null;
 
   static const oraclesButtonMaxHeight = 36.0;
 
@@ -76,8 +76,9 @@ abstract class AppStyles {
         ? _genericColorsDark.copyWith(isDarkMode)
         : _genericColorsLight.copyWith(isDarkMode);
 
-    _sceneBadgeBackground =
-        isDarkMode ? Colors.grey.shade700 : Colors.grey.shade300;
+    _sceneBadgeBackground = isDarkMode
+        ? Colors.grey.shade700
+        : Colors.grey.shade300;
     _sceneBadgeOnBackground = isDarkMode ? Colors.white : Colors.black;
   }
 
@@ -163,17 +164,26 @@ ThemeData _buildTheme(ColorScheme colorScheme) {
 
   final textTheme = bodyTextTheme(theme.textTheme).copyWith(
     headlineMedium: titleTextStyle(
-        textStyle: theme.textTheme.headlineMedium!
-            .copyWith(fontWeight: FontWeight.w600)),
+      textStyle: theme.textTheme.headlineMedium!.copyWith(
+        fontWeight: FontWeight.w600,
+      ),
+    ),
     titleLarge: titleTextStyle(
-        textStyle:
-            theme.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w600)),
+      textStyle: theme.textTheme.titleLarge!.copyWith(
+        fontWeight: FontWeight.w600,
+      ),
+    ),
     titleMedium: titleTextStyle(
-        textStyle:
-            theme.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w600)),
+      textStyle: theme.textTheme.titleMedium!.copyWith(
+        fontWeight: FontWeight.w600,
+      ),
+    ),
     titleSmall: titleTextStyle(
-        textStyle: theme.textTheme.titleSmall!
-            .copyWith(fontWeight: FontWeight.w600, fontSize: 12)),
+      textStyle: theme.textTheme.titleSmall!.copyWith(
+        fontWeight: FontWeight.w600,
+        fontSize: 12,
+      ),
+    ),
   );
 
   return theme.copyWith(textTheme: textTheme);

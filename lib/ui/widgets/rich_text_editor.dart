@@ -17,9 +17,11 @@ class RichTextEditorController {
           ? Document.fromJson(jsonDecode(initialText))
           : Document();
     } catch (_) {
-      quill.document = Document.fromDelta(Delta()
-        ..insert(initialText)
-        ..insert('\n'));
+      quill.document = Document.fromDelta(
+        Delta()
+          ..insert(initialText)
+          ..insert('\n'),
+      );
     }
   }
 
@@ -362,7 +364,7 @@ class _QuillToolbarArrowIndicatedButtonListState
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: widget.buttons,
                     ),
-            )
+            ),
           ],
         ),
       ),

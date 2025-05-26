@@ -20,15 +20,17 @@ class AdventureView extends GetView<AdventureController> {
     return protectClose(
       child: controller.obx(
         (state) => SafeArea(
-          child: LayoutBuilder(builder: (_, constraints) {
-            if (constraints.maxWidth > 636 + largeLayoutTablesWidth) {
-              return const LargeLayout();
-            } else if (constraints.maxWidth > kPhoneBreakPoint) {
-              return const MediumLayout();
-            } else {
-              return const SmallLayout();
-            }
-          }),
+          child: LayoutBuilder(
+            builder: (_, constraints) {
+              if (constraints.maxWidth > 636 + largeLayoutTablesWidth) {
+                return const LargeLayout();
+              } else if (constraints.maxWidth > kPhoneBreakPoint) {
+                return const MediumLayout();
+              } else {
+                return const SmallLayout();
+              }
+            },
+          ),
         ),
         onLoading: const Scaffold(body: loadingIndicator),
       ),

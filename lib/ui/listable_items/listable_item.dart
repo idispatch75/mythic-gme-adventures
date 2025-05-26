@@ -35,23 +35,23 @@ abstract class ListableItem {
   String toTag() => id.toString();
 
   JsonObj toJson() => {
-        'id': id,
-        'name': name,
-        if (summary != null) 'summary': summary,
-        if (notes != null) 'notes': notes,
-        'isArchived': isArchived,
-        'displayOrder': displayOrder,
-      };
+    'id': id,
+    'name': name,
+    if (summary != null) 'summary': summary,
+    if (notes != null) 'notes': notes,
+    'isArchived': isArchived,
+    'displayOrder': displayOrder,
+  };
 
   ListableItem.fromJson(JsonObj json)
-      : this(
-          json['id'],
-          json['name'],
-          summary: json['summary'],
-          notes: json['notes'],
-          isArchived: json['isArchived'],
-          displayOrder: json['displayOrder'] ?? 0,
-        );
+    : this(
+        json['id'],
+        json['name'],
+        summary: json['summary'],
+        notes: json['notes'],
+        isArchived: json['isArchived'],
+        displayOrder: json['displayOrder'] ?? 0,
+      );
 }
 
 class ListableItemsService<TItem extends ListableItem> extends GetxService
@@ -98,8 +98,9 @@ class ListableItemsService<TItem extends ListableItem> extends GetxService
 
   bool addToItemsList(Rx<TItem> item) {
     // prevent exceeding the recommended number of items
-    final itemCount =
-        itemsList.where((e) => e.value.id == item.value.id).length;
+    final itemCount = itemsList
+        .where((e) => e.value.id == item.value.id)
+        .length;
     if (itemCount >= GlobalSettingsService.maxNumberOfItemsInList) {
       final globalSettings = Get.find<GlobalSettingsService>();
       if (!globalSettings.allowUnlimitedListCount) {
@@ -129,17 +130,18 @@ class ListableItemsService<TItem extends ListableItem> extends GetxService
   }
 
   JsonObj toJsonGeneric(String listName) => {
-        listName: items,
-        '${listName}List': itemsList.map((e) => e.value.id).toList(),
-      };
+    listName: items,
+    '${listName}List': itemsList.map((e) => e.value.id).toList(),
+  };
 
   ListableItemsService.fromJson(
     JsonObj json,
     String listName,
     TItem Function(JsonObj) itemFactory,
   ) {
-    final itemsListIds =
-        List<int>.from(((json['${listName}List'] ?? <int>[]) as List));
+    final itemsListIds = List<int>.from(
+      ((json['${listName}List'] ?? <int>[]) as List),
+    );
     for (var item in fromJsonList(json[listName], itemFactory)) {
       final rxItem = add(item);
 

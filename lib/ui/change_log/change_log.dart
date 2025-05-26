@@ -40,14 +40,16 @@ class ChangeLogService extends GetxService {
         } else {
           final entries = version.entries
               .where(
-                  (e) => e.platform == _Platform.all || e.platform == platform)
+                (e) => e.platform == _Platform.all || e.platform == platform,
+              )
               .map((e) {
-            if (e.platform == _Platform.all) {
-              return e.text;
-            } else {
-              return '[${platform.name.capitalize}] ${e.text}';
-            }
-          }).toList();
+                if (e.platform == _Platform.all) {
+                  return e.text;
+                } else {
+                  return '[${platform.name.capitalize}] ${e.text}';
+                }
+              })
+              .toList();
           if (entries.isNotEmpty) {
             versions.add(ChangeLogVersion(version.version, entries));
           }
@@ -91,46 +93,62 @@ const _versions = [
   ]),
   _Version('1.10.0', [
     _Entry(
-        _Platform.all,
-        'Allow to backup Adventures individually for an easier manual synchronization.'
-        ' Available in the Adventure menu.'),
+      _Platform.all,
+      'Allow to backup Adventures individually for an easier manual synchronization.'
+      ' Available in the Adventure menu.',
+    ),
   ]),
   _Version('1.9.2', [
     _Entry(
-        _Platform.web,
-        'Fixed the roll log not being saved properly, resulting in "unknown" entries on other platform.'
-        ' Unfortunately, the previous roll log entries will be lost.'
-        ' Sorry for the inconvenience.'),
-    _Entry(_Platform.all,
-        'Fixed Random Events with Thread focus being interpreted as Current Context in the roll log when loading an Adventure.'),
+      _Platform.web,
+      'Fixed the roll log not being saved properly, resulting in "unknown" entries on other platform.'
+      ' Unfortunately, the previous roll log entries will be lost.'
+      ' Sorry for the inconvenience.',
+    ),
+    _Entry(
+      _Platform.all,
+      'Fixed Random Events with Thread focus being interpreted as Current Context in the roll log when loading an Adventure.',
+    ),
   ]),
   _Version('1.9.1', [
-    _Entry(_Platform.all,
-        'Restored the default line height in the Rich text editor for notes.'),
     _Entry(
-        _Platform.all, 'Made full screen editing for Scenes more accessible.'),
+      _Platform.all,
+      'Restored the default line height in the Rich text editor for notes.',
+    ),
+    _Entry(
+      _Platform.all,
+      'Made full screen editing for Scenes more accessible.',
+    ),
   ]),
   _Version('1.9.0', [
-    _Entry(_Platform.all,
-        'Added text formatting options to notes in Scenes, Notes, etc.'),
+    _Entry(
+      _Platform.all,
+      'Added text formatting options to notes in Scenes, Notes, etc.',
+    ),
     _Entry(_Platform.all, 'Allow to clear the Roll Log.'),
   ]),
   _Version('1.8.1', []),
   _Version('1.8.0', [
     _Entry(
-        _Platform.all,
-        'Added a Help system to give access to some Mythic rules abstracts.'
-        ' Help buttons can be disabled in the Global Settings.'),
-    _Entry(_Platform.all,
-        'Fixed incorrect wording "Extreme" instead of "Exceptional" in Fate answers.'),
+      _Platform.all,
+      'Added a Help system to give access to some Mythic rules abstracts.'
+      ' Help buttons can be disabled in the Global Settings.',
+    ),
     _Entry(
-        _Platform.all,
-        'Lock the counter of Characters/Threads Lists to a maximum of 3, as recommended in the rules.'
-        ' Can be toggled in the Global Settings.'),
+      _Platform.all,
+      'Fixed incorrect wording "Extreme" instead of "Exceptional" in Fate answers.',
+    ),
+    _Entry(
+      _Platform.all,
+      'Lock the counter of Characters/Threads Lists to a maximum of 3, as recommended in the rules.'
+      ' Can be toggled in the Global Settings.',
+    ),
   ]),
   _Version('1.7.0', [
     _Entry(
-        _Platform.all, 'Added animations to lists, and thread progress track.'),
+      _Platform.all,
+      'Added animations to lists, and thread progress track.',
+    ),
     _Entry(_Platform.all, 'Added the ability to sort some lists.'),
     _Entry(_Platform.all, 'Use a more legible font for titles and headers.'),
   ]),
@@ -140,22 +158,27 @@ const _versions = [
   ]),
   _Version('1.6.0', [
     _Entry(
-        _Platform.all,
-        'Added support for Prepared Adventures, with Adventure Features and adapted Event Focus table.'
-        ' Toggle this in the Adventure Settings.'),
+      _Platform.all,
+      'Added support for Prepared Adventures, with Adventure Features and adapted Event Focus table.'
+      ' Toggle this in the Adventure Settings.',
+    ),
   ]),
   _Version('1.5.0', [
     _Entry(
-        _Platform.all,
-        'A Web version of the App is available at https://mythic-gme-adventures.idispatch.ovh.'
-        ' See the User Manual for more info.'),
+      _Platform.all,
+      'A Web version of the App is available at https://mythic-gme-adventures.idispatch.ovh.'
+      ' See the User Manual for more info.',
+    ),
     _Entry(
-        _Platform.all,
-        'If you missed it in previous version, added the Physical dice mode:'
-        ' switch to this mode to roll the dice yourself and lookup the result in the App.'
-        ' Toggle this in the Adventure menu.'),
+      _Platform.all,
+      'If you missed it in previous version, added the Physical dice mode:'
+      ' switch to this mode to roll the dice yourself and lookup the result in the App.'
+      ' Toggle this in the Adventure menu.',
+    ),
     _Entry(_Platform.all, 'Added the ability to backup the local Adventures.'),
-    _Entry(_Platform.windows,
-        'Maybe fixed a crash on Windows 10 when closing the App.'),
+    _Entry(
+      _Platform.windows,
+      'Maybe fixed a crash on Windows 10 when closing the App.',
+    ),
   ]),
 ];

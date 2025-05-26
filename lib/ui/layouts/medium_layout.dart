@@ -36,13 +36,15 @@ class MediumLayout extends GetView<LayoutController> {
         ),
         body: [
           const _MediumLayoutOracles(),
-          LayoutBuilder(builder: (_, constraints) {
-            if (constraints.maxHeight > 600) {
-              return const _MediumLayoutScenes();
-            } else {
-              return const SmallLayoutScenes();
-            }
-          }),
+          LayoutBuilder(
+            builder: (_, constraints) {
+              if (constraints.maxHeight > 600) {
+                return const _MediumLayoutScenes();
+              } else {
+                return const SmallLayoutScenes();
+              }
+            },
+          ),
           const SmallLayoutOther(),
         ][controller.navigationTabIndex()],
       ),
@@ -112,8 +114,10 @@ class _MediumLayoutTables extends StatelessWidget {
 
         // roll log
         Expanded(
-          child:
-              getZoneDecoration(const RollLogOrLookupView(), withRight: false),
+          child: getZoneDecoration(
+            const RollLogOrLookupView(),
+            withRight: false,
+          ),
         ),
       ],
     );

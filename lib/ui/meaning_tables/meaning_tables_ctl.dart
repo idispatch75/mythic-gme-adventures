@@ -24,8 +24,9 @@ class MeaningTablesController extends GetxController {
   void onInit() {
     super.onInit();
 
-    _languageSubscription =
-        Get.find<MeaningTablesService>().language.listen((_) {
+    _languageSubscription = Get.find<MeaningTablesService>().language.listen((
+      _,
+    ) {
       _init();
     });
 
@@ -41,11 +42,13 @@ class MeaningTablesController extends GetxController {
 
   void _init() {
     favorites.replaceAll(
-        Get.find<GlobalSettingsService>().favoriteMeaningTables.toSet()
-          ..addAll(Get.find<AdventureService>().favoriteMeaningTables));
+      Get.find<GlobalSettingsService>().favoriteMeaningTables.toSet()
+        ..addAll(Get.find<AdventureService>().favoriteMeaningTables),
+    );
 
-    final sortedTables =
-        Get.find<MeaningTablesService>().meaningTables.toList(growable: false);
+    final sortedTables = Get.find<MeaningTablesService>().meaningTables.toList(
+      growable: false,
+    );
     sortedTables.sort((a, b) {
       final isFavoriteA = favorites.contains(a.id);
       final isFavoriteB = favorites.contains(b.id);
@@ -71,20 +74,21 @@ class MeaningTablesController extends GetxController {
     final choice = await Get.dialog<String>(
       SimpleDialog(
         title: const Text('Set favorite for'),
-        children: [
-          ('global', 'All Adventures'),
-          ('adventure', 'The current Adventure only'),
-          ('none', 'Not favorite'),
-        ]
-            .map(
-              (e) => SimpleDialogOption(
-                onPressed: () {
-                  Get.back(result: e.$1);
-                },
-                child: Text(e.$2),
-              ),
-            )
-            .toList(),
+        children:
+            [
+                  ('global', 'All Adventures'),
+                  ('adventure', 'The current Adventure only'),
+                  ('none', 'Not favorite'),
+                ]
+                .map(
+                  (e) => SimpleDialogOption(
+                    onPressed: () {
+                      Get.back(result: e.$1);
+                    },
+                    child: Text(e.$2),
+                  ),
+                )
+                .toList(),
       ),
       barrierDismissible: true,
     );
@@ -118,14 +122,15 @@ class MeaningTablesController extends GetxController {
   List<MeaningTableSubRoll> roll(String tableId, {bool addToLog = true}) {
     // a roll includes 2 rolls, usually on the same table
     // except for actions and descriptions which have 2 separate tables.
-    final table = Get.find<MeaningTablesService>()
-        .meaningTables
-        .firstWhere((e) => e.id == tableId);
+    final table = Get.find<MeaningTablesService>().meaningTables.firstWhere(
+      (e) => e.id == tableId,
+    );
 
     MeaningTableSubRoll createSubRoll(int index, int entryCount) {
       return MeaningTableSubRoll(
-          entryId: '${tableId}_$index',
-          dieRoll: Random().nextInt(entryCount) + 1);
+        entryId: '${tableId}_$index',
+        dieRoll: Random().nextInt(entryCount) + 1,
+      );
     }
 
     final results = [
@@ -133,7 +138,7 @@ class MeaningTablesController extends GetxController {
       createSubRoll(
         table.entryCount2 != null ? 2 : 1,
         table.entryCount2 ?? table.entryCount1,
-      )
+      ),
     ];
 
     if (addToLog) {
@@ -157,11 +162,13 @@ class MeaningTablesController extends GetxController {
   /// This function must be called inside an [Obx]
   /// to benefit from favorite re-ordering.
   List<Widget> getButtons({required bool isSmallLayout}) => tables
-      .map((e) => MeaningTableButton(
-            e,
-            isFavorite: favorites.contains(e.id),
-            isSmallLayout: isSmallLayout,
-            key: ValueKey(e.id),
-          ))
+      .map(
+        (e) => MeaningTableButton(
+          e,
+          isFavorite: favorites.contains(e.id),
+          isSmallLayout: isSmallLayout,
+          key: ValueKey(e.id),
+        ),
+      )
       .toList();
 }

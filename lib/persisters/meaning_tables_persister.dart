@@ -43,7 +43,9 @@ class MeaningTablesPersisterService
   ///
   /// Deletes the tables directory in the remote storage before copying.
   Future<void> importDirectoryToRemote(
-      String absoluteDirectoryPath, RxInt progress) async {
+    String absoluteDirectoryPath,
+    RxInt progress,
+  ) async {
     assert(
       localPersister != null && remotePersister != null,
       'Local and remote persisters cannot be null.',
@@ -183,8 +185,9 @@ class MeaningTablesPersister {
     // save files
     final archive = ZipDecoder().decodeBytes(zipContent);
 
-    final jsonFiles =
-        archive.where((e) => e.isFile && e.name.endsWith('.json'));
+    final jsonFiles = archive.where(
+      (e) => e.isFile && e.name.endsWith('.json'),
+    );
     for (final file in jsonFiles) {
       final parts = file.name.split('/');
       if (parts.length == 2) {

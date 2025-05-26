@@ -29,15 +29,15 @@ class RandomEventLookupView extends StatelessWidget {
 
     final lookupPlayerCharacters =
         Get.find<PlayerCharactersService>().playerCharacters.length > 1
-            ? () => _showPlayerCharactersLookup(context)
-            : null;
+        ? () => _showPlayerCharactersLookup(context)
+        : null;
 
     final lookupFeatures = Get.find<FeaturesService>().features.isNotEmpty
         ? () => _showFeaturesLookup(context)
         : null;
 
-    final isPreparedAdventure =
-        Get.find<AdventureService>().isPreparedAdventure();
+    final isPreparedAdventure = Get.find<AdventureService>()
+        .isPreparedAdventure();
 
     return RollLookupView(
       header: 'Random Event',
@@ -157,17 +157,25 @@ class RandomEventLookupView extends StatelessWidget {
   }
 
   void _showCharactersLookup(
-      BuildContext context, CharactersListController controller) {
+    BuildContext context,
+    CharactersListController controller,
+  ) {
     showListItemsLookup<Character>(
-        context,
-        CharactersListView.listItemTypeLabel,
-        controller.sourceItemsList.map((e) => e.value).toList());
+      context,
+      CharactersListView.listItemTypeLabel,
+      controller.sourceItemsList.map((e) => e.value).toList(),
+    );
   }
 
   void _showThreadsLookup(
-      BuildContext context, ThreadsListController controller) {
-    showListItemsLookup<Thread>(context, ThreadsListView.listItemTypeLabel,
-        controller.sourceItemsList.map((e) => e.value).toList());
+    BuildContext context,
+    ThreadsListController controller,
+  ) {
+    showListItemsLookup<Thread>(
+      context,
+      ThreadsListView.listItemTypeLabel,
+      controller.sourceItemsList.map((e) => e.value).toList(),
+    );
   }
 
   void _showPlayerCharactersLookup(BuildContext context) {

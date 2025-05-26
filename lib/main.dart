@@ -44,11 +44,12 @@ Future<void> main() async {
 
   final debugOptions = Catcher2Options(
     releaseOptions.reportMode,
-    releaseOptions.handlers
-      ..add(ConsoleHandler(
+    releaseOptions.handlers..add(
+      ConsoleHandler(
         enableDeviceParameters: false,
         enableApplicationParameters: false,
-      )),
+      ),
+    ),
   );
 
   Catcher2(
@@ -167,8 +168,9 @@ void _runApp() async {
       navigatorKey: kNavigatorKey,
       theme: AppStyles.lightTheme,
       darkTheme: AppStyles.darkTheme,
-      themeMode:
-          preferences.enableDarkMode() ? ThemeMode.dark : ThemeMode.light,
+      themeMode: preferences.enableDarkMode()
+          ? ThemeMode.dark
+          : ThemeMode.light,
       locale: locale,
       fallbackLocale: const Locale('en'),
       debugShowCheckedModeBanner: false,
@@ -271,7 +273,8 @@ class _WindowCloseInterceptor extends WindowListener {
 }
 
 Future<void> _migratePreferences(
-    SharedPreferencesWithCache sharedPreferences) async {
+  SharedPreferencesWithCache sharedPreferences,
+) async {
   final oldSharedPreferences = await SharedPreferences.getInstance();
 
   final isMigrated = sharedPreferences.getBool('isMigrated');
@@ -279,8 +282,9 @@ Future<void> _migratePreferences(
     return;
   }
 
-  final enableGoogleStorage =
-      oldSharedPreferences.getBool('enableGoogleStorage');
+  final enableGoogleStorage = oldSharedPreferences.getBool(
+    'enableGoogleStorage',
+  );
   if (enableGoogleStorage != null) {
     await sharedPreferences.setBool('enableGoogleStorage', enableGoogleStorage);
   }
@@ -290,11 +294,14 @@ Future<void> _migratePreferences(
     await sharedPreferences.setBool('enableLocalStorage', enableLocalStorage);
   }
 
-  final localDataDirectoryOverride =
-      oldSharedPreferences.getString('localDataDirectoryOverride');
+  final localDataDirectoryOverride = oldSharedPreferences.getString(
+    'localDataDirectoryOverride',
+  );
   if (localDataDirectoryOverride != null) {
     await sharedPreferences.setString(
-        'localDataDirectoryOverride', localDataDirectoryOverride);
+      'localDataDirectoryOverride',
+      localDataDirectoryOverride,
+    );
   }
 
   final enableDarkMode = oldSharedPreferences.getBool('enableDarkMode');

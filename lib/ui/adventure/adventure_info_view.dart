@@ -95,13 +95,16 @@ class AdventureInfoView extends GetView<AdventureInfoController> {
     } else if (error is RemoteStorageException) {
       details = 'Failed to save "${error.filePath}" online: ';
       if (error is RemoteStorageAuthenticationException) {
-        details += 'The authentication is no more valid.\n'
+        details +=
+            'The authentication is no more valid.\n'
             'Please go back to the list of adventures and check your online access.';
       } else if (error is RemoteStorageNetworkException) {
-        details += '${error.provider} could not be contacted.\n'
+        details +=
+            '${error.provider} could not be contacted.\n'
             'Please check your internet access.';
       } else if (error is RemoteStorageOperationException) {
-        details += '${error.provider} refused to save the file:'
+        details +=
+            '${error.provider} refused to save the file:'
             ' ${error.error}.';
       }
     } else {
@@ -210,49 +213,50 @@ class _AdventureActionsButton extends GetView<AdventureInfoController> {
 
             if (context.mounted) {
               showAboutDialog(
-                  applicationName:
-                      'Mythic GME Adventures', // info.appName is wrong for web (retrieved from generated version.json, where it is wrong)
-                  applicationVersion: info.version,
-                  context: context,
-                  children: [
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 500),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                const TextSpan(
-                                  text:
-                                      'Manage adventures using the rules of Mythic Game Master Emulator, 2nd Edition.\n'
-                                      'Find out more on the ',
-                                ),
-                                getInlineLink(
-                                  text: 'official site',
-                                  url:
-                                      'https://idispatch75.github.io/mythic-gme-adventures/',
-                                ),
-                                const TextSpan(text: '.'),
-                              ],
-                            ),
+                applicationName:
+                    'Mythic GME Adventures', // info.appName is wrong for web (retrieved from generated version.json, where it is wrong)
+                applicationVersion: info.version,
+                context: context,
+                children: [
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 500),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              const TextSpan(
+                                text:
+                                    'Manage adventures using the rules of Mythic Game Master Emulator, 2nd Edition.\n'
+                                    'Find out more on the ',
+                              ),
+                              getInlineLink(
+                                text: 'official site',
+                                url:
+                                    'https://idispatch75.github.io/mythic-gme-adventures/',
+                              ),
+                              const TextSpan(text: '.'),
+                            ],
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 16.0),
-                            child: Text(
-                              'This work is based on Mythic Game Master Emulator, 2nd Edition by Tana Pigeon,'
-                              ' published by Word Mill Games, and licensed for our use under the'
-                              ' Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0) license.'
-                              ' Find out more at www.wordmillgames.com.\n'
-                              'The App icon was created by Muhammad Miftakhul Rizky'
-                              ' from thenounproject.com (CC BY 3.0).',
-                              style: theme.textTheme.bodySmall,
-                            ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: Text(
+                            'This work is based on Mythic Game Master Emulator, 2nd Edition by Tana Pigeon,'
+                            ' published by Word Mill Games, and licensed for our use under the'
+                            ' Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0) license.'
+                            ' Find out more at www.wordmillgames.com.\n'
+                            'The App icon was created by Muhammad Miftakhul Rizky'
+                            ' from thenounproject.com (CC BY 3.0).',
+                            style: theme.textTheme.bodySmall,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ]);
+                  ),
+                ],
+              );
             }
           },
           leadingIcon: const Icon(Icons.info_outline),

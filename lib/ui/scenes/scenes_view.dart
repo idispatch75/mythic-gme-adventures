@@ -165,13 +165,14 @@ class ScenesView extends GetView<ScenesService> {
         message: 'The scene happens as expected.',
       );
     } else {
-      final isPreparedAdventure =
-          Get.find<AdventureService>().isPreparedAdventure();
+      final isPreparedAdventure = Get.find<AdventureService>()
+          .isPreparedAdventure();
 
       if (isPreparedAdventure) {
         await Dialogs.showAlert(
           title: 'Random Event',
-          message: 'Your expectations are sightly altered.\n'
+          message:
+              'Your expectations are sightly altered.\n'
               'A Random Event will be rolled.',
         );
 
@@ -181,7 +182,8 @@ class ScenesView extends GetView<ScenesService> {
           // altered
           await Dialogs.showAlert(
             title: 'Altered Scene',
-            message: 'Your expectations are sightly altered.\n'
+            message:
+                'Your expectations are sightly altered.\n'
                 'You may consult the Fate Chart or the Meaning Tables.\n'
                 'You may also roll an Adjustment.',
           );
@@ -189,7 +191,8 @@ class ScenesView extends GetView<ScenesService> {
           // interrupt
           await Dialogs.showAlert(
             title: 'Interrupt Scene',
-            message: 'Mythic derails your expectations.\n'
+            message:
+                'Mythic derails your expectations.\n'
                 'A Random Event will be rolled.',
           );
 
@@ -214,7 +217,7 @@ class ScenesView extends GetView<ScenesService> {
         4 => 'Increase an Activity',
         5 => 'Remove an Object',
         6 => 'Add an Object',
-        _ => 'Make 2 Adjustments'
+        _ => 'Make 2 Adjustments',
       };
 
       Get.find<RollLogService>().addGenericRoll(
@@ -324,11 +327,13 @@ class _SceneView extends GetView<ScenesService> {
       summary: _scene.value.summary,
       notes: _scene.value.notes,
     );
-    Get.replaceForced(SceneEditPageService(
-      _scene.value,
-      temporaryData: temporaryData,
-      isNew: false,
-    ));
+    Get.replaceForced(
+      SceneEditPageService(
+        _scene.value,
+        temporaryData: temporaryData,
+        isNew: false,
+      ),
+    );
     Get.find<LayoutController>().hasEditScenePage.value = true;
   }
 }

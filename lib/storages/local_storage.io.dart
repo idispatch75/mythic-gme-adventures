@@ -73,10 +73,12 @@ class LocalStorage extends DataStorage {
     Future<void> Function(List<String> filePath, String json) process, {
     String? absoluteDirectoryPath,
   }) async {
-    final startDirectory = Directory(absoluteDirectoryPath ??
-        await _getRootDirectoryPath() +
-            Platform.pathSeparator +
-            directory.join(Platform.pathSeparator));
+    final startDirectory = Directory(
+      absoluteDirectoryPath ??
+          await _getRootDirectoryPath() +
+              Platform.pathSeparator +
+              directory.join(Platform.pathSeparator),
+    );
 
     if (await startDirectory.exists()) {
       final entities = startDirectory.list(recursive: true);
@@ -106,7 +108,9 @@ class LocalStorage extends DataStorage {
       return File('${fileDirectory.path}${Platform.pathSeparator}$name');
     } catch (e) {
       throw LocalStorageException(
-          '$directoryPath${Platform.pathSeparator}$name', e);
+        '$directoryPath${Platform.pathSeparator}$name',
+        e,
+      );
     }
   }
 

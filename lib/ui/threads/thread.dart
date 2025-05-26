@@ -16,9 +16,9 @@ class Thread extends ListableItem {
     bool isTracked = false,
     int progress = 0,
     List<ThreadProgressPhase>? phases,
-  })  : isTracked = isTracked.obs,
-        progress = progress.obs,
-        phases = (phases ?? []).map((e) => e.obs).toList().obs;
+  }) : isTracked = isTracked.obs,
+       progress = progress.obs,
+       phases = (phases ?? []).map((e) => e.obs).toList().obs;
 
   @override
   JsonObj toJson() => super.toJson()
@@ -29,11 +29,13 @@ class Thread extends ListableItem {
     });
 
   Thread.fromJson(super.json)
-      : isTracked = RxBool(json['isTracked']),
-        progress = RxInt(json['progress']),
-        phases = fromJsonList(
-            json['phases'], (e) => ThreadProgressPhase.fromJson(e).obs).obs,
-        super.fromJson();
+    : isTracked = RxBool(json['isTracked']),
+      progress = RxInt(json['progress']),
+      phases = fromJsonList(
+        json['phases'],
+        (e) => ThreadProgressPhase.fromJson(e).obs,
+      ).obs,
+      super.fromJson();
 }
 
 class ThreadProgressPhase {
@@ -42,11 +44,11 @@ class ThreadProgressPhase {
   ThreadProgressPhase({this.hasFlashpoint = false});
 
   JsonObj toJson() => {
-        'hasFlashpoint': hasFlashpoint,
-      };
+    'hasFlashpoint': hasFlashpoint,
+  };
 
   ThreadProgressPhase.fromJson(JsonObj json)
-      : this(hasFlashpoint: json['hasFlashpoint']);
+    : this(hasFlashpoint: json['hasFlashpoint']);
 }
 
 class ThreadsService extends ListableItemsService<Thread> {
@@ -64,5 +66,5 @@ class ThreadsService extends ListableItemsService<Thread> {
   JsonObj toJson() => toJsonGeneric('threads');
 
   ThreadsService.fromJson(JsonObj json)
-      : super.fromJson(json, 'threads', Thread.fromJson);
+    : super.fromJson(json, 'threads', Thread.fromJson);
 }

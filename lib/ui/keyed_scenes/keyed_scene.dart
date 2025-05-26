@@ -16,17 +16,17 @@ class KeyedScene {
   }) : counts = counts ?? List.filled(2, KeyedSceneCount(count: 0));
 
   JsonObj toJson() => {
-        'trigger': trigger,
-        'event': event,
-        'counts': counts,
-      };
+    'trigger': trigger,
+    'event': event,
+    'counts': counts,
+  };
 
   KeyedScene.fromJson(JsonObj json)
-      : this(
-          trigger: json['trigger'],
-          event: json['event'],
-          counts: fromJsonList(json['counts'], KeyedSceneCount.fromJson),
-        );
+    : this(
+        trigger: json['trigger'],
+        event: json['event'],
+        counts: fromJsonList(json['counts'], KeyedSceneCount.fromJson),
+      );
 }
 
 class KeyedSceneCount {
@@ -35,8 +35,8 @@ class KeyedSceneCount {
   KeyedSceneCount({required this.count});
 
   JsonObj toJson() => {
-        'count': count,
-      };
+    'count': count,
+  };
 
   KeyedSceneCount.fromJson(JsonObj json) : this(count: json['count']);
 }
@@ -67,8 +67,8 @@ class KeyedScenesService extends GetxService with SavableMixin {
   }
 
   JsonObj toJson() => {
-        _collectionKey: scenes,
-      };
+    _collectionKey: scenes,
+  };
 
   KeyedScenesService.fromJson(JsonObj json) {
     for (var item in fromJsonList(json[_collectionKey], KeyedScene.fromJson)) {

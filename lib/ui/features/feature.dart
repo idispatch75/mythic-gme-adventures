@@ -21,21 +21,21 @@ class Feature {
   });
 
   JsonObj toJson() => {
-        'id': id,
-        'name': name,
-        if (notes != null) 'notes': notes,
-        'isArchived': isArchived,
-        'displayOrder': displayOrder,
-      };
+    'id': id,
+    'name': name,
+    if (notes != null) 'notes': notes,
+    'isArchived': isArchived,
+    'displayOrder': displayOrder,
+  };
 
   Feature.fromJson(JsonObj json)
-      : this(
-          json['id'],
-          json['name'],
-          notes: json['notes'],
-          isArchived: json['isArchived'],
-          displayOrder: json['displayOrder'] ?? 0,
-        );
+    : this(
+        json['id'],
+        json['name'],
+        notes: json['notes'],
+        isArchived: json['isArchived'],
+        displayOrder: json['displayOrder'] ?? 0,
+      );
 }
 
 class FeaturesService extends GetxService with SavableMixin {
@@ -89,8 +89,8 @@ class FeaturesService extends GetxService with SavableMixin {
   }
 
   JsonObj toJson() => {
-        'features': features,
-      };
+    'features': features,
+  };
 
   FeaturesService.fromJson(JsonObj json) {
     for (var item in fromJsonList(json['features'], Feature.fromJson)) {

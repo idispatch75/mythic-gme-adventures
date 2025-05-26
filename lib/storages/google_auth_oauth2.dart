@@ -32,14 +32,14 @@ abstract class OAuth2GoogleAuthManager
 
     final googleauth.AccessCredentials googleCredentials =
         googleauth.AccessCredentials(
-      googleauth.AccessToken(
-        'Bearer',
-        credentials.accessToken,
-        credentials.expiryDate,
-      ),
-      null,
-      [googleDriveScope],
-    );
+          googleauth.AccessToken(
+            'Bearer',
+            credentials.accessToken,
+            credentials.expiryDate,
+          ),
+          null,
+          [googleDriveScope],
+        );
 
     return googleauth.authenticatedClient(http.Client(), googleCredentials);
   }
@@ -87,8 +87,11 @@ abstract class OAuth2GoogleAuthManager
 
   Future<_TokenCredentials?> _refreshCredentials(String refreshToken) async {
     try {
-      final response = await http.get(Uri.parse(
-          '$baseUrl/refresh?refresh_token=${Uri.encodeComponent(refreshToken)}'));
+      final response = await http.get(
+        Uri.parse(
+          '$baseUrl/refresh?refresh_token=${Uri.encodeComponent(refreshToken)}',
+        ),
+      );
       if (response.statusCode == 200) {
         final tokens = jsonDecode(response.body) as JsonObj;
         return _TokenCredentials.fromResponse(tokens);
@@ -136,7 +139,8 @@ abstract class OAuth2GoogleAuthManager
     }
 
     throw GoogleSignInException(
-        'Unknown response: ${response.entries.map((e) => '${e.key}=${e.value}').join(',')}');
+      'Unknown response: ${response.entries.map((e) => '${e.key}=${e.value}').join(',')}',
+    );
   }
 }
 
@@ -152,12 +156,12 @@ class _TokenCredentials {
   });
 
   _TokenCredentials.fromResponse(Map<String, dynamic> response)
-      : this(
-          accessToken: response['access_token'],
-          refreshToken: response['refresh_token'],
-          expiryDate: DateTime.fromMillisecondsSinceEpoch(
-            int.parse(response['expiry_date']),
-            isUtc: true,
-          ),
-        );
+    : this(
+        accessToken: response['access_token'],
+        refreshToken: response['refresh_token'],
+        expiryDate: DateTime.fromMillisecondsSinceEpoch(
+          int.parse(response['expiry_date']),
+          isUtc: true,
+        ),
+      );
 }

@@ -50,8 +50,9 @@ class RollLookupView extends StatelessWidget {
             child: Column(
               children: [
                 ...entries.mapIndexed((index, entry) {
-                  final backgroundColor =
-                      index.isEven ? baseColor : alternateColor;
+                  final backgroundColor = index.isEven
+                      ? baseColor
+                      : alternateColor;
 
                   return RollLookupEntryView(
                     value: entry.value,

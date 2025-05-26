@@ -24,24 +24,26 @@ class FeaturesView extends GetView<FeaturesService> {
         Obx(() {
           final canRoll = features.length > 1;
 
-          return ButtonRow(children: [
-            // Roll button
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: IconButton.outlined(
-                onPressed: canRoll ? () => _roll(context) : null,
-                icon: AppStyles.rollIcon,
-                tooltip: 'Roll a Feature in this list',
+          return ButtonRow(
+            children: [
+              // Roll button
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: IconButton.outlined(
+                  onPressed: canRoll ? () => _roll(context) : null,
+                  icon: AppStyles.rollIcon,
+                  tooltip: 'Roll a Feature in this list',
+                ),
               ),
-            ),
 
-            // Create button
-            IconButton.filled(
-              onPressed: _create,
-              icon: const Icon(Icons.add),
-              tooltip: 'Create a Feature',
-            ),
-          ]);
+              // Create button
+              IconButton.filled(
+                onPressed: _create,
+                icon: const Icon(Icons.add),
+                tooltip: 'Create a Feature',
+              ),
+            ],
+          );
         }),
         Expanded(
           child: Obx(

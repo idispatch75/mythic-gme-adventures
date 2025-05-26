@@ -25,8 +25,8 @@ class ChaosFactorService extends GetxService with SavableMixin {
   }
 
   JsonObj toJson() => {
-        'chaosFactor': chaosFactor(),
-      };
+    'chaosFactor': chaosFactor(),
+  };
 
   ChaosFactorService.fromJson(JsonObj json) : this(json['chaosFactor']);
 }

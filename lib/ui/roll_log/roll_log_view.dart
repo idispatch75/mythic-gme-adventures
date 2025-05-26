@@ -65,8 +65,9 @@ class RollLogView extends HookWidget {
 
         // handle clear
         if (updates.any((e) => e is RollLogClear)) {
-          _animatedListKey.currentState
-              ?.removeAllItems((_, __) => const SizedBox.shrink());
+          _animatedListKey.currentState?.removeAllItems(
+            (_, __) => const SizedBox.shrink(),
+          );
         }
       });
 
@@ -87,8 +88,9 @@ class RollLogView extends HookWidget {
               final entry = log[log.length - index - 1];
 
               String rollDateText;
-              final rollDate =
-                  DateTime.fromMillisecondsSinceEpoch(entry.timestamp);
+              final rollDate = DateTime.fromMillisecondsSinceEpoch(
+                entry.timestamp,
+              );
               final now = DateTime.now();
               if (now.day == rollDate.day &&
                   now.month == rollDate.month &&
@@ -99,8 +101,9 @@ class RollLogView extends HookWidget {
               }
 
               final itemView = Padding(
-                padding:
-                    EdgeInsets.symmetric(horizontal: isDarkMode ? 12 : 0.0),
+                padding: EdgeInsets.symmetric(
+                  horizontal: isDarkMode ? 12 : 0.0,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -216,7 +219,7 @@ class _RandomEventView extends StatelessWidget {
                 ),
               ),
             ),
-          )
+          ),
       ],
     );
   }
@@ -246,7 +249,9 @@ class _MeaningTableView extends GetView<MeaningTablesService> {
                     .language(); // just to update on change
                 return _Result(
                   controller.getMeaningTableEntry(
-                      result.entryId, result.dieRoll),
+                    result.entryId,
+                    result.dieRoll,
+                  ),
                   result.dieRoll,
                   AppStyles.meaningTableColors,
                 );
@@ -258,11 +263,13 @@ class _MeaningTableView extends GetView<MeaningTablesService> {
   }
 
   Future<void> _copyResult(BuildContext context) async {
-    await Clipboard.setData(ClipboardData(
-      text: _roll.results
-          .map((e) => controller.getMeaningTableEntry(e.entryId, e.dieRoll))
-          .join(', '),
-    ));
+    await Clipboard.setData(
+      ClipboardData(
+        text: _roll.results
+            .map((e) => controller.getMeaningTableEntry(e.entryId, e.dieRoll))
+            .join(', '),
+      ),
+    );
 
     if (context.mounted) {
       showSnackBar(context, 'Result copied to the clipboard');

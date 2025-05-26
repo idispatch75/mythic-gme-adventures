@@ -16,14 +16,14 @@ Widget defaultAnimatedListView<TItem extends Object>({
     updateDuration: _updateDuration,
     itemBuilder: (context, animation, item, index) =>
         _buildItemBuilderTransition(
-      animation: animation,
-      child: itemBuilder(context, item, index),
-    ),
+          animation: animation,
+          child: itemBuilder(context, item, index),
+        ),
     removeItemBuilder: (context, animation, item) =>
         _buildRemoveItemBuilderTransition(
-      animation: animation,
-      child: removedItemBuilder(context, item),
-    ),
+          animation: animation,
+          child: removedItemBuilder(context, item),
+        ),
     separatorBuilder: (_, __) => _buildSeparator(),
   );
 }
