@@ -10,7 +10,11 @@ class RichTextEditorController {
   late final QuillController quill;
 
   RichTextEditorController(String? initialText) {
-    quill = QuillController.basic();
+    quill = QuillController.basic(
+      config: const QuillControllerConfig(
+        clipboardConfig: QuillClipboardConfig(enableExternalRichPaste: false),
+      ),
+    );
 
     try {
       quill.document = initialText != null
@@ -63,7 +67,7 @@ class RichTextEditor extends StatelessWidget {
 
     Widget editor = QuillEditor.basic(
       controller: controller.quill,
-      configurations: QuillEditorConfigurations(
+      config: QuillEditorConfig(
         minHeight: 100,
         scrollable: expands,
         expands: expands,
@@ -182,60 +186,58 @@ class _CustomToolbar extends StatelessWidget {
     );
 
     return ExcludeFocus(
-      child: QuillToolbar(
-        child: SizedBox(
-          height: 40,
-          child: _QuillToolbarArrowIndicatedButtonList(
-            axis: Axis.horizontal,
-            buttons: [
-              QuillToolbarHistoryButton(
-                isUndo: true,
-                controller: controller,
-              ),
-              QuillToolbarHistoryButton(
-                isUndo: false,
-                controller: controller,
-              ),
-              QuillToolbarToggleStyleButton(
-                controller: controller,
-                attribute: Attribute.bold,
-                options: toggleButtonOptions,
-              ),
-              QuillToolbarToggleStyleButton(
-                controller: controller,
-                attribute: Attribute.italic,
-                options: toggleButtonOptions,
-              ),
-              QuillToolbarToggleStyleButton(
-                controller: controller,
-                attribute: Attribute.underline,
-                options: toggleButtonOptions,
-              ),
-              QuillToolbarToggleStyleButton(
-                controller: controller,
-                attribute: Attribute.strikeThrough,
-                options: toggleButtonOptions,
-              ),
-              QuillToolbarSelectHeaderStyleDropdownButton(
-                controller: controller,
-              ),
-              QuillToolbarToggleStyleButton(
-                controller: controller,
-                attribute: Attribute.ul,
-                options: toggleButtonOptions,
-              ),
-              QuillToolbarLinkStyleButton(
-                controller: controller,
-              ),
-              QuillToolbarColorButton(
-                controller: controller,
-                isBackground: false,
-              ),
-              QuillToolbarClearFormatButton(
-                controller: controller,
-              ),
-            ],
-          ),
+      child: SizedBox(
+        height: 40,
+        child: _QuillToolbarArrowIndicatedButtonList(
+          axis: Axis.horizontal,
+          buttons: [
+            QuillToolbarHistoryButton(
+              isUndo: true,
+              controller: controller,
+            ),
+            QuillToolbarHistoryButton(
+              isUndo: false,
+              controller: controller,
+            ),
+            QuillToolbarToggleStyleButton(
+              controller: controller,
+              attribute: Attribute.bold,
+              options: toggleButtonOptions,
+            ),
+            QuillToolbarToggleStyleButton(
+              controller: controller,
+              attribute: Attribute.italic,
+              options: toggleButtonOptions,
+            ),
+            QuillToolbarToggleStyleButton(
+              controller: controller,
+              attribute: Attribute.underline,
+              options: toggleButtonOptions,
+            ),
+            QuillToolbarToggleStyleButton(
+              controller: controller,
+              attribute: Attribute.strikeThrough,
+              options: toggleButtonOptions,
+            ),
+            QuillToolbarSelectHeaderStyleDropdownButton(
+              controller: controller,
+            ),
+            QuillToolbarToggleStyleButton(
+              controller: controller,
+              attribute: Attribute.ul,
+              options: toggleButtonOptions,
+            ),
+            QuillToolbarLinkStyleButton(
+              controller: controller,
+            ),
+            QuillToolbarColorButton(
+              controller: controller,
+              isBackground: false,
+            ),
+            QuillToolbarClearFormatButton(
+              controller: controller,
+            ),
+          ],
         ),
       ),
     );

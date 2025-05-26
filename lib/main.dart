@@ -5,6 +5,7 @@ import 'package:catcher_2/catcher_2.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -173,6 +174,7 @@ void _runApp() async {
           : ThemeMode.light,
       locale: locale,
       fallbackLocale: const Locale('en'),
+      localizationsDelegates: FlutterQuillLocalizations.localizationsDelegates,
       debugShowCheckedModeBanner: false,
     ),
   );

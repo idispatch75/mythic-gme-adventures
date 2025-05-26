@@ -18,15 +18,15 @@ dependencies:
     sdk: flutter
   flutter_file_dialog: ^3.0.2
   flutter_hooks: ^0.21.2
-  flutter_quill: ^10.8.5
+  flutter_quill: ^11.4.1
   flutter_secure_storage: ^9.0.0
   flutter_web_auth_2: ^4.0.1
   formatted_text: ^4.0.1
   get: ^4.6.6
   google_fonts: ^6.1.0
   google_sign_in: ^6.1.5
-  googleapis: ^13.2.0
-  googleapis_auth: ^1.4.1
+  googleapis: ^14.0.0
+  googleapis_auth: ^2.0.0
   http: ^1.1.2
   intl: any
   io: ^1.0.4
@@ -39,12 +39,16 @@ dependencies:
   web: ^1.1.0
   window_manager: ^0.4.2
 
+dependency_overrides: 
+  flutter_quill:
+    git:
+      url: https://github.com/theniceboy/flutter-quill.git
+      ref: fix-flutter-3-32-macos-crash
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
-
-  flutter_native_splash: ^2.3.6
 
 flutter:
   uses-material-design: true
