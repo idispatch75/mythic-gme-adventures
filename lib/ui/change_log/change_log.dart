@@ -89,6 +89,7 @@ class _Version {
 // add the new version before the previous versions
 const _versions = [
   _Version('1.12.0', [
+    _Entry(_Platform.all, 'Added full screen edition for Notes.'),
     _Entry(
       _Platform.all,
       'Added a Combat Clash toggle to force the Chaos Factor to 5 when using Mythic RPG Narrative Combat.'

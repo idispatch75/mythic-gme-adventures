@@ -24,8 +24,10 @@ class LayoutController extends GetxController {
   final oraclesTabIndex = 0.obs;
   final sceneTabIndex = 0.obs;
   final otherTabIndex = 0.obs;
+  var largeLayoutTabIndex = 0;
 
   final hasEditScenePage = false.obs;
+  final hasEditNotePage = false.obs;
 
   final Rx<MeaningTable?> meaningTableDetails = Rx(null);
 }

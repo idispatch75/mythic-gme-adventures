@@ -16,7 +16,7 @@ class SceneEditView extends HookWidget {
   final Scene _scene;
   final bool isNew;
 
-  const SceneEditView(this._scene, {super.key, required this.isNew});
+  const SceneEditView(this._scene, {required this.isNew, super.key});
 
   @override
   Widget build(BuildContext context) {

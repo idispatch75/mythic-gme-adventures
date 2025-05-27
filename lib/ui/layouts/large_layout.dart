@@ -1,3 +1,5 @@
+import 'dart:math' show min;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
@@ -11,6 +13,7 @@ import '../dice_roller/dice_roller_view.dart';
 import '../fate_chart/fate_chart_view.dart';
 import '../features/features_view.dart';
 import '../meaning_tables/meaning_tables_view.dart';
+import '../notes/note_edit_page_view.dart';
 import '../notes/notes_view.dart';
 import '../player_characters/player_characters_view.dart';
 import '../scenes/scene_edit_page_view.dart';
@@ -48,6 +51,8 @@ class LargeLayout extends HookWidget {
                 final Widget widget;
                 if (layoutController.hasEditScenePage()) {
                   widget = SceneEditPageView();
+                } else if (layoutController.hasEditNotePage()) {
+                  widget = NoteEditPageView();
                 } else {
                   widget = Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,9 +188,15 @@ class _LargeLayoutTabs extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final layoutController = Get.find<LayoutController>();
+
+    final initialLength = hasFeatures ? 6 : 5;
     final tabController = useTabController(
       initialLength: hasFeatures ? 6 : 5,
-      initialIndex: 0,
+      initialIndex: min(
+        layoutController.largeLayoutTabIndex,
+        initialLength - 1,
+      ),
       keys: [hasFeatures],
     );
 
@@ -193,6 +204,7 @@ class _LargeLayoutTabs extends HookWidget {
       children: [
         TabBar(
           controller: tabController,
+          onTap: (value) => layoutController.largeLayoutTabIndex = value,
           tabs: [
             const Tab(text: 'SCENES'),
             const Tab(text: 'THREADS'),

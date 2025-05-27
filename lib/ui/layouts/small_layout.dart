@@ -16,6 +16,7 @@ import '../keyed_scenes/keyed_scene.dart';
 import '../keyed_scenes/keyed_scenes_view.dart';
 import '../meaning_tables/meaning_tables_ctl.dart';
 import '../meaning_tables/meaning_tables_view.dart';
+import '../notes/note_edit_page_view.dart';
 import '../notes/notes_view.dart';
 import '../player_characters/player_characters_view.dart';
 import '../preferences/preferences.dart';
@@ -156,59 +157,59 @@ class SmallLayoutScenes extends HookWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: SceneEditPageView(),
         );
-      } else {
-        Widget keyedSceneTab = const Text(
-          'KEYED SCENES',
-          softWrap: false,
-          overflow: TextOverflow.fade,
-        );
+      }
 
-        final keyedScenesController = Get.find<KeyedScenesService>();
-        if (keyedScenesController.scenes.isNotEmpty) {
-          keyedSceneTab = Stack(
-            clipBehavior: Clip.none,
-            children: [
-              keyedSceneTab,
-              const Positioned(
-                top: -6,
-                left: -8,
-                child: Badge(smallSize: 8),
-              ),
-            ],
-          );
-        }
+      Widget keyedSceneTab = const Text(
+        'KEYED SCENES',
+        softWrap: false,
+        overflow: TextOverflow.fade,
+      );
 
-        return LayoutTabBar(
-          tabIndex: layoutController.sceneTabIndex,
-          tabs: [
-            const Tab(text: 'THREADS'),
-            const Tab(text: 'CHARACTERS'),
-            const Tab(text: 'SCENES'),
-            Tab(child: keyedSceneTab),
-          ],
-          children: const [
-            ThreadsListView(),
-            CharactersListView(),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                ChaosFactorView(dense: true),
-                Expanded(
-                  child: _HeaderView(
-                    title: 'SCENES',
-                    helpEntry: scenesHelp,
-                    child: ScenesView(dense: true),
-                  ),
-                ),
-              ],
-            ),
-            _HeaderView(
-              title: 'KEYED SCENES',
-              child: KeyedScenesView(),
+      final keyedScenesController = Get.find<KeyedScenesService>();
+      if (keyedScenesController.scenes.isNotEmpty) {
+        keyedSceneTab = Stack(
+          clipBehavior: Clip.none,
+          children: [
+            keyedSceneTab,
+            const Positioned(
+              top: -6,
+              left: -8,
+              child: Badge(smallSize: 8),
             ),
           ],
         );
       }
+
+      return LayoutTabBar(
+        tabIndex: layoutController.sceneTabIndex,
+        tabs: [
+          const Tab(text: 'THREADS'),
+          const Tab(text: 'CHARACTERS'),
+          const Tab(text: 'SCENES'),
+          Tab(child: keyedSceneTab),
+        ],
+        children: const [
+          ThreadsListView(),
+          CharactersListView(),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ChaosFactorView(dense: true),
+              Expanded(
+                child: _HeaderView(
+                  title: 'SCENES',
+                  helpEntry: scenesHelp,
+                  child: ScenesView(dense: true),
+                ),
+              ),
+            ],
+          ),
+          _HeaderView(
+            title: 'KEYED SCENES',
+            child: KeyedScenesView(),
+          ),
+        ],
+      );
     });
   }
 }
@@ -223,6 +224,13 @@ class SmallLayoutOther extends HookWidget {
     setupRollIndicator(context);
 
     return Obx(() {
+      if (controller.hasEditNotePage()) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: NoteEditPageView(),
+        );
+      }
+
       final hasFeatures = Get.find<AdventureService>().isPreparedAdventure();
 
       return LayoutTabBar(
