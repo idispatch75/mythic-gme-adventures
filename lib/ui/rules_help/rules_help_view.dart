@@ -86,7 +86,7 @@ class RulesHelpView extends HookWidget {
   }
 
   String _getFateChartContent() {
-    final chaosFactor = Get.find<ChaosFactorService>().chaosFactor.value;
+    final chaosFactor = Get.find<ChaosFactorService>().fateChartFactor.value;
 
     const probabilities = [
       Probability.certain,

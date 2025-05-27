@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
 
+import '../chaos_factor/chaos_factor.dart';
 import '../meaning_tables/meaning_table.dart';
 import '../widgets/boolean_setting.dart';
 import '../widgets/edit_dialog.dart';
@@ -58,6 +59,7 @@ class GlobalSettingsEditView extends HookWidget {
     final allowChooseInLists = _settings.allowChooseInLists.obs;
     final allowUnlimitedListCount = _settings.allowUnlimitedListCount.obs;
     final hideHelpButtons = _settings.hideHelpButtons().obs;
+    final showCombatClash = _settings.showCombatClash().obs;
     final meaningTablesLanguage = _settings.meaningTablesLanguage.obs;
     if (!controller.meaningTableLanguages.containsKey(
       meaningTablesLanguage(),
@@ -72,6 +74,10 @@ class GlobalSettingsEditView extends HookWidget {
         _settings.allowChooseInLists = allowChooseInLists();
         _settings.allowUnlimitedListCount = allowUnlimitedListCount();
         _settings.hideHelpButtons.value = hideHelpButtons();
+        _settings.showCombatClash.value = showCombatClash();
+        if (!_settings.showCombatClash()) {
+          Get.find<ChaosFactorService>().isCombatClash(false);
+        }
         _settings.meaningTablesLanguage = meaningTablesLanguage();
         Get.find<MeaningTablesService>().language.value =
             _settings.meaningTablesLanguage;
@@ -111,6 +117,17 @@ class GlobalSettingsEditView extends HookWidget {
               subtext:
                   'Hides the Help buttons in the application.'
                   ' You can still access the Help in the Adventure menu.',
+            ),
+
+            // show combat clash
+            BooleanSetting(
+              withTopPadding: true,
+              setting: showCombatClash,
+              text: 'Show Combat Clash toggle',
+              subtext:
+                  'Shows the Combat Clash toggle in the Fate Chart.'
+                  ' When Combat Clash is enabled, the Chaos Factor is forced to 5 for Fate Questions,'
+                  ' as per Mythic RPG Narrative Combat from Mythic Magazine Compilation 5.',
             ),
 
             // meaning tables language

@@ -13,8 +13,8 @@ class FateChartView extends GetView<FateChartService> {
   Widget build(BuildContext context) {
     return Container(
       color: AppStyles.fateChartColors.background,
-      child: Obx(() {
-        return Column(
+      child: Obx(
+        () => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             RulesHelpWrapper.header(
@@ -23,14 +23,14 @@ class FateChartView extends GetView<FateChartService> {
             ),
             ...controller.getRows(context),
           ],
-        );
-      }),
+        ),
+      ),
     );
   }
 }
 
 class FateChartButton extends GetView<FateChartService> {
-  final _borderSide = BorderSide(color: AppStyles.headerColor, width: 2);
+  static final borderSide = BorderSide(color: AppStyles.headerColor, width: 2);
 
   final String text;
   final VoidCallback? onPressed;
@@ -38,7 +38,7 @@ class FateChartButton extends GetView<FateChartService> {
   final bool hasRightBorder;
   final bool hasFullWidth;
 
-  FateChartButton({
+  const FateChartButton({
     required this.text,
     required this.onPressed,
     required this.rollColors,
@@ -49,7 +49,7 @@ class FateChartButton extends GetView<FateChartService> {
 
   @override
   Widget build(BuildContext context) {
-    final rightBorderSide = hasRightBorder ? _borderSide : BorderSide.none;
+    final rightBorderSide = hasRightBorder ? borderSide : BorderSide.none;
 
     final button = Container(
       color: rollColors.background,
@@ -58,10 +58,10 @@ class FateChartButton extends GetView<FateChartService> {
       ),
       foregroundDecoration: BoxDecoration(
         border: Border(
-          left: _borderSide,
+          left: borderSide,
           right: rightBorderSide,
           top: BorderSide.none,
-          bottom: _borderSide,
+          bottom: borderSide,
         ),
       ),
       child: TextButton(

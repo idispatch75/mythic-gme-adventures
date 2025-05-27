@@ -91,6 +91,11 @@ const _versions = [
   _Version('1.12.0', [
     _Entry(
       _Platform.all,
+      'Added a Combat Clash toggle to force the Chaos Factor to 5 when using Mythic RPG Narrative Combat.'
+      ' This can be enabled in the Global Settings.',
+    ),
+    _Entry(
+      _Platform.all,
       'Improved the loading time of an Adventure when using Custom Meaning Tables in Google Drive.',
     ),
     _Entry(_Platform.all, 'Disabled rich-text paste in rich-text editor.'),

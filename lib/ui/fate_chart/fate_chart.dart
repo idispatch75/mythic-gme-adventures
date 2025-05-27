@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../helpers/utils.dart';
 import '../adventure/adventure.dart';
 import '../chaos_factor/chaos_factor.dart';
+import '../global_settings/global_settings.dart';
 import '../preferences/preferences.dart';
 import '../random_events/random_event.dart';
 import '../roll_log/roll_log.dart';
@@ -225,7 +226,7 @@ class FateChartService extends GetxService {
     }
 
     // add the roll to the log
-    final chaosFactor = Get.find<ChaosFactorService>().chaosFactor.value;
+    final chaosFactor = Get.find<ChaosFactorService>().fateChartFactor.value;
 
     return Get.find<RollLogService>().addFateChartRoll(
       probability: probability,
@@ -255,7 +256,7 @@ class FateChartService extends GetxService {
   /// Determines the outcome probability of the specified [probability]
   /// based on the current chaos factor and fate chart type.
   FateChartOutcomeProbability getOutcomeProbability(Probability probability) {
-    final chaosFactor = Get.find<ChaosFactorService>().chaosFactor.value;
+    final chaosFactor = Get.find<ChaosFactorService>().fateChartFactor.value;
 
     final adventure = Get.find<AdventureService>();
     final chart = switch (adventure.fateChartType) {
@@ -281,8 +282,49 @@ class FateChartService extends GetxService {
   /// Must be wrapped in a Obx to listen to the physical dice mode
   List<Widget> getRows(BuildContext context) {
     final isPhysicalDiceModeEnabled = getPhysicalDiceModeEnabled;
+    final showCombatClash = Get.find<GlobalSettingsService>().showCombatClash;
+    final isCombatClash = Get.find<ChaosFactorService>().isCombatClash;
 
     return [
+      // combat clash switch
+      Obx(
+        () {
+          if (!showCombatClash()) {
+            return const SizedBox.shrink();
+          }
+
+          return Container(
+            color: AppStyles.genericColors.background,
+            foregroundDecoration: BoxDecoration(
+              border: Border(
+                left: FateChartButton.borderSide,
+                right: FateChartButton.borderSide,
+                bottom: FateChartButton.borderSide,
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8.0, 4.0, 4.0, 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Expanded(
+                    child: Text('Combat Clash'),
+                  ),
+                  Obx(
+                    () => Switch.adaptive(
+                      value: isCombatClash.value,
+                      onChanged: isCombatClash.call,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+
+      // fate chart buttons
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -348,6 +390,8 @@ class FateChartService extends GetxService {
           ),
         ],
       ),
+
+      // random event button
       RulesHelpWrapper(
         helpEntry: randomEventHelp,
         iconColor: AppStyles.randomEventColors.onBackground,

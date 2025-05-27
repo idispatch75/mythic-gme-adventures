@@ -4,7 +4,7 @@ import '../../helpers/json_utils.dart';
 import '../../persisters/persister.dart';
 
 class GlobalSettingsService extends GetxService with SavableMixin {
-  static const supportedSchemaVersion = 2;
+  static const supportedSchemaVersion = 3;
 
   static const maxNumberOfItemsInList = 3;
 
@@ -15,6 +15,7 @@ class GlobalSettingsService extends GetxService with SavableMixin {
   List<String> characterTraitMeaningTables;
   bool allowUnlimitedListCount;
   final RxBool hideHelpButtons;
+  final RxBool showCombatClash;
   int? saveTimestamp;
 
   GlobalSettingsService({
@@ -25,10 +26,12 @@ class GlobalSettingsService extends GetxService with SavableMixin {
     List<String>? characterTraitMeaningTables,
     this.allowUnlimitedListCount = false,
     bool hideHelpButtons = false,
+    bool showCombatClash = false,
     this.saveTimestamp,
   }) : favoriteMeaningTables = favoriteMeaningTables ?? {},
        characterTraitMeaningTables = characterTraitMeaningTables ?? [],
-       hideHelpButtons = hideHelpButtons.obs;
+       hideHelpButtons = hideHelpButtons.obs,
+       showCombatClash = showCombatClash.obs;
 
   bool addMeaningTableFavorite(String id) {
     if (favoriteMeaningTables.add(id)) {
@@ -62,6 +65,7 @@ class GlobalSettingsService extends GetxService with SavableMixin {
     'characterTraitMeaningTables': characterTraitMeaningTables,
     'allowUnlimitedListCount': allowUnlimitedListCount,
     'hideHelpButtons': hideHelpButtons(),
+    'showCombatClash': showCombatClash(),
     if (saveTimestamp != null) 'saveTimestamp': saveTimestamp,
   };
 
@@ -78,6 +82,7 @@ class GlobalSettingsService extends GetxService with SavableMixin {
         ),
         allowUnlimitedListCount: json['allowUnlimitedListCount'] ?? false,
         hideHelpButtons: json['hideHelpButtons'] ?? false,
+        showCombatClash: json['showCombatClash'] ?? false,
         saveTimestamp: json['saveTimestamp'],
       );
 }
