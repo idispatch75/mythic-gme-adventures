@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@google-cloud/translate": "^8.5.0",
+    "@google-cloud/translate": "^9.2.0",
     "csv": "^6.3.5"
   }
 }
