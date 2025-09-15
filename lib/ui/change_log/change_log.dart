@@ -93,7 +93,7 @@ const _versions = [
       _Platform.all,
       'Added Portuguese support for Meaning Tables.'
       ' This uses the Retropunk translation, which does not have the same ordering for table entries as the English version,'
-      ' so when you switch to Portuguese, the existing entries in the roll log will be completely wrong.',
+      ' so when you switch to Portuguese, the existing entries in the roll log will be wrong.',
     ),
   ]),
   _Version('1.12.0', [
