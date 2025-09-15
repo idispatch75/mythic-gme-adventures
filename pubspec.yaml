@@ -1,7 +1,7 @@
 name: mythic_gme_adventures
 description: Mythic GME Adventures
 publish_to: 'none'
-version: 1.12.0+22
+version: 1.13.0+23
 
 environment:
   sdk: '>=3.8.0 <4.0.0'
@@ -18,7 +18,7 @@ dependencies:
     sdk: flutter
   flutter_file_dialog: ^3.0.2
   flutter_hooks: ^0.21.2
-  flutter_quill: ^11.4.1
+  flutter_quill: ^11.4.2
   flutter_secure_storage: ^9.0.0
   flutter_web_auth_2: ^4.0.1
   formatted_text: ^4.0.1
@@ -37,18 +37,12 @@ dependencies:
   shared_preferences: ^2.2.2
   url_launcher: ^6.2.1
   web: ^1.1.0
-  window_manager: ^0.4.2
-
-dependency_overrides: 
-  flutter_quill:
-    git:
-      url: https://github.com/theniceboy/flutter-quill.git
-      ref: fix-flutter-3-32-macos-crash
+  window_manager: ^0.5.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true
@@ -56,4 +50,5 @@ flutter:
   assets:
     - assets/meaning_tables/en/
     - assets/meaning_tables/fr/
+    - assets/meaning_tables/pt/
     - assets/google_fonts/

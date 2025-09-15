@@ -246,8 +246,10 @@ class _AdventureActionsButton extends GetView<AdventureInfoController> {
                             'This work is based on Mythic Game Master Emulator, 2nd Edition by Tana Pigeon,'
                             ' published by Word Mill Games, and licensed for our use under the'
                             ' Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0) license.'
-                            ' Find out more at www.wordmillgames.com.\n'
-                            'The App icon was created by Muhammad Miftakhul Rizky'
+                            ' Find out more at www.wordmillgames.com.'
+                            '\nThe Portuguese translations are based on the work of Retropunk.'
+                            ' Find out more at retropunk.com.br.'
+                            '\nThe App icon was created by Muhammad Miftakhul Rizky'
                             ' from thenounproject.com (CC BY 3.0).',
                             style: theme.textTheme.bodySmall,
                           ),

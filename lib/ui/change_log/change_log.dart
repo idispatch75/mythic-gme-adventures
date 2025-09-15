@@ -88,6 +88,14 @@ class _Version {
 
 // add the new version before the previous versions
 const _versions = [
+  _Version('1.13.0', [
+    _Entry(
+      _Platform.all,
+      'Added Portuguese support for Meaning Tables.'
+      ' This uses the Retropunk translation, which does not have the same ordering for table entries as the English version,'
+      ' so when you switch to Portuguese, the existing entries in the roll log will be wrong.',
+    ),
+  ]),
   _Version('1.12.0', [
     _Entry(_Platform.all, 'Added full screen edition for Notes.'),
     _Entry(
