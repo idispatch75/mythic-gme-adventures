@@ -88,6 +88,12 @@ class _Version {
 
 // add the new version before the previous versions
 const _versions = [
+  _Version('1.13.1', [
+    _Entry(
+      _Platform.android,
+      'Fixed application not loading. Sorry for the inconvenience.',
+    ),
+  ]),
   _Version('1.13.0', [
     _Entry(
       _Platform.all,
