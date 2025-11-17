@@ -82,8 +82,7 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                             ButtonRow(
                               children: [
                                 // import meaning tables
-                                if (GetPlatform.isWeb &&
-                                    _preferences.enableLocalStorage())
+                                if (_preferences.enableLocalStorage())
                                   Padding(
                                     padding: const EdgeInsets.only(right: 8.0),
                                     child: MenuAnchor(

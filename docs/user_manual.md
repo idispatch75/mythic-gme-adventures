@@ -230,7 +230,8 @@ and not the ones in the local storage; both sources are not merged.
 The custom tables are stored in `<data_folder>/meaning_tables/<language>`
 where `<language>` is an [ISO-639-1 code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes),
 e.g. `en` for English and `<data_folder>` is the folder defined in the *Preferences* dialog.  
-On the Web, the data folder is not accessible, so you must import a zip file containing the language folders at the root.
+On the Web and some Android devices, the data folder is not accessible, so you must import a zip file.
+When importing from a zip file, the file must contain the language folders at the root (the content of the zip will be extracted in `<data_folder>/meaning_tables`).
 
 The language folder must contain one JSON file per table, with this format:
 ```json

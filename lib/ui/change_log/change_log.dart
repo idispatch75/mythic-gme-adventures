@@ -88,6 +88,16 @@ class _Version {
 
 // add the new version before the previous versions
 const _versions = [
+  _Version('1.14.0', [
+    _Entry(
+      _Platform.android,
+      'Added the ability to import Custom Meaning Tables from a zip file.',
+    ),
+    _Entry(
+      _Platform.windows,
+      'Added the ability to import Custom Meaning Tables from a zip file.',
+    ),
+  ]),
   _Version('1.13.1', [
     _Entry(
       _Platform.android,
