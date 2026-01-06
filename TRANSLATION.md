@@ -24,8 +24,8 @@ Here are the steps to add a translation into the App:
 1. You contact me by e-mail at idispatch.dev@gmail.com, and tell me what kind of translation you want to do (language, full/partial)
 1. I create a CSV file that you'll have to translate, using Google Translate to create an initial translation, and I send it to you.  
 This translation will need a lot of amending because translating one word without context does not give great results. Also, English often uses the same word for a verb and a noun, which usually does not translate well to other languages.  
-You can open the file with Excel or Google Docs.
 The CSV delimiter is a tabulation.
+You can Open the file as Text file with Excel or Import it in Google Sheets.
 The words to translate are in the `translation` column.
 1. You translate the first 2 tables and send me back the CSV so I can check that everything is OK with the file and that you can continue translating the other tables.
 1. You finish the translation and send me the final CSV file. Specify which tables were translated if you made a partial translation.
