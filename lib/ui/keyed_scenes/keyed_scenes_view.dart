@@ -31,7 +31,7 @@ class KeyedScenesView extends GetView<KeyedScenesService> {
           child: Obx(
             () => defaultReorderableListView(
               items: scenes(),
-              itemBuilder: (_, item, __) {
+              itemBuilder: (_, item, _) {
                 return _SceneView(item);
               },
               removedItemBuilder: (_, item) {

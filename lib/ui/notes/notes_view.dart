@@ -31,7 +31,7 @@ class NotesView extends GetView<NotesService> {
           child: Obx(
             () => defaultReorderableListView(
               items: controller.notes(),
-              itemBuilder: (_, item, __) {
+              itemBuilder: (_, item, _) {
                 return _NoteView(item);
               },
               removedItemBuilder: (_, item) {

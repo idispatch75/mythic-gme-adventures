@@ -52,7 +52,7 @@ class AdventureIndexView extends GetView<AdventureIndexController> {
                       if (controller.status().isSuccess) {
                         list = defaultAnimatedListView(
                           items: controller.adventures,
-                          itemBuilder: (_, item, __) {
+                          itemBuilder: (_, item, _) {
                             return _IndexAdventureView(item);
                           },
                           removedItemBuilder: (_, item) {

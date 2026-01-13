@@ -58,7 +58,7 @@ class RollLogView extends HookWidget {
           for (var i = 0; i < removedRolls.length; i++) {
             _animatedListKey.currentState?.removeItem(
               log.length - i,
-              (_, __) => const SizedBox(),
+              (_, _) => const SizedBox(),
             );
           }
         }
@@ -66,7 +66,7 @@ class RollLogView extends HookWidget {
         // handle clear
         if (updates.any((e) => e is RollLogClear)) {
           _animatedListKey.currentState?.removeAllItems(
-            (_, __) => const SizedBox.shrink(),
+            (_, _) => const SizedBox.shrink(),
           );
         }
       });

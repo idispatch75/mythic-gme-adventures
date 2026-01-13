@@ -120,7 +120,7 @@ abstract class ListableItemsListView<TItem extends ListableItem>
           child: Obx(
             () => defaultAnimatedListView(
               items: items(),
-              itemBuilder: (_, item, __) {
+              itemBuilder: (_, item, _) {
                 return createItemView(item, itemTypeLabel);
               },
               removedItemBuilder: (_, item) {

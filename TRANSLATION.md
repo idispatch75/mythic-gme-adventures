@@ -31,7 +31,7 @@ The words to translate are in the `translation` column.
 1. You finish the translation and send me the final CSV file. Specify which tables were translated if you made a partial translation.
 1. I send you a zip file containing the translated Meaning Tables as JSON, so you can see what it looks like in the App.  
 To do so, you add them to the App as Custom Meaning Tables.
-The easiest way is to use the Web version and then `Custom Meaning Tables` > `Import tables` in the Adventures List page. Then you enter an Adventure and `Enable Physical Dice Mode` to have a better view of all the words.
+The easiest way is to use the Web version and then `Custom Meaning Tables` > `Import tables` in the Adventures List page. Then you enter an Adventure, select your language in the `Global Settings`, and `Enable Physical Dice Mode` to have a better view of all the words.
 1. If you are happy with your work, you tell me if you want to be credited and with what name. Otherwise you send me the amended CSV and we repeat from the previous step.
 
 ## Recommendations

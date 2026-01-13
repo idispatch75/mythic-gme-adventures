@@ -62,7 +62,7 @@ class DiceRollerView extends HookWidget {
         // handle clear
         if (updates.any((e) => e is DiceRollerLogClear)) {
           _animatedListKey.currentState?.removeAllItems(
-            (_, __) => const SizedBox.shrink(),
+            (_, _) => const SizedBox.shrink(),
           );
         }
       });

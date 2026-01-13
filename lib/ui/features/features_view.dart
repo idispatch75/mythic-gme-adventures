@@ -49,7 +49,7 @@ class FeaturesView extends GetView<FeaturesService> {
           child: Obx(
             () => defaultReorderableListView(
               items: features(),
-              itemBuilder: (_, item, __) {
+              itemBuilder: (_, item, _) {
                 return _FeatureView(item);
               },
               removedItemBuilder: (_, item) {

@@ -64,7 +64,7 @@ abstract class ListableItemsView<TItem extends ListableItem>
           child: Obx(
             () => defaultReorderableListView(
               items: _controller.items(),
-              itemBuilder: (_, item, __) {
+              itemBuilder: (_, item, _) {
                 return createItemView(item);
               },
               removedItemBuilder: (_, item) {

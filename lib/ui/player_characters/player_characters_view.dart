@@ -50,7 +50,7 @@ class PlayerCharactersView extends GetView<PlayerCharactersService> {
           child: Obx(
             () => defaultAnimatedListView(
               items: players(),
-              itemBuilder: (_, item, __) {
+              itemBuilder: (_, item, _) {
                 return _PlayerCharacterView(item);
               },
               removedItemBuilder: (_, item) {

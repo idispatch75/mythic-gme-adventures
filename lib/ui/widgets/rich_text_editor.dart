@@ -396,7 +396,7 @@ class _QuillToolbarArrowIndicatedButtonListState
 
 /// ScrollBehavior without the Material glow effect.
 class _NoGlowBehavior extends ScrollBehavior {
-  Widget buildViewportChrome(BuildContext _, Widget child, AxisDirection __) {
+  Widget buildViewportChrome(BuildContext _, Widget child, AxisDirection _) {
     return child;
   }
 }

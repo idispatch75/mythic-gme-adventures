@@ -21,6 +21,7 @@ class GlobalSettingsEditController extends GetxController {
     'nl': 'Nederlands',
     'cs': 'Czeski',
     'pl': 'Polski',
+    'zh': '中文',
   };
 
   final meaningTableLanguages = <String, String>{};

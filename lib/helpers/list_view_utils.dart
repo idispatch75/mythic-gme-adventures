@@ -24,7 +24,7 @@ Widget defaultAnimatedListView<TItem extends Object>({
           animation: animation,
           child: removedItemBuilder(context, item),
         ),
-    separatorBuilder: (_, __) => _buildSeparator(),
+    separatorBuilder: (_, _) => _buildSeparator(),
   );
 }
 
@@ -64,7 +64,7 @@ Widget defaultReorderableListView<TItem extends Object>({
         ),
       ),
     ),
-    separatorBuilder: (_, __) => _buildSeparator(),
+    separatorBuilder: (_, _) => _buildSeparator(),
     onReorderFinished: (item, from, to, newItems) =>
         onReorderFinished(newItems),
   );

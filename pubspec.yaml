@@ -1,10 +1,10 @@
 name: mythic_gme_adventures
 description: Mythic GME Adventures
 publish_to: 'none'
-version: 1.14.0+25
+version: 1.15.0+26
 
 environment:
-  sdk: '>=3.8.0 <4.0.0'
+  sdk: '>=3.10.0 <4.0.0'
 
 dependencies:
   animated_list_plus: ^0.5.2
@@ -19,11 +19,11 @@ dependencies:
   flutter_file_dialog: ^3.0.2
   flutter_hooks: ^0.21.2
   flutter_quill: ^11.4.2
-  flutter_secure_storage: ^9.0.0
+  flutter_secure_storage: ^10.0.0
   flutter_web_auth_2: ^4.0.1
   formatted_text: ^4.0.1
   get: ^4.6.6
-  google_fonts: ^6.1.0
+  google_fonts: ^7.0.0
   google_sign_in: ^6.1.5
   googleapis: ^14.0.0
   googleapis_auth: ^2.0.0
@@ -31,7 +31,7 @@ dependencies:
   intl: any
   io: ^1.0.4
   loggy: ^2.0.3
-  package_info_plus: ^8.0.0
+  package_info_plus: ^9.0.0
   path_provider: ^2.1.1
   rxdart: ^0.28.0
   shared_preferences: ^2.2.2
@@ -51,4 +51,5 @@ flutter:
     - assets/meaning_tables/en/
     - assets/meaning_tables/fr/
     - assets/meaning_tables/pt/
+    - assets/meaning_tables/zh/
     - assets/google_fonts/

@@ -88,6 +88,12 @@ class _Version {
 
 // add the new version before the previous versions
 const _versions = [
+  _Version('1.15.0', [
+    _Entry(
+      _Platform.all,
+      'Added Chinese support for Meaning Tables (provided by sennomulo).',
+    ),
+  ]),
   _Version('1.14.0', [
     _Entry(
       _Platform.android,
