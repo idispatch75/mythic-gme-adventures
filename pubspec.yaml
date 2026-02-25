@@ -1,7 +1,7 @@
 name: mythic_gme_adventures
 description: Mythic GME Adventures
 publish_to: 'none'
-version: 1.15.0+26
+version: 1.15.1+27
 
 environment:
   sdk: '>=3.10.0 <4.0.0'
@@ -23,7 +23,7 @@ dependencies:
   flutter_web_auth_2: ^4.0.1
   formatted_text: ^4.0.1
   get: ^4.6.6
-  google_fonts: ^7.0.0
+  google_fonts: ^8.0.2
   google_sign_in: ^6.1.5
   googleapis: ^14.0.0
   googleapis_auth: ^2.0.0

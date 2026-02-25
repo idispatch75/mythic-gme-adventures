@@ -88,6 +88,12 @@ class _Version {
 
 // add the new version before the previous versions
 const _versions = [
+  _Version('1.15.1', [
+    _Entry(
+      _Platform.all,
+      'Fixed buggy extraneous Meaning Table.',
+    ),
+  ]),
   _Version('1.15.0', [
     _Entry(
       _Platform.all,
