@@ -1,7 +1,7 @@
 name: mythic_gme_adventures
 description: Mythic GME Adventures
 publish_to: 'none'
-version: 1.15.1+27
+version: 1.16.0+28
 
 environment:
   sdk: '>=3.10.0 <4.0.0'
@@ -13,20 +13,20 @@ dependencies:
   collection: ^1.18.0
   cross_file: ^0.3.4+2
   extension_google_sign_in_as_googleapis_auth: ^2.0.11
-  file_picker: ^10.0.0
+  file_picker: ^11.0.2
   flutter:
     sdk: flutter
   flutter_file_dialog: ^3.0.2
   flutter_hooks: ^0.21.2
   flutter_quill: ^11.4.2
   flutter_secure_storage: ^10.0.0
-  flutter_web_auth_2: ^4.0.1
+  flutter_web_auth_2: ^5.0.2
   formatted_text: ^4.0.1
   get: ^4.6.6
   google_fonts: ^8.0.2
-  google_sign_in: ^6.1.5
-  googleapis: ^14.0.0
-  googleapis_auth: ^2.0.0
+  google_sign_in: 6.3.0
+  googleapis: 14.0.0
+  googleapis_auth: 2.0.0
   http: ^1.1.2
   intl: any
   io: ^1.0.4

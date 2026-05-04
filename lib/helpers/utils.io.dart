@@ -43,7 +43,7 @@ Future<String?> _pickFilePath({
   required String dialogTitle,
   required String extension,
 }) async {
-  final result = await FilePicker.platform.pickFiles(
+  final result = await FilePicker.pickFiles(
     dialogTitle: dialogTitle,
     // extensions are moderately supported on Android:
     // the mime type must be known somehow
@@ -64,7 +64,7 @@ Future<void> saveTextFile(
   required String dialogTitle,
 }) async {
   if (GetPlatform.isDesktop) {
-    final exportFile = await FilePicker.platform.saveFile(
+    final exportFile = await FilePicker.saveFile(
       dialogTitle: dialogTitle,
       fileName: fileName,
     );
@@ -89,7 +89,7 @@ Future<void> saveBinaryFile(
   required String dialogTitle,
 }) async {
   if (GetPlatform.isDesktop) {
-    final exportFile = await FilePicker.platform.saveFile(
+    final exportFile = await FilePicker.saveFile(
       dialogTitle: dialogTitle,
       fileName: fileName,
     );

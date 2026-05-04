@@ -114,7 +114,7 @@ class PreferencesEditView extends HookWidget {
                     final initialDirectory =
                         localDataDirectoryController.text.nullIfEmpty() ??
                         defaultLocalDataDirectory.data;
-                    final path = await FilePicker.platform.getDirectoryPath(
+                    final path = await FilePicker.getDirectoryPath(
                       dialogTitle: 'Local data folder',
                       initialDirectory: initialDirectory,
                       lockParentWindow: true,

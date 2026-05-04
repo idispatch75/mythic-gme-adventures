@@ -233,12 +233,3 @@ magick -background none -size 512x512 assets\splash-light.svg web\icons\icon-512
 			}
 		}
 		```
-
-#### macOS
-
-- intercept exit event, in `macos/Runner/AppDelegate.swift`:
-	```swift
-	override func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
-		return false
-  }
-	```

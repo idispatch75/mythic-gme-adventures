@@ -20,7 +20,7 @@ extension AdventureIndexControllerX on AdventureIndexController {
     }
 
     // pick a source directory
-    final localDirectory = await FilePicker.platform.getDirectoryPath(
+    final localDirectory = await FilePicker.getDirectoryPath(
       dialogTitle: 'Custom Meaning Tables folder',
       lockParentWindow: true,
     );
