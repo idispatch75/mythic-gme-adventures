@@ -94,6 +94,10 @@ const _versions = [
       'Added the option to show the Physical Dice Mode toggle in the Fate Chart, for quick access.'
       ' This can be activated in the Global Settings.',
     ),
+    _Entry(
+      _Platform.all,
+      'Fixed empty list when Rolling Traits when using Chinese Meaning tables.',
+    ),
   ]),
   _Version('1.15.1', [
     _Entry(

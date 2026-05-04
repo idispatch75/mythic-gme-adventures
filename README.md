@@ -88,6 +88,11 @@ swa deploy --env production --deployment-token TOKEN
 	keytool -genkey -v -keystore upload-keystore.jks -storetype JKS -keyalg RSA -keysize 2048 -validity 10000 -alias upload
 	```
 
+  To get the SHA1 of the debug signing certificate:
+  ```
+  keytool -list -v -keystore c:\users\your_user_name\.android\debug.keystore -alias androiddebugkey -storepass android -keypass android
+  ```
+
 ### Non versioned files
 
 From Securesafe:
