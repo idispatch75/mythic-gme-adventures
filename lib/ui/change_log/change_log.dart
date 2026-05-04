@@ -88,6 +88,13 @@ class _Version {
 
 // add the new version before the previous versions
 const _versions = [
+  _Version('1.16.0', [
+    _Entry(
+      _Platform.all,
+      'Added the option to show the Physical Dice Mode toggle in the Fate Chart, for quick access.'
+      ' This can be activated in the Global Settings.',
+    ),
+  ]),
   _Version('1.15.1', [
     _Entry(
       _Platform.all,

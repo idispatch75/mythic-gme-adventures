@@ -284,12 +284,16 @@ class FateChartService extends GetxService {
     final isPhysicalDiceModeEnabled = getPhysicalDiceModeEnabled;
     final showCombatClash = Get.find<GlobalSettingsService>().showCombatClash;
     final isCombatClash = Get.find<ChaosFactorService>().isCombatClash;
+    final showQuickPhysicalDiceMode =
+        Get.find<GlobalSettingsService>().showQuickPhysicalDiceMode;
+    final enablePhysicalDiceMode =
+        Get.find<LocalPreferencesService>().enablePhysicalDiceMode;
 
     return [
-      // combat clash switch
+      // header with options
       Obx(
         () {
-          if (!showCombatClash()) {
+          if (!showCombatClash() && !showQuickPhysicalDiceMode()) {
             return const SizedBox.shrink();
           }
 
@@ -304,19 +308,43 @@ class FateChartService extends GetxService {
             ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(8.0, 4.0, 4.0, 4.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
+              child: Column(
                 children: [
-                  const Expanded(
-                    child: Text('Combat Clash'),
-                  ),
-                  Obx(
-                    () => Switch.adaptive(
-                      value: isCombatClash.value,
-                      onChanged: isCombatClash.call,
+                  // combat clash switch
+                  if (showCombatClash())
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Expanded(
+                          child: Text('Combat Clash'),
+                        ),
+                        Obx(
+                          () => Switch.adaptive(
+                            value: isCombatClash.value,
+                            onChanged: isCombatClash.call,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
+
+                  // physical dice mode
+                  if (showQuickPhysicalDiceMode())
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Expanded(
+                          child: Text('Physical Dice Mode'),
+                        ),
+                        Obx(
+                          () => Switch.adaptive(
+                            value: enablePhysicalDiceMode.value,
+                            onChanged: enablePhysicalDiceMode.call,
+                          ),
+                        ),
+                      ],
+                    ),
                 ],
               ),
             ),

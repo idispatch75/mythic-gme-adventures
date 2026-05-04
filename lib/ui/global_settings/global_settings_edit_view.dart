@@ -61,6 +61,7 @@ class GlobalSettingsEditView extends HookWidget {
     final allowUnlimitedListCount = _settings.allowUnlimitedListCount.obs;
     final hideHelpButtons = _settings.hideHelpButtons().obs;
     final showCombatClash = _settings.showCombatClash().obs;
+    final showQuickPhysicalDiceMode = _settings.showQuickPhysicalDiceMode().obs;
     final meaningTablesLanguage = _settings.meaningTablesLanguage.obs;
     if (!controller.meaningTableLanguages.containsKey(
       meaningTablesLanguage(),
@@ -76,6 +77,7 @@ class GlobalSettingsEditView extends HookWidget {
         _settings.allowUnlimitedListCount = allowUnlimitedListCount();
         _settings.hideHelpButtons.value = hideHelpButtons();
         _settings.showCombatClash.value = showCombatClash();
+        _settings.showQuickPhysicalDiceMode.value = showQuickPhysicalDiceMode();
         if (!_settings.showCombatClash()) {
           Get.find<ChaosFactorService>().isCombatClash(false);
         }
@@ -129,6 +131,15 @@ class GlobalSettingsEditView extends HookWidget {
                   'Shows the Combat Clash toggle in the Fate Chart.'
                   ' When Combat Clash is enabled, the Chaos Factor is forced to 5 for Fate Questions,'
                   ' as per Mythic RPG Narrative Combat from Mythic Magazine Compilation 5.',
+            ),
+
+            // show quick physical dice mode
+            BooleanSetting(
+              withTopPadding: true,
+              setting: showQuickPhysicalDiceMode,
+              text: 'Show quick toggle for Physical Dice Mode',
+              subtext:
+                  'Shows the Physical Dice Mode toggle in the Fate Chart, for quick access.',
             ),
 
             // meaning tables language

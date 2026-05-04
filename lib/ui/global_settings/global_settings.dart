@@ -16,6 +16,7 @@ class GlobalSettingsService extends GetxService with SavableMixin {
   bool allowUnlimitedListCount;
   final RxBool hideHelpButtons;
   final RxBool showCombatClash;
+  final RxBool showQuickPhysicalDiceMode;
   int? saveTimestamp;
 
   GlobalSettingsService({
@@ -27,11 +28,13 @@ class GlobalSettingsService extends GetxService with SavableMixin {
     this.allowUnlimitedListCount = false,
     bool hideHelpButtons = false,
     bool showCombatClash = false,
+    bool showQuickPhysicalDiceMode = false,
     this.saveTimestamp,
   }) : favoriteMeaningTables = favoriteMeaningTables ?? {},
        characterTraitMeaningTables = characterTraitMeaningTables ?? [],
        hideHelpButtons = hideHelpButtons.obs,
-       showCombatClash = showCombatClash.obs;
+       showCombatClash = showCombatClash.obs,
+       showQuickPhysicalDiceMode = showQuickPhysicalDiceMode.obs;
 
   bool addMeaningTableFavorite(String id) {
     if (favoriteMeaningTables.add(id)) {
@@ -66,6 +69,7 @@ class GlobalSettingsService extends GetxService with SavableMixin {
     'allowUnlimitedListCount': allowUnlimitedListCount,
     'hideHelpButtons': hideHelpButtons(),
     'showCombatClash': showCombatClash(),
+    'showQuickPhysicalDiceMode': showQuickPhysicalDiceMode(),
     if (saveTimestamp != null) 'saveTimestamp': saveTimestamp,
   };
 
@@ -83,6 +87,7 @@ class GlobalSettingsService extends GetxService with SavableMixin {
         allowUnlimitedListCount: json['allowUnlimitedListCount'] ?? false,
         hideHelpButtons: json['hideHelpButtons'] ?? false,
         showCombatClash: json['showCombatClash'] ?? false,
+        showQuickPhysicalDiceMode: json['showQuickPhysicalDiceMode'] ?? false,
         saveTimestamp: json['saveTimestamp'],
       );
 }
