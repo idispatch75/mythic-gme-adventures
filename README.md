@@ -96,7 +96,7 @@ swa deploy --env production --deployment-token TOKEN
 ### Non versioned files
 
 From Securesafe:
-- download `android\upload-keystore.jks`
+- download `android\app\upload-keystore.jks`
 - download `android\key.properties`
 
 ### VS Code extensions

@@ -88,6 +88,12 @@ class _Version {
 
 // add the new version before the previous versions
 const _versions = [
+  _Version('1.17.0', [
+    _Entry(
+      _Platform.all,
+      'Added Spanish support for Meaning Tables.',
+    ),
+  ]),
   _Version('1.16.0', [
     _Entry(
       _Platform.all,
